@@ -3,40 +3,8 @@ import Head from "next/head";
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useSession } from "next-auth/react";
-import { useDisconnect, useSignTypedData } from "wagmi";
-
-// All properties on a domain are optional
-const domain = {
-  name: "Ether Mail",
-  version: "1",
-  chainId: 1,
-  verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-};
-
-// The named list of all type definitions
-const types = {
-  Person: [
-    { name: "name", type: "string" },
-    { name: "wallet", type: "address" },
-  ],
-  Mail: [
-    { name: "from", type: "Person" },
-    { name: "to", type: "Person" },
-    { name: "contents", type: "string" },
-  ],
-};
-
-const value = {
-  from: {
-    name: "Cow",
-    wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
-  },
-  to: {
-    name: "Bob",
-    wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-  },
-  contents: "Hello, Bob!",
-};
+import { useDisconnect } from "wagmi";
+import { SignTypedMessage } from "../components/SignTypedMessage";
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession();
@@ -49,7 +17,7 @@ const Home: NextPage = () => {
     return (
       <div>
         Authenticated <button onClick={() => disconnect()}>Disconnect</button>
-        <SignTypedData />
+        <SignTypedMessage />
       </div>
     );
   }
@@ -57,7 +25,7 @@ const Home: NextPage = () => {
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
       <Head>
         <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/apps/demo-app/public/favicon.ico" />
       </Head>
 
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
@@ -93,22 +61,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-export const SignTypedData = () => {
-  const { data, isError, isLoading, isSuccess, signTypedData } =
-    useSignTypedData({
-      domain,
-      types,
-      value,
-    });
-
-  return (
-    <div>
-      <button disabled={isLoading} onClick={() => signTypedData()}>
-        Sign typed data
-      </button>
-      {isSuccess && <div>Signature: {data}</div>}
-      {isError && <div>Error signing message</div>}
-    </div>
-  );
-};
