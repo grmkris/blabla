@@ -12,6 +12,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { SessionProvider } from "next-auth/react";
 import { Layout } from "../components/Layout";
+import { getInstalledInjectedConnectors, StarknetProvider } from "@starknet-react/core";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Sign in to my RainbowKit app",
@@ -34,14 +35,17 @@ const wagmiClient = createClient({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const connectors = getInstalledInjectedConnectors()
   return (
     <WagmiConfig client={wagmiClient}>
       <SessionProvider session={pageProps.session}>
         <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
             <RainbowKitProvider chains={chains}>
+              <StarknetProvider connectors={connectors}>
               <Layout>
                 <Component {...pageProps} />
               </Layout>
+              </StarknetProvider>
             </RainbowKitProvider>
         </RainbowKitSiweNextAuthProvider>
       </SessionProvider>
