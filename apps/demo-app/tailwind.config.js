@@ -5,9 +5,17 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx}',
     '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
   mode: 'jit',
+  // daisyUI config (optional)
+  daisyui: {
+    styled: true,
+    themes: 'light',
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+    prefix: "",
+    darkTheme: "light",
+  },
 };

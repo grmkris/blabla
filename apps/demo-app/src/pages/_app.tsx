@@ -11,6 +11,7 @@ import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { SessionProvider } from "next-auth/react";
+import { Layout } from "../components/Layout";
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Sign in to my RainbowKit app",
@@ -38,7 +39,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SessionProvider session={pageProps.session}>
         <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
             <RainbowKitProvider chains={chains}>
-              <Component {...pageProps} />
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
             </RainbowKitProvider>
         </RainbowKitSiweNextAuthProvider>
       </SessionProvider>

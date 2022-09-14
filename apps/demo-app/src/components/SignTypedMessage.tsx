@@ -43,7 +43,7 @@ export const SignTypedMessage = () => {
 
   return (
     <div>
-      <button disabled={isLoading} onClick={() => signTypedData()}>
+      <button className={'btn'} disabled={isLoading} onClick={() => signTypedData()}>
         Sign typed data
       </button>
       {isSuccess && <div>Signature: {data}</div>}
