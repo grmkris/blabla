@@ -3,8 +3,11 @@ import Head from "next/head";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
+import {
+  allChains,
+} from 'wagmi'
 
-export type Inputs = { chain: string; indexer: string };
+export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
   const {inputs, addInput} = useGraphNotifyStore((state) => ({
     inputs: state.inputs,
@@ -43,11 +46,16 @@ const Home: NextPage = () => {
           <label className="label">
             <span className="label-text">Chain id</span>
           </label>
-          <input
-            className="input input-bordered input-primary w-full max-w-xs"
-            defaultValue=""
-            {...register("chain")}
-          />
+          <select
+            {...register("chainId", { required: true })}
+            className="select select-primary w-full max-w-xs"
+          >
+            {allChains.map((chain) => (
+              <option key={chain.id} value={chain.id}>
+                {chain.name}
+              </option>
+            ))}
+          </select>
           <label className="label">
             <span className="label-text">Sugraph url?</span>
           </label>
@@ -60,13 +68,15 @@ const Home: NextPage = () => {
           <input type="submit" className={"mt-2 btn"} />
         </form>
         <div className={"divider"}>Subgraphs</div>
-        {
-          inputs.map((subgraph, index) => {
-            return (
-              <SubgraphStatusIndicator chain={subgraph.chain} indexer={subgraph.indexer} key={index} index={index} />
-            )
-          })
-        }
+        <div className={"mb-20 flex flex-col sm:flex-row"}>
+          {
+            inputs.map((subgraph, index) => {
+              return (
+                <SubgraphStatusIndicator chain={subgraph.chainId} indexer={subgraph.indexer} key={index} index={index} />
+              )
+            })
+          }
+        </div>
       </main>
     </div>
   );
