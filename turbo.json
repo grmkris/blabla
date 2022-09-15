@@ -1,12 +1,27 @@
 {
   "$schema": "https://turborepo.org/schema.json",
+  "globalDependencies": [
+    "tsconfig.json",
+    "$NEXTAUTH_URL",
+    "$NEXTAUTH_SECRET",
+    "$VERCEL_URL"
+  ],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [".next/**, build/**"]
     },
-    "lint": {
-      "outputs": []
+    "graph-notify#build": {
+      "dependsOn": [
+        "^build",
+        "$NEXT_PUBLIC_ALCHEMY_ID",
+        "$NEXTAUTH_URL",
+        "$NEXTAUTH_SECRET",
+        "$VERCEL_URL"
+      ],
+      "outputs": [".next/**, build/**"]
     },
     "dev": {
       "cache": false

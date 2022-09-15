@@ -1,5 +1,5 @@
 {
-  "name": "graph_notify",
+  "name": "graph-notify",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -26,7 +26,8 @@
     "siwe": "^1.1.6",
     "ui": "workspace:*",
     "wagmi": "^0.6.6",
-    "graphql": "^16.6.0"
+    "graphql": "^16.6.0",
+    "idb-keyval": "^6.2.0"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^2.2.10",

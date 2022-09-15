@@ -4,7 +4,7 @@
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
-        "url": "https://gateway.thegraph.com/api/408304b8f418be03f0c0aa1bcc4282fe/subgraphs/id/FDD65maya4xVfPnCjSgDRBz6UBWKAcmGtgY6BmUueJCg",
+        "url": "https://api.thegraph.com/subgraphs/name/airswap/airswap",
         "headers": {
           "user-agent": "JS GraphQL"
         },

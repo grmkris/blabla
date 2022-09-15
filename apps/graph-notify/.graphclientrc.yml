@@ -3,7 +3,7 @@ sources:
   - name: tidv
     handler:
       graphql:
-        endpoint: https://{context.indexer_url:gateway.thegraph.com/api/408304b8f418be03f0c0aa1bcc4282fe/subgraphs/id/FDD65maya4xVfPnCjSgDRBz6UBWKAcmGtgY6BmUueJCg}
+        endpoint: https://{context.indexer_url:api.thegraph.com/subgraphs/name/airswap/airswap}
         chainName: { context.chainName }
 
 additionalTypeDefs: |
@@ -13,7 +13,7 @@ additionalTypeDefs: |
   }
 
 additionalResolvers:
-  - ./graph/resolvers.ts
+  - ./queries/resolvers.ts
 
 documents:
   - ./queries/get-subgraph-status.graphql
