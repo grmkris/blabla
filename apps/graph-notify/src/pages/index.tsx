@@ -3,9 +3,7 @@ import Head from "next/head";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
-import {
-  allChains,
-} from 'wagmi'
+import { useChainListChains } from "../hooks/useChainListChains";
 
 export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
@@ -13,6 +11,7 @@ const Home: NextPage = () => {
     inputs: state.inputs,
     addInput: state.addInput
   }));
+  const {data: chainList, isLoading: isLoadingChainList} = useChainListChains();
   const {
     register,
     handleSubmit,
@@ -50,11 +49,12 @@ const Home: NextPage = () => {
             {...register("chainId", { required: true })}
             className="select select-primary w-full max-w-xs"
           >
-            {allChains.map((chain) => (
-              <option key={chain.id} value={chain.id}>
-                {chain.name}
+            {chainList?.map((chain) => {
+              console.log(chain);
+              return <option key={chain.chainId} value={chain.chainId}>
+                {chain.networkId} - {chain.name}
               </option>
-            ))}
+            })}
           </select>
           <label className="label">
             <span className="label-text">Sugraph url?</span>
