@@ -5,6 +5,7 @@ import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
 import { useChainListChains } from "../hooks/useChainListChains";
 import { ComboBoxExample } from "../components/ComboBox";
+import { trpc } from "../utils/trpc";
 
 export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
@@ -22,6 +23,7 @@ const Home: NextPage = () => {
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     addInput(data);
   };
+  const hello = trpc.useQuery(['hello', { text: 'dsaf' }]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
@@ -37,7 +39,6 @@ const Home: NextPage = () => {
             Observer
           </a>
         </h1>
-
         <p className="mt-3 text-2xl">
           Get notified when your subgraph is synced! Enter subgraph url and
           chain to get started.
