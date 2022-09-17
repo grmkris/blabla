@@ -1,11 +1,10 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
 import { useChainListChains } from "../hooks/useChainListChains";
-import { ComboBoxExample } from "../components/ComboBox";
-import { trpc } from "../utils/trpc";
+import Select from "react-select";
 
 export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
@@ -13,29 +12,31 @@ const Home: NextPage = () => {
     inputs: state.inputs,
     addInput: state.addInput,
   }));
-  const { data: chainList, isLoading: isLoadingChainList } =
-    useChainListChains();
+  const { data: chainList } = useChainListChains();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    control,
+    reset,
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log("qqq", data);
     addInput(data);
+    reset();
   };
-  const hello = trpc.useQuery(['hello', { text: 'dsaf' }]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
       <Head>
         <title>Create Next App</title>
-        <link rel="icon" href="/apps/demo-app/public/favicon.ico" />
+        <link rel="icon" href="/apps/graph-notify/public/favicon.ico" />
       </Head>
 
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
         <h1 className="text-6xl font-bold">
-          Subgraph {" "}
-            <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
+          Subgraph{" "}
+          <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
             Observer
           </a>
         </h1>
@@ -45,34 +46,81 @@ const Home: NextPage = () => {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          {chainList && (
-            <ComboBoxExample
-              {...register("chainId", { required: true })}
-              className="select select-primary w-full max-w-xs"
-              data={chainList}
-            ></ComboBoxExample>
-          )}
-          <label className="label">
-            <span className="label-text">Sugraph url?</span>
-          </label>
-          <input
-            className="input input-bordered input-primary w-full max-w-xs"
-            {...register("indexer", { required: true })}
-          />
-          {/* errors will return when field validation fails  */}
-          {errors.indexer && <span>This field is required</span>}
+          <div className="form-control w-full max-w-md">
+            <label className="label">
+              <span className="label-text font-bold">Sugraph url?</span>
+            </label>
+            <input
+              className="input input-bordered input-primary"
+              {...register("indexer", { required: true })}
+            />
+            <label className="label">
+              {errors.indexer && (
+                <span className={"label-text-alt text-error"}>
+                  This field is required
+                </span>
+              )}
+            </label>
+          </div>
+
+          <div className="form-control w-full w-72">
+            {chainList && (
+              <>
+                <label className="label">
+                  <span className="label-text font-bold">Chain</span>
+                </label>
+                <Controller
+                  control={control}
+                  rules={{ required: true }}
+                  name="chainId"
+                  render={({ field: { onChange, value } }) => (
+                    <Select
+                      onChange={(option) => onChange(option?.value)}
+                      value={{
+                        label: chainList
+                          .map((chain) => chain.chainId + "-" + chain.name)
+                          .find((chain) => chain?.includes(value?.toString())),
+                        value,
+                      }}
+                      options={chainList.map((chain) => ({
+                        label: chain.chainId + "-" + chain.name,
+                        value: chain.chainId,
+                      }))}
+                      styles={{
+                        input: (provided) => ({
+                          ...provided,
+                          height: "2.4em",
+                        }),
+                        control: (provided) => ({
+                          ...provided,
+                          borderRadius: "0.5em",
+                        }),
+                      }}
+                    />
+                  )}
+                />
+              </>
+            )}
+          </div>
+
           <input type="submit" className={"mt-2 btn"} />
         </form>
-        <div className={"divider"}>Subgraphs</div>
-        <div className={"mb-20 flex flex-col sm:flex-row"}>
+        <div className={"divider font-bold text-2xl"}>
+          <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-800 to-blue-700">
+            Subgraphs
+          </a>
+        </div>
+        <div className={"mb-20 flex flex-wrap flex-row justify-center"}>
           {inputs.map((subgraph, index) => {
             return (
-              <SubgraphStatusIndicator
-                chain={subgraph.chainId}
-                indexer={subgraph.indexer}
-                key={index}
-                index={index}
-              />
+              <div className={"m-2"}>
+                <SubgraphStatusIndicator
+                  chain={subgraph.chainId}
+                  indexer={subgraph.indexer}
+                  key={index}
+                  index={index}
+                />
+              </div>
             );
           })}
         </div>
