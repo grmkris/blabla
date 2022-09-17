@@ -4,14 +4,16 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
 import { useChainListChains } from "../hooks/useChainListChains";
+import { ComboBoxExample } from "../components/ComboBox";
 
 export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
-  const {inputs, addInput} = useGraphNotifyStore((state) => ({
+  const { inputs, addInput } = useGraphNotifyStore((state) => ({
     inputs: state.inputs,
-    addInput: state.addInput
+    addInput: state.addInput,
   }));
-  const {data: chainList, isLoading: isLoadingChainList} = useChainListChains();
+  const { data: chainList, isLoading: isLoadingChainList } =
+    useChainListChains();
   const {
     register,
     handleSubmit,
@@ -42,20 +44,13 @@ const Home: NextPage = () => {
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="label">
-            <span className="label-text">Chain id</span>
-          </label>
-          <select
-            {...register("chainId", { required: true })}
-            className="select select-primary w-full max-w-xs"
-          >
-            {chainList?.map((chain) => {
-              console.log(chain);
-              return <option key={chain.chainId} value={chain.chainId}>
-                {chain.networkId} - {chain.name}
-              </option>
-            })}
-          </select>
+          {chainList && (
+            <ComboBoxExample
+              {...register("chainId", { required: true })}
+              className="select select-primary w-full max-w-xs"
+              data={chainList}
+            ></ComboBoxExample>
+          )}
           <label className="label">
             <span className="label-text">Sugraph url?</span>
           </label>
@@ -69,13 +64,16 @@ const Home: NextPage = () => {
         </form>
         <div className={"divider"}>Subgraphs</div>
         <div className={"mb-20 flex flex-col sm:flex-row"}>
-          {
-            inputs.map((subgraph, index) => {
-              return (
-                <SubgraphStatusIndicator chain={subgraph.chainId} indexer={subgraph.indexer} key={index} index={index} />
-              )
-            })
-          }
+          {inputs.map((subgraph, index) => {
+            return (
+              <SubgraphStatusIndicator
+                chain={subgraph.chainId}
+                indexer={subgraph.indexer}
+                key={index}
+                index={index}
+              />
+            );
+          })}
         </div>
       </main>
     </div>

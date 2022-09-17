@@ -98,7 +98,11 @@ export const SubgraphStatusIndicator = (props: {
           </div>
           {chain?.blockExplorers?.default.url ? (
             <Link href={chain?.blockExplorers?.default.url}>
-              <a target="_blank" rel="noopener noreferrer" className={"link link-primary truncate text-clip max-w-sm"}>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className={"link link-primary truncate text-clip max-w-sm"}
+              >
                 {chain?.name}
               </a>
             </Link>
@@ -107,55 +111,45 @@ export const SubgraphStatusIndicator = (props: {
           )}
         </div>
         <Link href={props.indexer} passHref>
-          <a target="_blank" rel="noopener noreferrer" className={"link link-primary truncate text-clip max-w-sm"}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            className={"link link-primary truncate text-clip max-w-sm"}
+          >
             {props.indexer}
           </a>
         </Link>{" "}
         <div className="flex flex-col text-left">
           <div>Subgraph block: {data?._meta?.block.number}</div>
+          {isLoading && <div>Subgraph block: Loading...</div>}
+          {!data?._meta?.block.number && (
+            <div className="badge badge-error gap-2">Subgraph block: Not available</div>
+          )}
           {isLoadingLatestBlock && <div>Latest block: Loading...</div>}
           {!isLoadingLatestBlock && (
             <>
               {latestBlock ? (
-                <div>Latest block: {BigNumber.from(latestBlock).toString()}</div>
+                <div>
+                  Latest block: {BigNumber.from(latestBlock).toString()}
+                </div>
               ) : (
-                <div>Latest block: Not available</div>
+                <div className="badge badge-error gap-2">Latest block: Not available</div>
               )}
-              {blockBehind !== undefined && <div>Blocks behind: {blockBehind}</div>}
+              {blockBehind !== undefined && (
+                <div>
+                  Blocks behind:
+                  {blockBehind <= 10 && (
+                    <div className="badge badge-success m-2">{blockBehind}</div>
+                  )}
+                  {blockBehind >= 10 && (
+                    <div className="badge badge-warning gap-2">
+                      {blockBehind}
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
-          <div className="badge badge-success gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              className="inline-block w-4 h-4 stroke-current"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-            Synced
-          </div>
-          <div className="badge badge-warning gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              className="inline-block w-4 h-4 stroke-current"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-            Out of sync
-          </div>
         </div>
       </div>
     </div>
