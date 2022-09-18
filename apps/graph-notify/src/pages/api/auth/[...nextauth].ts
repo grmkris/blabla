@@ -1,8 +1,17 @@
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials"
 import { getCsrfToken } from "next-auth/react"
 import { SiweMessage } from "siwe"
 import { NextApiRequest, NextApiResponse } from "next";
+import { API_URL } from "../../../config/constants";
+
+export const nextAuthOptions : NextAuthOptions = {
+  providers: [],
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+}
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -26,11 +35,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         try {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"))
 
-          const nextAuthUrl =
-            process.env.NEXTAUTH_URL ||
-            (process.env.VERCEL_URL
-              ? `https://${process.env.VERCEL_URL}`
-              : null)
+          const nextAuthUrl = API_URL
           if (!nextAuthUrl) {
             return null
           }
@@ -64,17 +69,16 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   }
 
   return NextAuth(req, res, {
+    ...nextAuthOptions,
     // https://next-auth.js.org/configuration/providers/oauth
     providers,
-    session: {
-      strategy: "jwt",
-    },
-    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-      async session({ session, token }) {
-        session.address = token.sub
-        session.user.name = token.sub
-        session.user.image = 'https://www.fillmurray.com/128/128'
+      async session({ session, token,user }) {
+        if (!token.sub) {
+          throw new Error("No sub in token")
+        }
+        session.user.address = token.sub;
+        console.log("NextAuthsession: " + JSON.stringify(session));
         return session
       },
     },

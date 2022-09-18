@@ -16,6 +16,7 @@
     "@trpc/next": "^9.27.2",
     "@trpc/react": "^9.27.2",
     "@trpc/server": "^9.27.2",
+    "@hookform/resolvers": "^2.9.8",
     "clsx": "^1.2.1",
     "daisyui": "^2.27.0",
     "ethers": "^5.7.1",

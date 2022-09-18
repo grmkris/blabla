@@ -5,7 +5,7 @@ import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
 import { useChainListChains } from "../hooks/useChainListChains";
 import Select from "react-select";
-import { useTrpc } from "../utils/useTrpc";
+import { useTrpc } from "../config/trpc/useTrpc";
 
 export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
@@ -45,8 +45,7 @@ const Home: NextPage = () => {
           </a>
         </h1>
         <p className="mt-3 text-2xl">
-          Get notified when your subgraph is synced! Enter subgraph url and
-          chain to get started.
+          Be 🚨notified 🚨 on important events happening on any subgraph 🚀
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -4,9 +4,10 @@
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
-        "url": "https://api.thegraph.com/subgraphs/name/airswap/airswap",
+        "url": "https://api.repeater.dev/graphql",
         "headers": {
-          "user-agent": "JS GraphQL"
+          "user-agent": "JS GraphQL",
+          "Authorization": "Bearer 43444036523bba9d6524ec9abb1c9f03"
         },
         "introspect": false
       }

@@ -1,5 +1,6 @@
 import * as trpcNext from "@trpc/server/adapters/next";
 import * as trpc from "@trpc/server";
+import { getSession } from "next-auth/react";
 
 /**
  * Creates context for an incoming request
@@ -10,8 +11,12 @@ export const createContext = async (
 ) => {
   const req = opts?.req;
   const res = opts?.res;
-  const session = "adf";
-  console.log("sessioncreateContext: " + session, req, res);
+  // get user from next auth js
+  if (!req || !res) {
+    throw new Error("req or res is missing");
+  }
+  const session = await getSession({ req })
+  console.log("sessioncreateContext: " + JSON.stringify(session));
   // for API-response caching see https://trpc.io/docs/caching
   return {
     req,

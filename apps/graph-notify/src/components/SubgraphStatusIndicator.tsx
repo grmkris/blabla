@@ -10,8 +10,19 @@ import Image from "next/image";
 import chainIds from "../chainIds";
 import BellIcon from "./../../public/bell.svg";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Subscription } from "../pages/api/trpc/[trpc]";
 import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
+import { useTrpc } from "../config/trpc/useTrpc";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from "zod";
+
+export const SubscriptionSchema = z.object({
+  subgraphUrl: z.string().url(),
+  email: z.string().email(),
+  user: z.string(),
+  interval: z.number()
+})
+export type Subscription = z.infer<typeof SubscriptionSchema>;
 
 const NoSsr = (props: { children: React.ReactNode }) => (
   <React.Fragment>{props.children}</React.Fragment>
@@ -45,11 +56,17 @@ export const SubgraphStatusIndicator = (props: {
   } = useGetLatestBlock(
     chainFromChainData?.rpc.find((element) => !element.includes("${"))
   );
+  const session = useSession();
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm<Subscription>();
+  } = useForm<Subscription>({resolver: zodResolver(SubscriptionSchema),defaultValues: {
+      user: session?.data?.user.address,
+      subgraphUrl: props.indexer,
+    }});
 
   const icon = useMemo(() => {
     const chainSlug =
@@ -61,14 +78,22 @@ export const SubgraphStatusIndicator = (props: {
     return url;
   }, [chainFromChainData]);
 
+  const {mutate, isLoading : isLoadingSubscribe, data : dataSubscribe } = useTrpc.useMutation("subscribe");
   const blockBehind =
     latestBlock &&
     data?._meta?.block.number &&
     latestBlock - data?._meta?.block.number;
-  const onSubmit: SubmitHandler<Subscription> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<Subscription> = (subscriptionReq) => {
+    console.log("subscriptionReq", subscriptionReq);
+    mutate({
+      user: subscriptionReq.user || session?.data?.user.address,
+      subgraphUrl: subscriptionReq.subgraphUrl,
+      email: subscriptionReq.email,
+      interval: subscriptionReq.interval,
+    });
   };
 
+  setValue("user", session?.data?.user.address || "");
   return (
     <NoSsr>
       <div className="card w-80 bg-base-100 shadow-xl">
@@ -200,7 +225,7 @@ export const SubgraphStatusIndicator = (props: {
                     type="email"
                     placeholder="Email"
                     className="input input-primary input-bordered"
-                    {...register("email", { required: true })}
+                    {...register("email")}
                   />
                   {errors.email && (
                     <span className="text-red-500">This field is required</span>
@@ -214,7 +239,7 @@ export const SubgraphStatusIndicator = (props: {
                     type="number"
                     placeholder="Interval"
                     className="input input-primary input-bordered"
-                    {...register("interval", { required: true })}
+                    {...register("interval", {valueAsNumber: true })}
                   />
                   {errors.interval && (
                     <span className="text-red-500">This field is required</span>
