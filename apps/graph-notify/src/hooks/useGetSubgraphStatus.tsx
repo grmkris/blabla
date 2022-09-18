@@ -17,6 +17,7 @@ export const useGetSubgraphStatus = (chainId: string, indexer: string) => {
       })
       return client.getSubgraphStatus()
     },{
+      retry: false,
     }
   );
 };

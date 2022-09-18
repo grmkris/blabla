@@ -9,7 +9,6 @@ import { API_URL } from "../../../config/constants";
 import { SubscriptionSchema } from "../../../components/SubgraphStatusIndicator";
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>;
-
 export const appRouter = trpc
   .router<Context>()
   .query("next-auth.getSession", {
@@ -44,6 +43,34 @@ export const appRouter = trpc
       };
     },
   })
+  .query("get-active-subscriptions", {
+    async resolve({ input, ctx }) {
+      const repeater = new Repeater("43444036523bba9d6524ec9abb1c9f03");
+      const jobs = await repeater.jobs();
+      // filter only jobs that have user address in name
+      const userJobs = jobs.filter((job: { name: (string | undefined)[] }) =>
+        job.name.includes(ctx?.session?.user?.address)
+      );
+      return {
+        jobs: userJobs,
+      };
+    },
+  })
+  .query("get-subscription", {
+    input: z.object({
+      name: z.string(),
+    }),
+    output: SubscriptionSchema,
+    async resolve({ input, ctx }) {
+      const repeater = new Repeater("43444036523bba9d6524ec9abb1c9f03");
+      const job = await repeater.job(input.name);
+      if (!job) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      const object = JSON.parse(job.body);
+      return object;
+    },
+  })
   .mutation("subscribe", {
     input: SubscriptionSchema,
     async resolve({ input, ctx }) {
@@ -51,31 +78,41 @@ export const appRouter = trpc
       if (input.user !== ctx?.session?.user.address) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
-
-      const repeater = new Repeater("43444036523bba9d6524ec9abb1c9f03");
+      const test = input.subgraphUrl.split("/");
       try {
         const jobInput = {
-          name: input.user,
+          name: input.user + "-" + test[test.length - 1],
           endpoint: API_URL + "/api/check-subgraph",
           verb: "POST",
           headers: {
             "Content-Type": "application/json",
-            'Authorization': 'Bearer 43444036523bba9d6524ec9abb1c9f03'
           },
           json: input,
-          // ISO8601 Duration
           runEvery: `PT${input.interval}M`,
-          runAt: "2020-08-18T12:34:56Z"
+          runAt: new Date().toISOString(),
         };
-        console.log("jobInput: " + JSON.stringify(jobInput));
-        const job = await repeater.enqueue(jobInput);
-        console.log("job enqueued", job);
+        const repeater = new Repeater("43444036523bba9d6524ec9abb1c9f03");
+        const job = await repeater.enqueueOrUpdate(jobInput);
         return job;
       } catch (error) {
-        console.log(error);
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
     },
+  })
+  .mutation("delete-subscription", {
+    input: z.object({
+      name: z.string()
+    }),
+    async resolve({ input, ctx }) {
+      const repeater = new Repeater("43444036523bba9d6524ec9abb1c9f03");
+      const job = await repeater.job(input.name);
+      console.log("Delete job: " + job);
+      const result = await job.delete()
+      console.log("delete job result: " + result);
+      return {
+        result
+      };
+    }
   });
 // export type definition of API
 export type AppRouter = typeof appRouter;

@@ -5,7 +5,7 @@ import { allChains } from "wagmi";
 import { useChainListChains } from "../hooks/useChainListChains";
 import { useGetLatestBlock } from "../hooks/useGetLatestBlock";
 import { BigNumber } from "ethers";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import Image from "next/image";
 import chainIds from "../chainIds";
 import BellIcon from "./../../public/bell.svg";
@@ -13,15 +13,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useTrpc } from "../config/trpc/useTrpc";
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 export const SubscriptionSchema = z.object({
   subgraphUrl: z.string().url(),
   email: z.string().email(),
   user: z.string(),
-  interval: z.number()
-})
+  interval: z.string(),
+});
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 
 const NoSsr = (props: { children: React.ReactNode }) => (
@@ -50,23 +50,46 @@ export const SubgraphStatusIndicator = (props: {
   const chainFromChainData = chainData?.find((element) => {
     return element.networkId == props.chain;
   });
-  const {
-    data: latestBlock,
-    isLoading: isLoadingLatestBlock
-  } = useGetLatestBlock(
-    chainFromChainData?.rpc.find((element) => !element.includes("${"))
-  );
+  const { data: latestBlock, isLoading: isLoadingLatestBlock } =
+    useGetLatestBlock(
+      chainFromChainData?.rpc.find((element) => !element.includes("${"))
+    );
+
   const session = useSession();
+  const {
+    data: subscriptionData,
+    isLoading: isLoadingSubscription,
+    isError: isErrorSubscriptionData,
+  } = useTrpc.useQuery(
+    [
+      "get-subscription",
+      {
+        name:
+          session?.data?.user?.address +
+          "-" +
+          props.indexer.split("/")[props.indexer.split("/").length - 1],
+      },
+    ],
+    {
+      ssr: false,
+      retry: 0,
+    }
+  );
+  const utils = useTrpc.useContext();
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<Subscription>({resolver: zodResolver(SubscriptionSchema),defaultValues: {
+    reset,
+    getValues,
+  } = useForm<Subscription>({
+    resolver: zodResolver(SubscriptionSchema),
+    defaultValues: {
       user: session?.data?.user.address,
       subgraphUrl: props.indexer,
-    }});
+    },
+  });
 
   const icon = useMemo(() => {
     const chainSlug =
@@ -78,27 +101,66 @@ export const SubgraphStatusIndicator = (props: {
     return url;
   }, [chainFromChainData]);
 
-  const {mutate, isLoading : isLoadingSubscribe, data : dataSubscribe } = useTrpc.useMutation("subscribe");
+  const {
+    mutate,
+    isLoading: isLoadingSubscribe,
+    data: dataSubscribe,
+  } = useTrpc.useMutation("subscribe", {
+    onSuccess: async () => {
+      await utils.invalidateQueries(["get-subscription"]);
+    },
+  });
+  const deleteSubscription = useTrpc.useMutation("delete-subscription", {
+    onSuccess: async () => {
+      await utils.invalidateQueries(["get-subscription"]);
+      reset({
+        ...getValues(),
+        email: "",
+        interval: "",
+      });
+    },
+  });
   const blockBehind =
     latestBlock &&
     data?._meta?.block.number &&
     latestBlock - data?._meta?.block.number;
-  const onSubmit: SubmitHandler<Subscription> = (subscriptionReq) => {
+  const onSubmit: SubmitHandler<Subscription> = async (subscriptionReq) => {
     console.log("subscriptionReq", subscriptionReq);
     mutate({
-      user: subscriptionReq.user || session?.data?.user.address,
+      user: subscriptionReq.user,
       subgraphUrl: subscriptionReq.subgraphUrl,
       email: subscriptionReq.email,
       interval: subscriptionReq.interval,
     });
   };
 
-  setValue("user", session?.data?.user.address || "");
+  useEffect(() => {
+    if (subscriptionData) {
+      reset({
+        ...getValues(),
+        interval: subscriptionData?.interval,
+        email: subscriptionData?.email,
+        subgraphUrl: subscriptionData?.subgraphUrl,
+      });
+    }
+    if (session?.data?.user.address) {
+      reset({
+        ...getValues(),
+        user: session?.data?.user.address,
+        subgraphUrl: props.indexer,
+      });
+    }
+  }, [session?.data?.user.address, subscriptionData]);
+
   return (
     <NoSsr>
       <div className="card w-80 bg-base-100 shadow-xl">
         <div className="drawer drawer-end max-h-80">
-          <input id={props.index.toString()} type="checkbox" className="drawer-toggle" />
+          <input
+            id={props.index.toString()}
+            type="checkbox"
+            className="drawer-toggle"
+          />
           <div className="drawer-content">
             <div className="card-body">
               <div className="card-actions justify-end">
@@ -111,6 +173,14 @@ export const SubgraphStatusIndicator = (props: {
                 <button
                   className="btn btn-square btn-sm"
                   onClick={() => {
+                    const result = deleteSubscription.mutate({
+                      name:
+                        session?.data?.user?.address +
+                        "-" +
+                        props.indexer.split("/")[
+                          props.indexer.split("/").length - 1
+                        ],
+                    });
                     removeInput(props.index);
                   }}
                 >
@@ -130,7 +200,8 @@ export const SubgraphStatusIndicator = (props: {
                   </svg>
                 </button>
               </div>
-              {isLoading || !data && <div className="text-gray-500">Loading...</div>}
+              {isLoadingSubscription ||
+                (!data && <div className="text-gray-500">Loading...</div>)}
               <h2 className="card-title">Subgraph Status</h2>
               <div className="flex items-center space-x-3">
                 <div className="avatar">
@@ -174,7 +245,7 @@ export const SubgraphStatusIndicator = (props: {
               </Link>{" "}
               <div className="flex flex-col text-left">
                 <div>Subgraph block: {data?._meta?.block.number}</div>
-                {isLoading && <div>Subgraph block: Loading...</div>}
+                {isLoadingSubscription && <div>Subgraph block: Loading...</div>}
                 {!data?._meta?.block.number && (
                   <div className="badge badge-error gap-2">
                     Subgraph block: Not available
@@ -214,7 +285,10 @@ export const SubgraphStatusIndicator = (props: {
           </div>
 
           <div className="drawer-side">
-            <label htmlFor={props.index.toString()} className="drawer-overlay"></label>
+            <label
+              htmlFor={props.index.toString()}
+              className="drawer-overlay"
+            ></label>
             <div className="menu p-4 overflow-y-auto w-72 bg-base-100 text-base-content">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="form-control">
@@ -236,22 +310,49 @@ export const SubgraphStatusIndicator = (props: {
                     <span className="label-text">Interval</span>
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     placeholder="Interval"
                     className="input input-primary input-bordered"
-                    {...register("interval", {valueAsNumber: true })}
+                    {...register("interval")}
                   />
                   {errors.interval && (
                     <span className="text-red-500">This field is required</span>
                   )}
                 </div>
                 {
-                  /* submit button */
-                  <input
-                    type="submit"
-                    className="btn btn-primary float-left mt-4"
-                    value="Subscribe"
-                  />
+                  <div className={"flex flex-row space-x-0.5"}>
+                    <button
+                      type="submit"
+                      className={`btn btn-primary mt-4`}
+                      disabled={
+                        isLoadingSubscription ||
+                        isLoadingSubscribe ||
+                        deleteSubscription.isLoading
+                      }
+                    >
+                      {subscriptionData && !isErrorSubscriptionData
+                        ? "Update"
+                        : "Subscribe"}
+                    </button>
+                    {subscriptionData && !isErrorSubscriptionData && (
+                      <button
+                        className={`btn btn-error float-right mt-4`}
+                        disabled={deleteSubscription.isLoading}
+                        onClick={async () => {
+                          deleteSubscription.mutate({
+                            name:
+                              session?.data?.user?.address +
+                              "-" +
+                              props.indexer.split("/")[
+                                props.indexer.split("/").length - 1
+                              ],
+                          });
+                        }}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                 }
               </form>
             </div>
