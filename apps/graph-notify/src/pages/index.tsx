@@ -5,6 +5,7 @@ import { SubgraphStatusIndicator } from "../components/SubgraphStatusIndicator";
 import { useGraphNotifyStore } from "../store";
 import { useChainListChains } from "../hooks/useChainListChains";
 import Select from "react-select";
+import { useTrpc } from "../utils/useTrpc";
 
 export type Inputs = { chainId: number; indexer: string };
 const Home: NextPage = () => {
@@ -25,6 +26,9 @@ const Home: NextPage = () => {
     addInput(data);
     reset();
   };
+  const result = useTrpc.useQuery(["hello"], {});
+
+  console.log("result", result.data);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">

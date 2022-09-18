@@ -3,6 +3,7 @@ import * as trpcNext from '@trpc/server/adapters/next';
 import { z } from 'zod';
 // @ts-ignore
 import { Repeater } from 'repeaterdev-js'
+import { TRPCError } from "@trpc/server";
 
 export const SubscriptionSchema = z.object({
   subgraphUrl: z.string().url(),
@@ -13,8 +14,42 @@ export const SubscriptionSchema = z.object({
 
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 
-export const appRouter = trpc
-  .router()
+export const createContext = async (
+  opts?: trpcNext.CreateNextContextOptions
+) => {
+  const req = opts?.req;
+  const res = opts?.res;
+  const session = "adf";
+  console.log("sessioncreateContext: " + session, req, res);
+  // for API-response caching see https://trpc.io/docs/caching
+  return {
+    req,
+    res,
+    session,
+  };
+};
+
+type Context = trpc.inferAsyncReturnType<typeof createContext>;
+
+export const appRouter = trpc.router<Context>()
+  .query("next-auth.getSession", {
+    async resolve({ ctx }) {
+      // The session object is added to the routers context
+      // in the context file server side
+      console.log('sesion1: '+ ctx?.session)
+      return ctx?.session;
+    },
+  })
+  .middleware(async ({ ctx, next }) => {
+    // Any query or mutation after this middleware will raise
+    // an error unless there is a current session
+    console.log('middleware ctx: '+ ctx)
+    if (!ctx?.session) {
+      console.log("no session")
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    return next();
+  })
   .query('hello', {
     input: z
       .object({
@@ -27,9 +62,9 @@ export const appRouter = trpc
       };
     },
   })
-  .query('subscribe', {
+  .mutation('subscribe', {
     input: SubscriptionSchema,
-    async resolve({ input }) {
+    async resolve({ input, ctx }) {
       const repeater = new Repeater('43444036523bba9d6524ec9abb1c9f03')
       const job = await repeater.enqueue({
         name: 'sample-job',
@@ -43,12 +78,11 @@ export const appRouter = trpc
       return job
     }
   });
-
 // export type definition of API
 export type AppRouter = typeof appRouter;
 
 // export API handler
 export default trpcNext.createNextApiHandler({
   router: appRouter,
-  createContext: () => null,
+  createContext
 });
