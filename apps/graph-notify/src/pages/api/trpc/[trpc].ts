@@ -68,6 +68,7 @@ export const appRouter = trpc
         throw new TRPCError({ code: "NOT_FOUND" });
       }
       const object = JSON.parse(job.body);
+      console.log("object", object);
       return object;
     },
   })

@@ -21,6 +21,7 @@ export const SubscriptionSchema = z.object({
   email: z.string().email(),
   user: z.string(),
   interval: z.string(),
+  chainId: z.string().optional(),
 });
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 
@@ -131,6 +132,7 @@ export const SubgraphStatusIndicator = (props: {
       subgraphUrl: subscriptionReq.subgraphUrl,
       email: subscriptionReq.email,
       interval: subscriptionReq.interval,
+      chainId: props.chain.toString(),
     });
   };
 

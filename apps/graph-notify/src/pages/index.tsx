@@ -41,7 +41,7 @@ const Home: NextPage = () => {
           </a>
         </h1>
         <p className="mt-3 text-2xl">
-          Be 🚨notified 🚨 on important events happening on any subgraph 🚀
+          Get notified on important events on Graph network 🚀
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
