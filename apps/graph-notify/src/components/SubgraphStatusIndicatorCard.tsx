@@ -15,6 +15,7 @@ import { useSession } from "next-auth/react";
 import { useTrpc } from "../config/trpc/useTrpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Inputs } from "../pages";
 
 export const SubscriptionSchema = z.object({
   subgraphUrl: z.string().url(),
@@ -32,24 +33,23 @@ export default dynamic(() => Promise.resolve(NoSsr), {
   ssr: false,
 });
 
-export const SubgraphStatusIndicator = (props: {
-  chain: number;
-  indexer: string;
+export const SubgraphStatusIndicatorCard = (props: {
+  input: Inputs;
   index: number;
 }) => {
   const { data, isLoading } = useGetSubgraphStatus(
-    props.chain?.toString(),
-    props.indexer
+    props.input.chainId?.toString(),
+    props.input.indexer
   );
   const { removeInput } = useGraphNotifyStore((state) => ({
     removeInput: state.removeInput,
   }));
   const chain = allChains.find((element) => {
-    return element.id == props.chain;
+    return element.id == props.input.chainId;
   });
   const { data: chainData } = useChainListChains();
   const chainFromChainData = chainData?.find((element) => {
-    return element.networkId == props.chain;
+    return element.networkId == props.input.chainId;
   });
   const { data: latestBlock, isLoading: isLoadingLatestBlock } =
     useGetLatestBlock(
@@ -68,7 +68,9 @@ export const SubgraphStatusIndicator = (props: {
         name:
           session?.data?.user?.address +
           "-" +
-          props.indexer.split("/")[props.indexer.split("/").length - 1],
+          props.input.indexer.split("/")[
+            props.input.indexer.split("/").length - 1
+          ],
       },
     ],
     {
@@ -88,7 +90,7 @@ export const SubgraphStatusIndicator = (props: {
     resolver: zodResolver(SubscriptionSchema),
     defaultValues: {
       user: session?.data?.user.address,
-      subgraphUrl: props.indexer,
+      subgraphUrl: props.input.indexer,
     },
   });
 
@@ -132,7 +134,7 @@ export const SubgraphStatusIndicator = (props: {
       subgraphUrl: subscriptionReq.subgraphUrl,
       email: subscriptionReq.email,
       interval: subscriptionReq.interval,
-      chainId: props.chain.toString(),
+      chainId: props.input.chainId.toString(),
     });
   };
 
@@ -149,7 +151,7 @@ export const SubgraphStatusIndicator = (props: {
       reset({
         ...getValues(),
         user: session?.data?.user.address,
-        subgraphUrl: props.indexer,
+        subgraphUrl: props.input.indexer,
       });
     }
   }, [session?.data?.user.address, subscriptionData]);
@@ -168,7 +170,7 @@ export const SubgraphStatusIndicator = (props: {
               <div className="card-actions justify-end">
                 <label
                   htmlFor={props.index.toString()}
-                  className="drawer-button btn btn-square btn-sm"
+                  className="drawer-button btn btn-square btn-sm btn-accent"
                 >
                   <BellIcon />
                 </label>
@@ -179,8 +181,8 @@ export const SubgraphStatusIndicator = (props: {
                       name:
                         session?.data?.user?.address +
                         "-" +
-                        props.indexer.split("/")[
-                          props.indexer.split("/").length - 1
+                        props.input.indexer.split("/")[
+                          props.input.indexer.split("/").length - 1
                         ],
                     });
                     removeInput(props.index);
@@ -204,7 +206,7 @@ export const SubgraphStatusIndicator = (props: {
               </div>
               {isLoadingSubscription ||
                 (!data && <div className="text-gray-500">Loading...</div>)}
-              <h2 className="card-title">Subgraph Status</h2>
+              <h2 className="card-title">{props.input.name}</h2>
               <div className="flex items-center space-x-3">
                 <div className="avatar">
                   <div className="rounded-full">
@@ -236,13 +238,13 @@ export const SubgraphStatusIndicator = (props: {
                   chain?.name
                 )}
               </div>
-              <Link href={props.indexer} passHref>
+              <Link href={props.input.indexer} passHref>
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
                   className={"link link-primary truncate text-clip max-w-sm"}
                 >
-                  {props.indexer}
+                  {props.input.indexer}
                 </a>
               </Link>{" "}
               <div className="flex flex-col text-left">
@@ -345,8 +347,8 @@ export const SubgraphStatusIndicator = (props: {
                             name:
                               session?.data?.user?.address +
                               "-" +
-                              props.indexer.split("/")[
-                                props.indexer.split("/").length - 1
+                              props.input.indexer.split("/")[
+                                props.input.indexer.split("/").length - 1
                               ],
                           });
                         }}
