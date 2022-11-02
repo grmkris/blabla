@@ -21,6 +21,12 @@
         "$NEXTAUTH_SECRET",
         "$VERCEL_URL"
       ],
+      "env": [
+        "NEXT_PUBLIC_ALCHEMY_ID",
+        "NEXTAUTH_URL",
+        "NEXTAUTH_SECRET",
+        "VERCEL_URL"
+      ]],
       "outputs": [".next/**, build/**"]
     },
     "dev": {

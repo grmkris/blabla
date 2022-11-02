@@ -11,7 +11,7 @@ export const inputSchema = z.object({
   chainId: z.number(),
   indexer: z.string(),
   name: z.string(),
-  email: z.string().email().optional(),
+  email: z.string().email().nullish(),
 });
 export type Inputs = z.infer<typeof inputSchema>;
 
@@ -35,7 +35,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Head>
         <title>Observer</title>
         <link rel="icon" href="/apps/graph-notify/public/favicon.ico" />
@@ -44,13 +44,14 @@ const Home: NextPage = () => {
       <main className="p-14">
         <div className="p-8 sm:px-0">
           <h1 className="text-6xl font-bold">
-            Subgraph{" "}
+            Subgraph
             <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
               Observer
             </a>
+            🧙‍
           </h1>
           <p className="mt-3 text-2xl">
-            Get notified on important events on Graph network 🚀
+            Realtime monitoring of subgraph health
           </p>
         </div>
         <div className="lg:grid lg:grid-cols-3 lg:gap-6 text-center">
@@ -133,7 +134,7 @@ const Home: NextPage = () => {
               </label>
               <input
                 className="input input-bordered input-primary"
-                {...register("email", { required: true })}
+                {...register("email")}
               />
               <label className="label">
                 {errors.email && (
@@ -149,7 +150,7 @@ const Home: NextPage = () => {
             <div className={"mb-20 flex flex-wrap flex-row justify-center"}>
               {inputs.map((subgraph, index) => {
                 return (
-                  <div className={"m-2"}>
+                  <div className={"m-2"} key={index}>
                     <SubgraphStatusIndicatorCard
                       input={subgraph}
                       key={index}
