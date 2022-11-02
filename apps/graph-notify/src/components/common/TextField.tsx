@@ -1,11 +1,14 @@
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegisterReturn } from "react-hook-form";
 import clsx from "clsx";
+
+export declare type FieldValues = Record<string, any>;
 
 export const TextField = (props: {
   label: string;
   placeholder: string;
   error?: string;
-  register: UseFormRegister<any>;
+  className?: string;
+  register: UseFormRegisterReturn<any>;
 }) => {
   console.log("props", props);
   return (

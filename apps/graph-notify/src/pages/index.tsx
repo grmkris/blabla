@@ -1,28 +1,29 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import z from "zod";
-import { CreateSubgraphFrom } from "../components/CreateSubgraphFrom";
-import { SubgraphCardsDashboard } from "../components/SubgraphCardsDashboard";
+import { CreateSubgraphForm } from "../components/CreateSubgraphForm";
+import { SubgraphsDashboard } from "../components/SubgraphsDashboard";
+import NonSSRWrapper from "../components/common/NonSSRWrapper";
 
-export const inputSchema = z.object({
+export const SubgraphFormSchema = z.object({
   chainId: z.number(),
   indexer: z.string(),
   name: z.string(),
   email: z.string().email().nullish(),
 });
-export type Inputs = z.infer<typeof inputSchema>;
+export type SubgraphForm = z.infer<typeof SubgraphFormSchema>;
 
 const Home: NextPage = () => {
   return (
-    <div>
+    <NonSSRWrapper>
       <Head>
         <title>Observer</title>
         <link rel="icon" href="/apps/graph-notify/public/favicon.ico" />
       </Head>
-      <main className="p-14">
-        <div className="p-8 sm:px-0">
+      <main className="md:p-14 p-4">
+        <div className="md:p-8 sm:px-0">
           <h1 className="text-6xl font-bold">
-            Subgraph
+            Subgraph{" "}
             <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
               Observer
             </a>
@@ -33,11 +34,11 @@ const Home: NextPage = () => {
           </p>
         </div>
         <div className="lg:grid lg:grid-cols-3 lg:gap-6 text-center">
-          <CreateSubgraphFrom />
-          <SubgraphCardsDashboard />
+          <CreateSubgraphForm />
+          <SubgraphsDashboard />
         </div>
       </main>
-    </div>
+    </NonSSRWrapper>
   );
 };
 

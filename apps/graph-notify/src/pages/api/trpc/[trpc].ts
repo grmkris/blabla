@@ -6,7 +6,7 @@ import { Repeater } from "repeaterdev-js";
 import { TRPCError } from "@trpc/server";
 import { createContext } from "../../../config/trpc/context";
 import { API_URL } from "../../../config/constants";
-import { SubscriptionSchema } from "../../../components/SubgraphStatusIndicatorCard";
+import { SubscriptionSchema } from "../../../components/SubgraphCard";
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>;
 export const appRouter = trpc
@@ -102,18 +102,18 @@ export const appRouter = trpc
   })
   .mutation("delete-subscription", {
     input: z.object({
-      name: z.string()
+      name: z.string(),
     }),
     async resolve({ input, ctx }) {
       const repeater = new Repeater("43444036523bba9d6524ec9abb1c9f03");
       const job = await repeater.job(input.name);
       console.log("Delete job: " + job);
-      const result = await job.delete()
+      const result = await job.delete();
       console.log("delete job result: " + result);
       return {
-        result
+        result,
       };
-    }
+    },
   });
 // export type definition of API
 export type AppRouter = typeof appRouter;

@@ -24,16 +24,23 @@ export type ChainListSchema = {
     url: string;
     standard: string;
   }[];
-}
+};
 
-
-export const useChainListChains = () => {
-  return useQuery<ChainListSchema[]>(
-    ['useChainListChains'],
+export const useGetChainData = () => {
+  const chainList = useQuery<ChainListSchema[]>(
+    ["useChainListChains"],
     async () => {
-      const data = await fetch('https://chainid.network/chains.json')
-      return data.json()
-    },{
-    }
+      const data = await fetch("https://chainid.network/chains.json");
+      return data.json();
+    },
+    {}
   );
+
+  const getDataForChain = (chainId: number) =>
+    chainList.data?.find((element) => {
+      console.log("chainId", chainId);
+      return element.chainId == chainId ?? "0";
+    });
+
+  return { chainList, getDataForChain };
 };

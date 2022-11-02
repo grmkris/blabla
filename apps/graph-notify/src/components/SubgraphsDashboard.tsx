@@ -1,9 +1,10 @@
-import { SubgraphStatusIndicatorCard } from "./SubgraphStatusIndicatorCard";
+import { SubgraphCard } from "./SubgraphCard";
 import { useGraphNotifyStore } from "../store";
+import NonSSRWrapper from "./common/NonSSRWrapper";
 
-export const SubgraphCardsDashboard = () => {
+export const SubgraphsDashboard = () => {
   const { inputs } = useGraphNotifyStore((state) => ({
-    inputs: state.inputs,
+    inputs: state.subgraphs,
   }));
   return (
     <div className="lg:col-span-2 rounded-lg border-4 border-dashed border-gray-200 mt-4 lg:mt-0">
@@ -11,11 +12,9 @@ export const SubgraphCardsDashboard = () => {
         {inputs.map((subgraph, index) => {
           return (
             <div className={"m-2"} key={index}>
-              <SubgraphStatusIndicatorCard
-                input={subgraph}
-                key={index}
-                index={index}
-              />
+              <NonSSRWrapper>
+                <SubgraphCard input={subgraph} key={index} index={index} />
+              </NonSSRWrapper>
             </div>
           );
         })}

@@ -1,11 +1,7 @@
-import create  from "zustand";
-import {
-  devtools,
-  persist,
-  StateStorage,
-} from "zustand/middleware";
+import create from "zustand";
+import { devtools, persist, StateStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { Inputs } from "./pages";
+import { SubgraphForm } from "./pages";
 import { del, get, set } from "idb-keyval";
 
 // Custom storage object
@@ -25,10 +21,10 @@ const storage: StateStorage = {
 };
 
 export type IGraphNotifyStoreStore = {
-  inputs: Inputs[];
-  setInputs: (inputs: Inputs[]) => void;
-  addInput: (input: Inputs) => void;
-  removeInput: (index: number) => void;
+  subgraphs: SubgraphForm[];
+  setSubgraphs: (inputs: SubgraphForm[]) => void;
+  addSubgraph: (input: SubgraphForm) => void;
+  removeSubgraph: (index: number) => void;
 };
 
 export const useGraphNotifyStore = create<IGraphNotifyStoreStore>()(
@@ -36,16 +32,16 @@ export const useGraphNotifyStore = create<IGraphNotifyStoreStore>()(
     devtools(
       persist(
         (set) => ({
-          inputs: [],
-          setInputs: (inputs) => set({ inputs }),
-          addInput: (input) =>
+          subgraphs: [],
+          setSubgraphs: (subgraphs) => set({ subgraphs }),
+          addSubgraph: (subgraph) =>
             set((state) => {
-              state.inputs.push(input);
+              state.subgraphs.push(subgraph);
             }),
-          removeInput: (index) =>
+          removeSubgraph: (index) =>
             set((state) => {
-              state.inputs.splice(index, 1);
-            })
+              state.subgraphs.splice(index, 1);
+            }),
         }),
         {
           name: "bear-storage",
