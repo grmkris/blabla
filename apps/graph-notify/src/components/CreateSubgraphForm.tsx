@@ -1,9 +1,9 @@
 import { useGetChainData } from "../hooks/useGetChainData";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { SubgraphForm } from "../pages";
 import Select from "react-select";
 import { useGraphNotifyStore } from "../store";
 import { TextField } from "./common/TextField";
+import { SubgraphForm } from "../types/common";
 
 export const CreateSubgraphForm = () => {
   const { addInput } = useGraphNotifyStore((state) => ({

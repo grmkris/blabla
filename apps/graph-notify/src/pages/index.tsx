@@ -1,17 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import z from "zod";
 import { CreateSubgraphForm } from "../components/CreateSubgraphForm";
 import { SubgraphsDashboard } from "../components/SubgraphsDashboard";
 import NonSSRWrapper from "../components/common/NonSSRWrapper";
-
-export const SubgraphFormSchema = z.object({
-  chainId: z.number(),
-  indexer: z.string(),
-  name: z.string(),
-  email: z.string().email().nullish(),
-});
-export type SubgraphForm = z.infer<typeof SubgraphFormSchema>;
 
 const Home: NextPage = () => {
   return (
@@ -25,12 +16,12 @@ const Home: NextPage = () => {
           <h1 className="text-6xl font-bold">
             Subgraph{" "}
             <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
-              Observer
+              Observer NLAqqqqq BLAqqqq
             </a>
             🧙‍
           </h1>
           <p className="mt-3 text-2xl">
-            Realtime monitoring of subgraph health
+            Realtime monitoring of subgraph health sdf
           </p>
         </div>
         <div className="lg:grid lg:grid-cols-3 lg:gap-6 text-center">

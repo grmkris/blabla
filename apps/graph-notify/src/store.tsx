@@ -1,8 +1,8 @@
 import create from "zustand";
 import { devtools, persist, StateStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { SubgraphForm } from "./pages";
 import { del, get, set } from "idb-keyval";
+import { SubgraphForm } from "./types/common";
 
 // Custom storage object
 const storage: StateStorage = {

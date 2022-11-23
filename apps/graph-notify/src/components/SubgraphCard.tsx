@@ -4,18 +4,8 @@ import Link from "next/link";
 import { useGetNodeLatestBlock } from "../hooks/useGetNodeLatestBlock";
 import { BigNumber } from "ethers";
 import React from "react";
-import { z } from "zod";
-import { SubgraphForm } from "../pages";
 import { ImCross } from "react-icons/all";
-
-export const SubscriptionSchema = z.object({
-  subgraphUrl: z.string().url(),
-  email: z.string().email(),
-  user: z.string(),
-  interval: z.string(),
-  chainId: z.string().optional(),
-});
-export type Subscription = z.infer<typeof SubscriptionSchema>;
+import { SubgraphForm } from "../types/common";
 
 export const SubgraphCard = (props: { input: SubgraphForm; index: number }) => {
   const { data } = useGetSubgraphStatus(

@@ -6,7 +6,7 @@ import { Repeater } from "repeaterdev-js";
 import { TRPCError } from "@trpc/server";
 import { createContext } from "../../../config/trpc/context";
 import { API_URL } from "../../../config/constants";
-import { SubscriptionSchema } from "../../../components/SubgraphCard";
+import { SubscriptionSchema } from "../../../types/common";
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>;
 export const appRouter = trpc

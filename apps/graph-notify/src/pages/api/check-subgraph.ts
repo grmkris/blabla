@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Novu } from "@novu/node";
 import { getBuiltGraphSDK } from "../../../.graphclient";
 import { ethers } from "ethers";
-import { ChainListSchema } from "../../hooks/useGetChainData";
+import { ChainListSchema } from "../../types/common";
 type Data = {
   block: string;
 };
