@@ -10,15 +10,18 @@ import { DefaultLogger } from '@graphql-mesh/utils';
 import MeshCache from "@graphql-mesh/cache-localforage";
 import { fetch as fetchFn } from '@whatwg-node/fetch';
 
+import { MeshResolvedSource } from '@graphql-mesh/runtime';
+import { MeshTransform, MeshPlugin } from '@graphql-mesh/types';
 import GraphqlHandler from "@graphql-mesh/graphql"
 import { parse } from 'graphql';
 import BareMerger from "@graphql-mesh/merger-bare";
 import { printWithCache } from '@graphql-mesh/utils';
-import { createMeshHTTPHandler } from '@graphql-mesh/http';
+import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
 import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
-import type { TidvContext } from './sources/tidv/types';
+import { ImportFn } from '@graphql-mesh/types';
+import type { TidvTypes } from './sources/tidv/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -3079,16 +3082,16 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
 }>;
 
 
-export type MeshContext = TidvContext & BaseMeshContext;
+export type MeshContext = TidvTypes.Context & BaseMeshContext;
 
 
 const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
 
-const importFn = (moduleId: string) => {
+const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
     case ".graphclient/sources/tidv/introspectionSchema":
-      return import("./sources/tidv/introspectionSchema");
+      return import("./sources/tidv/introspectionSchema") as T;
     
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
@@ -3117,9 +3120,9 @@ const cache = new (MeshCache as any)({
       logger,
     } as any)
 
-const sources = [];
-const transforms = [];
-const additionalEnvelopPlugins = [];
+const sources: MeshResolvedSource[] = [];
+const transforms: MeshTransform[] = [];
+const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
 const tidvTransforms = [];
 const tidvHandler = new GraphqlHandler({
               name: "tidv",
@@ -3173,8 +3176,8 @@ const merger = new(BareMerger as any)({
   };
 }
 
-export function createBuiltMeshHTTPHandler() {
-  return createMeshHTTPHandler({
+export function createBuiltMeshHTTPHandler(): MeshHTTPHandler<MeshContext> {
+  return createMeshHTTPHandler<MeshContext>({
     baseDir,
     getBuiltMesh: getBuiltGraphClient,
     rawServeConfig: undefined,
@@ -3182,14 +3185,14 @@ export function createBuiltMeshHTTPHandler() {
 }
 
 
-let meshInstance$: Promise<MeshInstance<MeshContext>>;
+let meshInstance$: Promise<MeshInstance> | undefined;
 
-export function getBuiltGraphClient(): Promise<MeshInstance<MeshContext>> {
+export function getBuiltGraphClient(): Promise<MeshInstance> {
   if (meshInstance$ == null) {
-    meshInstance$ = getMeshOptions().then(meshOptions => getMesh<MeshContext>(meshOptions)).then(mesh => {
-      const id$ = mesh.pubsub.subscribe('destroy', () => {
+    meshInstance$ = getMeshOptions().then(meshOptions => getMesh(meshOptions)).then(mesh => {
+      const id = mesh.pubsub.subscribe('destroy', () => {
         meshInstance$ = undefined;
-        id$.then(id => mesh.pubsub.unsubscribe(id)).catch(err => console.error(err));
+        mesh.pubsub.unsubscribe(id);
       });
       return mesh;
     });
@@ -3202,7 +3205,7 @@ export const execute: ExecuteMeshFn = (...args) => getBuiltGraphClient().then(({
 export const subscribe: SubscribeMeshFn = (...args) => getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
 export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(globalContext?: TGlobalContext) {
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
-  return getSdk<TOperationContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
+  return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
 export type getSubgraphStatusQueryVariables = Exact<{ [key: string]: never; }>;
 

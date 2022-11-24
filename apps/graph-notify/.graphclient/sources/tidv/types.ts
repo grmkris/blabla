@@ -1,7 +1,7 @@
+// @ts-nocheck
 
 import { InContextSdkMethod } from '@graphql-mesh/types';
 import { MeshContext } from '@graphql-mesh/runtime';
-import { Scalars } from '../..';
 
 export namespace TidvTypes {
   export type Maybe<T> = T | null;
@@ -2518,173 +2518,174 @@ export type _SubgraphErrorPolicy_ =
   /** If the subgraph has indexing errors, data will be omitted. The default. */
   | 'deny';
 
-}
-export type QueryTidvSdk = {
+  export type QuerySdk = {
+      /** null **/
+  user: InContextSdkMethod<Query['user'], QueryuserArgs, MeshContext>,
   /** null **/
-  user: InContextSdkMethod<TidvTypes.Query['user'], TidvTypes.QueryuserArgs, MeshContext>,
+  users: InContextSdkMethod<Query['users'], QueryusersArgs, MeshContext>,
   /** null **/
-  users: InContextSdkMethod<TidvTypes.Query['users'], TidvTypes.QueryusersArgs, MeshContext>,
+  swapContract: InContextSdkMethod<Query['swapContract'], QueryswapContractArgs, MeshContext>,
   /** null **/
-  swapContract: InContextSdkMethod<TidvTypes.Query['swapContract'], TidvTypes.QueryswapContractArgs, MeshContext>,
+  swapContracts: InContextSdkMethod<Query['swapContracts'], QueryswapContractsArgs, MeshContext>,
   /** null **/
-  swapContracts: InContextSdkMethod<TidvTypes.Query['swapContracts'], TidvTypes.QueryswapContractsArgs, MeshContext>,
+  swapLightContract: InContextSdkMethod<Query['swapLightContract'], QueryswapLightContractArgs, MeshContext>,
   /** null **/
-  swapLightContract: InContextSdkMethod<TidvTypes.Query['swapLightContract'], TidvTypes.QueryswapLightContractArgs, MeshContext>,
+  swapLightContracts: InContextSdkMethod<Query['swapLightContracts'], QueryswapLightContractsArgs, MeshContext>,
   /** null **/
-  swapLightContracts: InContextSdkMethod<TidvTypes.Query['swapLightContracts'], TidvTypes.QueryswapLightContractsArgs, MeshContext>,
+  swap: InContextSdkMethod<Query['swap'], QueryswapArgs, MeshContext>,
   /** null **/
-  swap: InContextSdkMethod<TidvTypes.Query['swap'], TidvTypes.QueryswapArgs, MeshContext>,
+  swaps: InContextSdkMethod<Query['swaps'], QueryswapsArgs, MeshContext>,
   /** null **/
-  swaps: InContextSdkMethod<TidvTypes.Query['swaps'], TidvTypes.QueryswapsArgs, MeshContext>,
+  swapLight: InContextSdkMethod<Query['swapLight'], QueryswapLightArgs, MeshContext>,
   /** null **/
-  swapLight: InContextSdkMethod<TidvTypes.Query['swapLight'], TidvTypes.QueryswapLightArgs, MeshContext>,
+  swapLights: InContextSdkMethod<Query['swapLights'], QueryswapLightsArgs, MeshContext>,
   /** null **/
-  swapLights: InContextSdkMethod<TidvTypes.Query['swapLights'], TidvTypes.QueryswapLightsArgs, MeshContext>,
+  token: InContextSdkMethod<Query['token'], QuerytokenArgs, MeshContext>,
   /** null **/
-  token: InContextSdkMethod<TidvTypes.Query['token'], TidvTypes.QuerytokenArgs, MeshContext>,
+  tokens: InContextSdkMethod<Query['tokens'], QuerytokensArgs, MeshContext>,
   /** null **/
-  tokens: InContextSdkMethod<TidvTypes.Query['tokens'], TidvTypes.QuerytokensArgs, MeshContext>,
+  indexer: InContextSdkMethod<Query['indexer'], QueryindexerArgs, MeshContext>,
   /** null **/
-  indexer: InContextSdkMethod<TidvTypes.Query['indexer'], TidvTypes.QueryindexerArgs, MeshContext>,
+  indexers: InContextSdkMethod<Query['indexers'], QueryindexersArgs, MeshContext>,
   /** null **/
-  indexers: InContextSdkMethod<TidvTypes.Query['indexers'], TidvTypes.QueryindexersArgs, MeshContext>,
+  index: InContextSdkMethod<Query['index'], QueryindexArgs, MeshContext>,
   /** null **/
-  index: InContextSdkMethod<TidvTypes.Query['index'], TidvTypes.QueryindexArgs, MeshContext>,
+  indexes: InContextSdkMethod<Query['indexes'], QueryindexesArgs, MeshContext>,
   /** null **/
-  indexes: InContextSdkMethod<TidvTypes.Query['indexes'], TidvTypes.QueryindexesArgs, MeshContext>,
+  stake: InContextSdkMethod<Query['stake'], QuerystakeArgs, MeshContext>,
   /** null **/
-  stake: InContextSdkMethod<TidvTypes.Query['stake'], TidvTypes.QuerystakeArgs, MeshContext>,
+  stakes: InContextSdkMethod<Query['stakes'], QuerystakesArgs, MeshContext>,
   /** null **/
-  stakes: InContextSdkMethod<TidvTypes.Query['stakes'], TidvTypes.QuerystakesArgs, MeshContext>,
+  locator: InContextSdkMethod<Query['locator'], QuerylocatorArgs, MeshContext>,
   /** null **/
-  locator: InContextSdkMethod<TidvTypes.Query['locator'], TidvTypes.QuerylocatorArgs, MeshContext>,
+  locators: InContextSdkMethod<Query['locators'], QuerylocatorsArgs, MeshContext>,
   /** null **/
-  locators: InContextSdkMethod<TidvTypes.Query['locators'], TidvTypes.QuerylocatorsArgs, MeshContext>,
+  delegateFactory: InContextSdkMethod<Query['delegateFactory'], QuerydelegateFactoryArgs, MeshContext>,
   /** null **/
-  delegateFactory: InContextSdkMethod<TidvTypes.Query['delegateFactory'], TidvTypes.QuerydelegateFactoryArgs, MeshContext>,
+  delegateFactories: InContextSdkMethod<Query['delegateFactories'], QuerydelegateFactoriesArgs, MeshContext>,
   /** null **/
-  delegateFactories: InContextSdkMethod<TidvTypes.Query['delegateFactories'], TidvTypes.QuerydelegateFactoriesArgs, MeshContext>,
+  delegate: InContextSdkMethod<Query['delegate'], QuerydelegateArgs, MeshContext>,
   /** null **/
-  delegate: InContextSdkMethod<TidvTypes.Query['delegate'], TidvTypes.QuerydelegateArgs, MeshContext>,
+  delegates: InContextSdkMethod<Query['delegates'], QuerydelegatesArgs, MeshContext>,
   /** null **/
-  delegates: InContextSdkMethod<TidvTypes.Query['delegates'], TidvTypes.QuerydelegatesArgs, MeshContext>,
+  rule: InContextSdkMethod<Query['rule'], QueryruleArgs, MeshContext>,
   /** null **/
-  rule: InContextSdkMethod<TidvTypes.Query['rule'], TidvTypes.QueryruleArgs, MeshContext>,
+  rules: InContextSdkMethod<Query['rules'], QueryrulesArgs, MeshContext>,
   /** null **/
-  rules: InContextSdkMethod<TidvTypes.Query['rules'], TidvTypes.QueryrulesArgs, MeshContext>,
+  locker: InContextSdkMethod<Query['locker'], QuerylockerArgs, MeshContext>,
   /** null **/
-  locker: InContextSdkMethod<TidvTypes.Query['locker'], TidvTypes.QuerylockerArgs, MeshContext>,
+  lockers: InContextSdkMethod<Query['lockers'], QuerylockersArgs, MeshContext>,
   /** null **/
-  lockers: InContextSdkMethod<TidvTypes.Query['lockers'], TidvTypes.QuerylockersArgs, MeshContext>,
+  pool: InContextSdkMethod<Query['pool'], QuerypoolArgs, MeshContext>,
   /** null **/
-  pool: InContextSdkMethod<TidvTypes.Query['pool'], TidvTypes.QuerypoolArgs, MeshContext>,
+  pools: InContextSdkMethod<Query['pools'], QuerypoolsArgs, MeshContext>,
   /** null **/
-  pools: InContextSdkMethod<TidvTypes.Query['pools'], TidvTypes.QuerypoolsArgs, MeshContext>,
+  poolClaim: InContextSdkMethod<Query['poolClaim'], QuerypoolClaimArgs, MeshContext>,
   /** null **/
-  poolClaim: InContextSdkMethod<TidvTypes.Query['poolClaim'], TidvTypes.QuerypoolClaimArgs, MeshContext>,
+  poolClaims: InContextSdkMethod<Query['poolClaims'], QuerypoolClaimsArgs, MeshContext>,
   /** null **/
-  poolClaims: InContextSdkMethod<TidvTypes.Query['poolClaims'], TidvTypes.QuerypoolClaimsArgs, MeshContext>,
+  enabledRoot: InContextSdkMethod<Query['enabledRoot'], QueryenabledRootArgs, MeshContext>,
   /** null **/
-  enabledRoot: InContextSdkMethod<TidvTypes.Query['enabledRoot'], TidvTypes.QueryenabledRootArgs, MeshContext>,
+  enabledRoots: InContextSdkMethod<Query['enabledRoots'], QueryenabledRootsArgs, MeshContext>,
   /** null **/
-  enabledRoots: InContextSdkMethod<TidvTypes.Query['enabledRoots'], TidvTypes.QueryenabledRootsArgs, MeshContext>,
+  collectedFeesDay: InContextSdkMethod<Query['collectedFeesDay'], QuerycollectedFeesDayArgs, MeshContext>,
   /** null **/
-  collectedFeesDay: InContextSdkMethod<TidvTypes.Query['collectedFeesDay'], TidvTypes.QuerycollectedFeesDayArgs, MeshContext>,
+  collectedFeesDays: InContextSdkMethod<Query['collectedFeesDays'], QuerycollectedFeesDaysArgs, MeshContext>,
   /** null **/
-  collectedFeesDays: InContextSdkMethod<TidvTypes.Query['collectedFeesDays'], TidvTypes.QuerycollectedFeesDaysArgs, MeshContext>,
+  volumeDay: InContextSdkMethod<Query['volumeDay'], QueryvolumeDayArgs, MeshContext>,
   /** null **/
-  volumeDay: InContextSdkMethod<TidvTypes.Query['volumeDay'], TidvTypes.QueryvolumeDayArgs, MeshContext>,
-  /** null **/
-  volumeDays: InContextSdkMethod<TidvTypes.Query['volumeDays'], TidvTypes.QueryvolumeDaysArgs, MeshContext>,
+  volumeDays: InContextSdkMethod<Query['volumeDays'], QueryvolumeDaysArgs, MeshContext>,
   /** Access to subgraph metadata **/
-  _meta: InContextSdkMethod<TidvTypes.Query['_meta'], TidvTypes.Query_metaArgs, MeshContext>
-};
+  _meta: InContextSdkMethod<Query['_meta'], Query_metaArgs, MeshContext>
+  };
 
-export type MutationTidvSdk = {
+  export type MutationSdk = {
+    
+  };
 
-};
-
-export type SubscriptionTidvSdk = {
+  export type SubscriptionSdk = {
+      /** null **/
+  user: InContextSdkMethod<Subscription['user'], SubscriptionuserArgs, MeshContext>,
   /** null **/
-  user: InContextSdkMethod<TidvTypes.Subscription['user'], TidvTypes.SubscriptionuserArgs, MeshContext>,
+  users: InContextSdkMethod<Subscription['users'], SubscriptionusersArgs, MeshContext>,
   /** null **/
-  users: InContextSdkMethod<TidvTypes.Subscription['users'], TidvTypes.SubscriptionusersArgs, MeshContext>,
+  swapContract: InContextSdkMethod<Subscription['swapContract'], SubscriptionswapContractArgs, MeshContext>,
   /** null **/
-  swapContract: InContextSdkMethod<TidvTypes.Subscription['swapContract'], TidvTypes.SubscriptionswapContractArgs, MeshContext>,
+  swapContracts: InContextSdkMethod<Subscription['swapContracts'], SubscriptionswapContractsArgs, MeshContext>,
   /** null **/
-  swapContracts: InContextSdkMethod<TidvTypes.Subscription['swapContracts'], TidvTypes.SubscriptionswapContractsArgs, MeshContext>,
+  swapLightContract: InContextSdkMethod<Subscription['swapLightContract'], SubscriptionswapLightContractArgs, MeshContext>,
   /** null **/
-  swapLightContract: InContextSdkMethod<TidvTypes.Subscription['swapLightContract'], TidvTypes.SubscriptionswapLightContractArgs, MeshContext>,
+  swapLightContracts: InContextSdkMethod<Subscription['swapLightContracts'], SubscriptionswapLightContractsArgs, MeshContext>,
   /** null **/
-  swapLightContracts: InContextSdkMethod<TidvTypes.Subscription['swapLightContracts'], TidvTypes.SubscriptionswapLightContractsArgs, MeshContext>,
+  swap: InContextSdkMethod<Subscription['swap'], SubscriptionswapArgs, MeshContext>,
   /** null **/
-  swap: InContextSdkMethod<TidvTypes.Subscription['swap'], TidvTypes.SubscriptionswapArgs, MeshContext>,
+  swaps: InContextSdkMethod<Subscription['swaps'], SubscriptionswapsArgs, MeshContext>,
   /** null **/
-  swaps: InContextSdkMethod<TidvTypes.Subscription['swaps'], TidvTypes.SubscriptionswapsArgs, MeshContext>,
+  swapLight: InContextSdkMethod<Subscription['swapLight'], SubscriptionswapLightArgs, MeshContext>,
   /** null **/
-  swapLight: InContextSdkMethod<TidvTypes.Subscription['swapLight'], TidvTypes.SubscriptionswapLightArgs, MeshContext>,
+  swapLights: InContextSdkMethod<Subscription['swapLights'], SubscriptionswapLightsArgs, MeshContext>,
   /** null **/
-  swapLights: InContextSdkMethod<TidvTypes.Subscription['swapLights'], TidvTypes.SubscriptionswapLightsArgs, MeshContext>,
+  token: InContextSdkMethod<Subscription['token'], SubscriptiontokenArgs, MeshContext>,
   /** null **/
-  token: InContextSdkMethod<TidvTypes.Subscription['token'], TidvTypes.SubscriptiontokenArgs, MeshContext>,
+  tokens: InContextSdkMethod<Subscription['tokens'], SubscriptiontokensArgs, MeshContext>,
   /** null **/
-  tokens: InContextSdkMethod<TidvTypes.Subscription['tokens'], TidvTypes.SubscriptiontokensArgs, MeshContext>,
+  indexer: InContextSdkMethod<Subscription['indexer'], SubscriptionindexerArgs, MeshContext>,
   /** null **/
-  indexer: InContextSdkMethod<TidvTypes.Subscription['indexer'], TidvTypes.SubscriptionindexerArgs, MeshContext>,
+  indexers: InContextSdkMethod<Subscription['indexers'], SubscriptionindexersArgs, MeshContext>,
   /** null **/
-  indexers: InContextSdkMethod<TidvTypes.Subscription['indexers'], TidvTypes.SubscriptionindexersArgs, MeshContext>,
+  index: InContextSdkMethod<Subscription['index'], SubscriptionindexArgs, MeshContext>,
   /** null **/
-  index: InContextSdkMethod<TidvTypes.Subscription['index'], TidvTypes.SubscriptionindexArgs, MeshContext>,
+  indexes: InContextSdkMethod<Subscription['indexes'], SubscriptionindexesArgs, MeshContext>,
   /** null **/
-  indexes: InContextSdkMethod<TidvTypes.Subscription['indexes'], TidvTypes.SubscriptionindexesArgs, MeshContext>,
+  stake: InContextSdkMethod<Subscription['stake'], SubscriptionstakeArgs, MeshContext>,
   /** null **/
-  stake: InContextSdkMethod<TidvTypes.Subscription['stake'], TidvTypes.SubscriptionstakeArgs, MeshContext>,
+  stakes: InContextSdkMethod<Subscription['stakes'], SubscriptionstakesArgs, MeshContext>,
   /** null **/
-  stakes: InContextSdkMethod<TidvTypes.Subscription['stakes'], TidvTypes.SubscriptionstakesArgs, MeshContext>,
+  locator: InContextSdkMethod<Subscription['locator'], SubscriptionlocatorArgs, MeshContext>,
   /** null **/
-  locator: InContextSdkMethod<TidvTypes.Subscription['locator'], TidvTypes.SubscriptionlocatorArgs, MeshContext>,
+  locators: InContextSdkMethod<Subscription['locators'], SubscriptionlocatorsArgs, MeshContext>,
   /** null **/
-  locators: InContextSdkMethod<TidvTypes.Subscription['locators'], TidvTypes.SubscriptionlocatorsArgs, MeshContext>,
+  delegateFactory: InContextSdkMethod<Subscription['delegateFactory'], SubscriptiondelegateFactoryArgs, MeshContext>,
   /** null **/
-  delegateFactory: InContextSdkMethod<TidvTypes.Subscription['delegateFactory'], TidvTypes.SubscriptiondelegateFactoryArgs, MeshContext>,
+  delegateFactories: InContextSdkMethod<Subscription['delegateFactories'], SubscriptiondelegateFactoriesArgs, MeshContext>,
   /** null **/
-  delegateFactories: InContextSdkMethod<TidvTypes.Subscription['delegateFactories'], TidvTypes.SubscriptiondelegateFactoriesArgs, MeshContext>,
+  delegate: InContextSdkMethod<Subscription['delegate'], SubscriptiondelegateArgs, MeshContext>,
   /** null **/
-  delegate: InContextSdkMethod<TidvTypes.Subscription['delegate'], TidvTypes.SubscriptiondelegateArgs, MeshContext>,
+  delegates: InContextSdkMethod<Subscription['delegates'], SubscriptiondelegatesArgs, MeshContext>,
   /** null **/
-  delegates: InContextSdkMethod<TidvTypes.Subscription['delegates'], TidvTypes.SubscriptiondelegatesArgs, MeshContext>,
+  rule: InContextSdkMethod<Subscription['rule'], SubscriptionruleArgs, MeshContext>,
   /** null **/
-  rule: InContextSdkMethod<TidvTypes.Subscription['rule'], TidvTypes.SubscriptionruleArgs, MeshContext>,
+  rules: InContextSdkMethod<Subscription['rules'], SubscriptionrulesArgs, MeshContext>,
   /** null **/
-  rules: InContextSdkMethod<TidvTypes.Subscription['rules'], TidvTypes.SubscriptionrulesArgs, MeshContext>,
+  locker: InContextSdkMethod<Subscription['locker'], SubscriptionlockerArgs, MeshContext>,
   /** null **/
-  locker: InContextSdkMethod<TidvTypes.Subscription['locker'], TidvTypes.SubscriptionlockerArgs, MeshContext>,
+  lockers: InContextSdkMethod<Subscription['lockers'], SubscriptionlockersArgs, MeshContext>,
   /** null **/
-  lockers: InContextSdkMethod<TidvTypes.Subscription['lockers'], TidvTypes.SubscriptionlockersArgs, MeshContext>,
+  pool: InContextSdkMethod<Subscription['pool'], SubscriptionpoolArgs, MeshContext>,
   /** null **/
-  pool: InContextSdkMethod<TidvTypes.Subscription['pool'], TidvTypes.SubscriptionpoolArgs, MeshContext>,
+  pools: InContextSdkMethod<Subscription['pools'], SubscriptionpoolsArgs, MeshContext>,
   /** null **/
-  pools: InContextSdkMethod<TidvTypes.Subscription['pools'], TidvTypes.SubscriptionpoolsArgs, MeshContext>,
+  poolClaim: InContextSdkMethod<Subscription['poolClaim'], SubscriptionpoolClaimArgs, MeshContext>,
   /** null **/
-  poolClaim: InContextSdkMethod<TidvTypes.Subscription['poolClaim'], TidvTypes.SubscriptionpoolClaimArgs, MeshContext>,
+  poolClaims: InContextSdkMethod<Subscription['poolClaims'], SubscriptionpoolClaimsArgs, MeshContext>,
   /** null **/
-  poolClaims: InContextSdkMethod<TidvTypes.Subscription['poolClaims'], TidvTypes.SubscriptionpoolClaimsArgs, MeshContext>,
+  enabledRoot: InContextSdkMethod<Subscription['enabledRoot'], SubscriptionenabledRootArgs, MeshContext>,
   /** null **/
-  enabledRoot: InContextSdkMethod<TidvTypes.Subscription['enabledRoot'], TidvTypes.SubscriptionenabledRootArgs, MeshContext>,
+  enabledRoots: InContextSdkMethod<Subscription['enabledRoots'], SubscriptionenabledRootsArgs, MeshContext>,
   /** null **/
-  enabledRoots: InContextSdkMethod<TidvTypes.Subscription['enabledRoots'], TidvTypes.SubscriptionenabledRootsArgs, MeshContext>,
+  collectedFeesDay: InContextSdkMethod<Subscription['collectedFeesDay'], SubscriptioncollectedFeesDayArgs, MeshContext>,
   /** null **/
-  collectedFeesDay: InContextSdkMethod<TidvTypes.Subscription['collectedFeesDay'], TidvTypes.SubscriptioncollectedFeesDayArgs, MeshContext>,
+  collectedFeesDays: InContextSdkMethod<Subscription['collectedFeesDays'], SubscriptioncollectedFeesDaysArgs, MeshContext>,
   /** null **/
-  collectedFeesDays: InContextSdkMethod<TidvTypes.Subscription['collectedFeesDays'], TidvTypes.SubscriptioncollectedFeesDaysArgs, MeshContext>,
+  volumeDay: InContextSdkMethod<Subscription['volumeDay'], SubscriptionvolumeDayArgs, MeshContext>,
   /** null **/
-  volumeDay: InContextSdkMethod<TidvTypes.Subscription['volumeDay'], TidvTypes.SubscriptionvolumeDayArgs, MeshContext>,
-  /** null **/
-  volumeDays: InContextSdkMethod<TidvTypes.Subscription['volumeDays'], TidvTypes.SubscriptionvolumeDaysArgs, MeshContext>,
+  volumeDays: InContextSdkMethod<Subscription['volumeDays'], SubscriptionvolumeDaysArgs, MeshContext>,
   /** Access to subgraph metadata **/
-  _meta: InContextSdkMethod<TidvTypes.Subscription['_meta'], TidvTypes.Subscription_metaArgs, MeshContext>
-};
-export type TidvContext = {
-      ["tidv"]: { Query: QueryTidvSdk, Mutation: MutationTidvSdk, Subscription: SubscriptionTidvSdk },
+  _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
+  };
+
+  export type Context = {
+      ["tidv"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
       ["indexer_url"]: Scalars['ID']
     };
+}

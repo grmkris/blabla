@@ -16,7 +16,7 @@ const Home: NextPage = () => {
           <h1 className="text-6xl font-bold">
             Subgraph{" "}
             <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
-              Observer NLAqqqqq BLAqqqq
+              Observer
             </a>
             🧙‍
           </h1>
