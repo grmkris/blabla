@@ -26,7 +26,7 @@ export const CreateSubgraphForm = () => {
   console.log("errors", errors);
   console.log("getValues", getValues());
   return (
-    <div className="md:col-span-1 items-center justify-center text-center">
+    <div>
       <form onSubmit={handleSubmit(onSubmit)} className="form-control w-full">
         <TextField
           label="Subgraph url"

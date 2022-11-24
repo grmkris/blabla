@@ -10,7 +10,6 @@ export const TextField = (props: {
   className?: string;
   register: UseFormRegisterReturn<any>;
 }) => {
-  console.log("props", props);
   return (
     <div className="form-control indicator w-full">
       <label className="label">
