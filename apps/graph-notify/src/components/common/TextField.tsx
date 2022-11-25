@@ -10,7 +10,6 @@ export const TextField = (props: {
   className?: string;
   register: UseFormRegisterReturn<any>;
 }) => {
-  console.log("props", props);
   return (
     <div className="form-control indicator w-full">
       <label className="label">
@@ -21,6 +20,7 @@ export const TextField = (props: {
       </label>
       <input
         placeholder={props.placeholder}
+        autoComplete="off"
         className={clsx("input input-bordered input-primary", [
           props.error && "input-error",
           props.className,

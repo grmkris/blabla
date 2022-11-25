@@ -8,7 +8,7 @@ import { ImCross } from "react-icons/all";
 import { SubgraphForm } from "../types/common";
 
 export const SubgraphCard = (props: { input: SubgraphForm; index: number }) => {
-  const { data } = useGetSubgraphStatus(
+  const { data, isLoading } = useGetSubgraphStatus(
     props.input.chainId?.toString(),
     props.input.indexer
   );
