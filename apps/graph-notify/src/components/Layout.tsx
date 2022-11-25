@@ -3,10 +3,8 @@ import { FaTwitter } from "react-icons/fa";
 
 function Footer() {
   return (
-    <footer className="footer footer-center p-4 bg-base-300 text-base-content">
-      <div>
-        <SocialLinks />
-      </div>
+    <footer className="footer footer-center p-4 text-base-content">
+      <SocialLinks />
     </footer>
   );
 }
@@ -29,8 +27,10 @@ function SocialLinks() {
 export const Layout = (props: { children: ReactNode }) => {
   return (
     <div className={"max-w-full"}>
-      <div className="min-h-screen heropattern-jigsaw-red-100">
-        <main>{props.children}</main>
+      <div className="min-h-screen">
+        <main className="px-4 py-12 sm:px-16 md:px-4 xl:px-16">
+          {props.children}
+        </main>
       </div>
       <Footer />
     </div>

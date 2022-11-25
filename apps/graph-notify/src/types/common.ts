@@ -42,3 +42,12 @@ export type ChainListSchema = {
     standard: string;
   }[];
 };
+
+export type TableDataRow = {
+  title: string;
+  link: string;
+  subgraphBlock: number;
+  latestBlock: number;
+  blocksBehind: number;
+  subRows?: TableDataRow[];
+};

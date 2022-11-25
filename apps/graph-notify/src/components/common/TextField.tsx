@@ -20,6 +20,7 @@ export const TextField = (props: {
       </label>
       <input
         placeholder={props.placeholder}
+        autoComplete="off"
         className={clsx("input input-bordered input-primary", [
           props.error && "input-error",
           props.className,

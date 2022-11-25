@@ -20,8 +20,6 @@ export const SubgraphCard = (props: { input: SubgraphForm; index: number }) => {
     data?._meta?.block.number &&
     latestBlock.data - data?._meta?.block.number;
 
-  console.log("data", data, isLoading);
-
   return (
     <div className="card w-80 bg-base-100 shadow-xl">
       <div className="drawer drawer-end max-h-80">
