@@ -11,7 +11,6 @@ import {
   SortingState,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import Link from "next/link";
 import { useState } from "react";
 import {
   HiChevronLeft,
@@ -20,7 +19,8 @@ import {
   HiChevronDoubleLeft,
   HiExternalLink,
 } from "react-icons/hi";
-import GraphBlockColumn from "./GraphBlockColumn";
+import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
+import { useGetChainData } from "../../hooks/useGetChainData";
 
 type GraphRow = {
   name: string;
@@ -32,71 +32,51 @@ type Props = {
   inputs: GraphRow[];
 };
 
-export default function SubgraphTable({ inputs: tableData }: Props) {
+export function SubgraphTable({ inputs: tableData }: Props) {
   const columnHelper = createColumnHelper<GraphRow>();
-
   const columns = [
     columnHelper.accessor("name", {
       header: () => <span>Title</span>,
       cell: (info) => info.getValue(),
       enableSorting: true,
     }),
-
     columnHelper.accessor("chainId", {
-      header: () => "latestBlock",
-      cell: (info) => (
-        <GraphBlockColumn
-          columnType="latestBlock"
-          chainId={info.getValue()}
-          indexer={info.row.getValue("indexer")}
-        />
-      ),
-    }),
-    columnHelper.accessor("chainId", {
-      header: () => "subgraphBlock",
-      cell: (info) => (
-        <GraphBlockColumn
-          columnType="subgraphBlock"
-          chainId={info.getValue()}
-          indexer={info.row.getValue("indexer")}
-        />
-      ),
-      enableGrouping: false, //THIS ENABLES GROUPING ON COLUMN
-    }),
-    columnHelper.accessor("chainId", {
-      header: () => "Blocks behind",
-      cell: (info) => (
-        <GraphBlockColumn
-          columnType="blocksBehind"
-          chainId={info.getValue()}
-          indexer={info.row.getValue("indexer")}
-        />
-      ),
+      header: () => <span>Chain</span>,
+      cell: (info) => <ChainIdToLink chainId={info.getValue()} />,
+      enableSorting: true,
     }),
     columnHelper.accessor("indexer", {
-      header: () => <span>Link</span>,
+      header: () => <span>GraphQL</span>,
       cell: (info) => (
-        <Link href={info.getValue()} target="_blank" rel="noopener noreferrer">
-          <button className="btn btn-info btn-outline gap-2 inline-flex">
-            <HiExternalLink />
-            Link
-          </button>
-        </Link>
+        // 2 urls buttons inline next to each other
+        <div className={"flex flex-row gap-2"}>
+          <a href={info.getValue()} target="_blank" rel="noopener noreferrer">
+            <button className="btn btn-sm btn-info btn-outline gap-2 inline-flex">
+              <HiExternalLink />
+              graphQL
+            </button>
+          </a>
+        </div>
       ),
+      enableGrouping: false,
     }),
-    columnHelper.accessor("indexer", {
-      header: () => <span>Link</span>,
-      cell: (info) => "info.getValue()",
+    columnHelper.accessor("chainId", {
+      header: () => "Status",
+      cell: (info) => (
+        <SubgraphStatusLabel
+          chainId={info.getValue()}
+          indexer={info.row.getValue("indexer")}
+        />
+      ),
+      enableGrouping: false,
     }),
   ];
-
-  const [data, setData] = useState(tableData);
 
   const [grouping, setGrouping] = useState<GroupingState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     state: {
       sorting,
@@ -225,48 +205,73 @@ export default function SubgraphTable({ inputs: tableData }: Props) {
           })}
         </tbody>
       </table>
-      <div className="h-2" />
-      <div className="flex justify-between items-center gap-2">
-        <div className="flex space-x-4">
-          <button
-            className="border rounded p-1 disabled:text-slate-500"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <HiChevronDoubleLeft />
-          </button>
-          <button
-            className="border rounded p-1 disabled:text-slate-500"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <HiChevronLeft />
-          </button>
-          <button
-            className="border rounded p-1 disabled:text-slate-500"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <HiChevronRight />
-          </button>
-          <button
-            className="border rounded p-1 disabled:text-slate-500"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <HiChevronDoubleRight />
-          </button>
-        </div>
-        <div>
-          <span className="flex items-center gap-1">
-            <div>Page</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
-            </strong>
-          </span>
-        </div>
-      </div>
+      {
+        // Paginationation shown if there are more than 10 rows
+        table.getRowModel().rows.length > 10 && (
+          <>
+            <div className="h-2" />
+            <div className="flex justify-between items-center gap-2">
+              <div className="flex space-x-4">
+                <button
+                  className="border rounded p-1 disabled:text-slate-500"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <HiChevronDoubleLeft />
+                </button>
+                <button
+                  className="border rounded p-1 disabled:text-slate-500"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <HiChevronLeft />
+                </button>
+                <button
+                  className="border rounded p-1 disabled:text-slate-500"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <HiChevronRight />
+                </button>
+                <button
+                  className="border rounded p-1 disabled:text-slate-500"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <HiChevronDoubleRight />
+                </button>
+              </div>
+              <div>
+                <span className="flex items-center gap-1">
+                  <div>Page</div>
+                  <strong>
+                    {table.getState().pagination.pageIndex + 1} of{" "}
+                    {table.getPageCount()}
+                  </strong>
+                </span>
+              </div>
+            </div>
+          </>
+        )
+      }
     </div>
   );
 }
+
+export const ChainIdToLink = (props: { chainId: number }) => {
+  const chainId = props.chainId;
+  const { getDataForChain } = useGetChainData();
+  const chainData = getDataForChain(chainId);
+  return (
+    <a
+      href={chainData?.explorers[0].url ?? ""}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <button className="btn btn-sm btn-info btn-outline gap-2 inline-flex">
+        <HiExternalLink />
+        <div>{chainData?.name}</div>
+      </button>
+    </a>
+  );
+};

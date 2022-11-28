@@ -35,6 +35,7 @@ export const useGetNodeLatestBlock = (chainId: number | undefined) => {
     },
     {
       enabled: !!chainId && !!rpcs,
+      refetchInterval: 1000,
     }
   );
 };

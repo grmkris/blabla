@@ -8,7 +8,11 @@ export const useGetChainData = () => {
       const data = await fetch("https://chainid.network/chains.json");
       return data.json();
     },
-    {}
+    {
+      cacheTime: Infinity,
+      staleTime: Infinity,
+      retry: 10,
+    }
   );
 
   const getDataForChain = (chainId: number) =>

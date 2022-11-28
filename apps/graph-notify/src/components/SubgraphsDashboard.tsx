@@ -1,5 +1,5 @@
 import { useGraphNotifyStore } from "../store";
-import SubgraphTable from "./SubgraphTable";
+import { SubgraphTable } from "./subgraphs-table/SubgraphTable";
 
 export const SubgraphsDashboard = () => {
   const { inputs } = useGraphNotifyStore((state) => ({

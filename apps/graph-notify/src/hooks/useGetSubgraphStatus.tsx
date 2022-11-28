@@ -19,6 +19,9 @@ export const useGetSubgraphStatus = (chainId: string, indexer: string) => {
 
       return client.getSubgraphStatus();
     },
-    {}
+    {
+      enabled: !!chainId && !!indexer,
+      refetchInterval: 1000,
+    }
   );
 };

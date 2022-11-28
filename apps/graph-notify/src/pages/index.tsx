@@ -22,7 +22,7 @@ const Home: NextPage = () => {
               🧙‍
             </h1>
             <p className="mt-5 text-2xl">
-              Realtime monitoring of subgraph health sdf
+              Realtime monitoring of subgraph health
             </p>
           </div>
 
@@ -30,7 +30,6 @@ const Home: NextPage = () => {
             <CreateSubgraphForm />
           </div>
         </div>
-
         <SubgraphsDashboard />
       </div>
     </NonSSRWrapper>
