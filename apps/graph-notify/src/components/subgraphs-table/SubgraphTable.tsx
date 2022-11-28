@@ -24,6 +24,7 @@ import {
 import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
 import RemoveButton from "./RemoveButton";
+import { getDataForChain } from "../../utils/functions";
 
 type GraphRow = {
   name: string;
@@ -272,8 +273,9 @@ export function SubgraphTable({ inputs: tableData }: Props) {
 
 export const ChainIdToLink = (props: { chainId: number }) => {
   const chainId = props.chainId;
-  const { getDataForChain } = useGetChainData();
-  const chainData = getDataForChain(chainId);
+  const chainList = useGetChainData();
+  const chainData = chainList.data && getDataForChain(chainList.data, chainId);
+
   return (
     <a
       href={chainData?.explorers[0].url ?? ""}

@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { getDataForChain } from "../utils/functions";
 import { useGetChainData } from "./useGetChainData";
 
 export const useGetNodeLatestBlock = (chainId: number | undefined) => {
-  const { getDataForChain } = useGetChainData();
-  const rpcs = chainId && getDataForChain(chainId)?.rpc;
+  const chainList = useGetChainData();
+  const chainData = chainList.data && getDataForChain(chainList.data, chainId!);
+  const rpcs = chainData?.rpc;
 
   return useQuery<number>(
     [chainId],

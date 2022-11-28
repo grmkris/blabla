@@ -9,7 +9,7 @@ export const CreateSubgraphForm = () => {
   const { addInput } = useGraphNotifyStore((state) => ({
     addInput: state.addSubgraph,
   }));
-  const { chainList } = useGetChainData();
+  const chainList = useGetChainData();
   const {
     register,
     handleSubmit,
