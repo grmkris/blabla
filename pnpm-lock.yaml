@@ -94,6 +94,7 @@ importers:
       graphql: ^16.6.0
       idb-keyval: ^6.2.0
       immer: ^9.0.15
+      js-base64: ^3.7.3
       next: latest
       next-auth: ^4.10.3
       next-transpile-modules: ^10.0.0
@@ -136,6 +137,7 @@ importers:
       graphql: 16.6.0
       idb-keyval: 6.2.0
       immer: 9.0.15
+      js-base64: 3.7.3
       next: 13.0.5_tenfsmnfmyo5s7fgpbwitjvwvm
       next-auth: 4.10.3_ef5jwxihqo6n7gxfmzogljlgcm
       next-transpile-modules: 10.0.0
@@ -8267,6 +8269,10 @@ packages:
 
   /jose/4.9.2:
     resolution: {integrity: sha512-EqKvu2PqJCD3Jrg3PvcYZVS7D21qMVLSYMDAFcOdGUEOpJSLNtJO7NjLANvu3SYHVl6pdP2ff7ve6EZW2nX7Nw==}
+    dev: false
+
+  /js-base64/3.7.3:
+    resolution: {integrity: sha512-PAr6Xg2jvd7MCR6Ld9Jg3BmTcjYsHEBx1VlwEwULb/qowPf5VD9kEMagj23Gm7JRnSvE/Da/57nChZjnvL8v6A==}
     dev: false
 
   /js-sdsl/4.1.4:

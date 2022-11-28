@@ -28,6 +28,7 @@
     "graphql": "^16.6.0",
     "idb-keyval": "^6.2.0",
     "immer": "^9.0.15",
+    "js-base64": "^3.7.3",
     "next": "latest",
     "next-auth": "^4.10.3",
     "next-transpile-modules": "^10.0.0",
