@@ -93,12 +93,12 @@ const BlocksBehindLabel = ({
 
   return (
     <>
-      {(blockBehind && (
+      {(blockBehind !== undefined && (
         <div
           className={`badge ${clsx(
             { "badge-success": blockBehind < 10 },
             { "badge-warning": blockBehind > 10 && blockBehind < 100 },
-            { "badge-error": blockBehind > 100 || !blockBehind }
+            { "badge-error": blockBehind > 100 }
           )}`}
         >
           Blocks behind: {blockBehind}
