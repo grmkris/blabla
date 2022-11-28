@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { withTRPC } from "@trpc/next";
 import { AppRouter } from "./api/trpc/[trpc]";
 import { API_URL } from "../config/constants";
+import { Toaster } from "react-hot-toast";
 
 // Create a query client
 const queryClient = new QueryClient();
@@ -18,6 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient} contextSharing={true}>
         <Layout>
           <Component {...pageProps} />
+          <Toaster />
         </Layout>
       </QueryClientProvider>
     </SessionProvider>

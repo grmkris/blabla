@@ -15,11 +15,5 @@ export const useGetChainData = () => {
     }
   );
 
-  const getDataForChain = (chainId: number) =>
-    chainList.data?.find((element) => {
-      console.log("chainId", chainId);
-      return element.chainId == chainId ?? "0";
-    });
-
-  return { chainList, getDataForChain };
+  return chainList;
 };

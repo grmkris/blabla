@@ -5,7 +5,6 @@ export const useGetSubgraphStatus = (chainId: string, indexer: string) => {
   return useQuery(
     ["useGetSubgraphStatus", chainId, indexer],
     async () => {
-      console.log("USE QUERY", chainId, indexer);
       if (indexer.startsWith("http://")) {
         indexer = indexer.replace("http://", "");
       }

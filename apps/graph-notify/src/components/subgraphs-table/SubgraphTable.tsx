@@ -18,14 +18,20 @@ import {
   HiChevronDoubleRight,
   HiChevronDoubleLeft,
   HiExternalLink,
+  HiChevronUp,
+  HiChevronDown,
 } from "react-icons/hi";
 import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
+import RemoveButton from "./RemoveButton";
+import { getDataForChain } from "../../utils/functions";
 
 type GraphRow = {
   name: string;
   indexer: string;
   chainId: number;
+  status?: any;
+  removeButton?: any;
   subRows?: GraphRow[];
 };
 type Props = {
@@ -39,11 +45,13 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       header: () => <span>Title</span>,
       cell: (info) => info.getValue(),
       enableSorting: true,
+      enableGrouping: false,
     }),
     columnHelper.accessor("chainId", {
       header: () => <span>Chain</span>,
       cell: (info) => <ChainIdToLink chainId={info.getValue()} />,
       enableSorting: true,
+      enableGrouping: false,
     }),
     columnHelper.accessor("indexer", {
       header: () => <span>GraphQL</span>,
@@ -60,14 +68,19 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       ),
       enableGrouping: false,
     }),
-    columnHelper.accessor("chainId", {
+    columnHelper.accessor("status", {
       header: () => "Status",
       cell: (info) => (
         <SubgraphStatusLabel
-          chainId={info.getValue()}
+          chainId={info.row.getValue("chainId")}
           indexer={info.row.getValue("indexer")}
         />
       ),
+      enableGrouping: false,
+    }),
+    columnHelper.accessor("removeButton", {
+      header: () => "Remove",
+      cell: (info) => <RemoveButton rowId={info.row.index} />,
       enableGrouping: false,
     }),
   ];
@@ -121,7 +134,7 @@ export function SubgraphTable({ inputs: tableData }: Props) {
                     <div
                       {...{
                         className: header.column.getCanSort()
-                          ? "cursor-pointer select-none"
+                          ? "cursor-pointer select-none flex items-center"
                           : "",
                         onClick: header.column.getToggleSortingHandler(),
                       }}
@@ -131,8 +144,8 @@ export function SubgraphTable({ inputs: tableData }: Props) {
                         header.getContext()
                       )}{" "}
                       {{
-                        asc: " 🔼",
-                        desc: " 🔽",
+                        asc: <HiChevronUp />,
+                        desc: <HiChevronDown />,
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   </div>
@@ -260,8 +273,9 @@ export function SubgraphTable({ inputs: tableData }: Props) {
 
 export const ChainIdToLink = (props: { chainId: number }) => {
   const chainId = props.chainId;
-  const { getDataForChain } = useGetChainData();
-  const chainData = getDataForChain(chainId);
+  const chainList = useGetChainData();
+  const chainData = chainList.data && getDataForChain(chainList.data, chainId);
+
   return (
     <a
       href={chainData?.explorers[0].url ?? ""}
