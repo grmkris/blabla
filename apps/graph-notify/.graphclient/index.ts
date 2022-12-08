@@ -2532,7 +2532,6 @@ export type _Meta_ = {
   deployment: Scalars['String'];
   /** If `true`, the subgraph encountered indexing errors at some past block */
   hasIndexingErrors: Scalars['Boolean'];
-  chainName: Scalars['String'];
   subgraphUrl: Scalars['String'];
 };
 
@@ -3047,7 +3046,6 @@ export type _Meta_Resolvers<ContextType = MeshContext, ParentType extends Resolv
   block?: Resolver<ResolversTypes['_Block_'], ParentType, ContextType>;
   deployment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   hasIndexingErrors?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  chainName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   subgraphUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -3126,7 +3124,7 @@ const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
 const tidvTransforms = [];
 const tidvHandler = new GraphqlHandler({
               name: "tidv",
-              config: {"endpoint":"https://{context.indexer_url:api.thegraph.com/subgraphs/name/airswap/airswap}","chainName":{"context.chainName":null}},
+              config: {"endpoint":"https://{context.indexer_url:api.thegraph.com/subgraphs/name/airswap/airswap}"},
               baseDir,
               cache,
               pubsub,
@@ -3139,7 +3137,7 @@ sources[0] = {
           handler: tidvHandler,
           transforms: tidvTransforms
         }
-const additionalTypeDefs = [parse("extend type _Meta_ {\n  chainName: String!\n  subgraphUrl: String!\n}"),] as any[];
+const additionalTypeDefs = [parse("extend type _Meta_ {\n  subgraphUrl: String!\n}"),] as any[];
 const additionalResolvers = await Promise.all([
         import("../queries/resolvers.ts")
             .then(m => m.resolvers || m.default || m)

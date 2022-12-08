@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getBuiltGraphSDK } from "../../.graphclient";
+import { useState } from "react";
 
-export const useGetSubgraphStatus = (chainId: string, indexer: string) => {
+export const useGetSubgraphStatus = (indexer: string) => {
+  const [refetchInterval, setRefetchInterval] = useState(1000);
   return useQuery(
-    ["useGetSubgraphStatus", chainId, indexer],
+    ["useGetSubgraphStatus", { indexer }],
     async () => {
       if (indexer.startsWith("http://")) {
         indexer = indexer.replace("http://", "");
@@ -12,15 +14,18 @@ export const useGetSubgraphStatus = (chainId: string, indexer: string) => {
         indexer = indexer.replace("https://", "");
       }
       const client = getBuiltGraphSDK({
-        chainName: chainId,
         indexer_url: indexer,
       });
-
       return client.getSubgraphStatus();
     },
     {
-      enabled: !!chainId && !!indexer,
-      refetchInterval: 1000,
+      enabled: !!indexer && indexer.length > 5,
+      refetchInterval: refetchInterval,
+      retry: false,
+      onError: (error) => {
+        console.log(error);
+        setRefetchInterval(10000);
+      },
     }
   );
 };

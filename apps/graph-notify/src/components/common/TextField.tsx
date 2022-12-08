@@ -1,10 +1,11 @@
 import { UseFormRegisterReturn } from "react-hook-form";
 import clsx from "clsx";
+import { ReactNode } from "react";
 
 export declare type FieldValues = Record<string, any>;
 
 export const TextField = (props: {
-  label: string;
+  label: string | ReactNode;
   placeholder: string;
   error?: string;
   className?: string;

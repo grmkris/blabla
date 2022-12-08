@@ -4,6 +4,7 @@ import Select from "react-select";
 import { useGraphNotifyStore } from "../store";
 import { TextField } from "./common/TextField";
 import { SubgraphForm } from "../types/common";
+import { useGetSubgraphStatus } from "../hooks/useGetSubgraphStatus";
 
 export const CreateSubgraphForm = () => {
   const { addInput } = useGraphNotifyStore((state) => ({
@@ -16,20 +17,33 @@ export const CreateSubgraphForm = () => {
     formState: { errors },
     control,
     reset,
-    getValues,
+    watch,
   } = useForm<SubgraphForm>();
   const onSubmit: SubmitHandler<SubgraphForm> = (data) => {
     addInput(data);
     reset();
   };
 
+  const SubgraphStatusLabel = (props: { url: string }) => {
+    const subgraphStatus = useGetSubgraphStatus(props.url);
+    console.log("SubgraphStatusLabel", subgraphStatus);
+
+    if (subgraphStatus.isFetching && !subgraphStatus.data)
+      return <span className={"ixnline"}>Subgraph url ⏳</span>;
+    if (subgraphStatus.error) return <div>Subgraph url ❌</div>;
+    if (subgraphStatus.data) return <div>Subgraph url ✅</div>;
+    return <div>Subgraph url</div>;
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)} className="form-control w-full">
         <TextField
-          label="Subgraph url"
+          label={<SubgraphStatusLabel url={watch("indexer")} />}
           placeholder="https://yousubgraph.url"
-          register={register("indexer", { required: true })}
+          register={register("indexer", {
+            required: true,
+          })}
           error={errors.indexer && "This field is required"}
         />
         {chainList.data && (

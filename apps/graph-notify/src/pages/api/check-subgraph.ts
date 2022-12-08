@@ -15,7 +15,6 @@ export default async function handler(
   console.log("received request on check-subgraph");
   console.log(req.body);
   const client = getBuiltGraphSDK({
-    chainName: "test123",
     indexer_url: req.body.subgraphUrl.replace("https://", ""),
   });
   const status = await client.getSubgraphStatus();

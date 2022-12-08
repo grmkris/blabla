@@ -9,6 +9,7 @@ import { withTRPC } from "@trpc/next";
 import { AppRouter } from "./api/trpc/[trpc]";
 import { API_URL } from "../config/constants";
 import { Toaster } from "react-hot-toast";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 // Create a query client
 const queryClient = new QueryClient();
@@ -16,10 +17,11 @@ const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
-      <QueryClientProvider client={queryClient} contextSharing={true}>
+      <QueryClientProvider client={queryClient}>
         <Layout>
           <Component {...pageProps} />
           <Toaster />
+          <ReactQueryDevtools initialIsOpen={false} />
         </Layout>
       </QueryClientProvider>
     </SessionProvider>

@@ -8,7 +8,7 @@ export const useGetNodeLatestBlock = (chainId: number | undefined) => {
   const rpcs = chainData?.rpc;
 
   return useQuery<number>(
-    [chainId],
+    ["useGetNodeLatestBlock", chainId],
     async () => {
       if (!rpcs || rpcs.length === 0) {
         throw new Error("No RPC");

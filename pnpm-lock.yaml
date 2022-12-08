@@ -77,7 +77,8 @@ importers:
       '@rainbow-me/rainbowkit-siwe-next-auth': ^0.1.2
       '@svgr/webpack': ^6.5.1
       '@tailwindcss/forms': ^0.5.3
-      '@tanstack/react-query': ^4.0.10
+      '@tanstack/react-query': ^4.19.1
+      '@tanstack/react-query-devtools': ^4.19.1
       '@tanstack/react-table': ^8.7.0
       '@trpc/client': ^9.27.2
       '@trpc/next': ^9.27.2
@@ -126,7 +127,8 @@ importers:
       '@novu/node': 0.8.0
       '@rainbow-me/rainbowkit': 0.5.3_gn4mwovaarjgpg42qwkvhto7ga
       '@rainbow-me/rainbowkit-siwe-next-auth': 0.1.2_dpyi2isjqecroysqcepahgxmbm
-      '@tanstack/react-query': 4.3.4_7fu7l4wal7urtkprbqv5gbhurm
+      '@tanstack/react-query': 4.19.1_7fu7l4wal7urtkprbqv5gbhurm
+      '@tanstack/react-query-devtools': 4.19.1_7qupc7bnczsno2oapilw5zv53i
       '@tanstack/react-table': 8.7.0_ef5jwxihqo6n7gxfmzogljlgcm
       '@trpc/client': 9.27.2_@trpc+server@9.27.2
       '@trpc/next': 9.27.2_2pj44k6djpbm5aqpdr64ixw7lu
@@ -4348,6 +4350,17 @@ packages:
       tailwindcss: 3.1.8_postcss@8.4.16
     dev: true
 
+  /@tanstack/match-sorter-utils/8.7.0:
+    resolution: {integrity: sha512-OgfIPMHTfuw9JGcXCCoEHWFP/eSP2eyhCYwkrFnWBM3NbUPAgOlFP11DbM7cozDRVB0XbPr1tD4pLAtWKlVUVg==}
+    engines: {node: '>=12'}
+    dependencies:
+      remove-accents: 0.4.2
+    dev: false
+
+  /@tanstack/query-core/4.19.1:
+    resolution: {integrity: sha512-Zp0aIose5C8skBzqbVFGk9HJsPtUhRVDVNWIqVzFbGQQgYSeLZMd3Sdb4+EnA5wl1J7X+bre2PJGnQg9x/zHOA==}
+    dev: false
+
   /@tanstack/query-core/4.3.4:
     resolution: {integrity: sha512-NLAe3j5Vk1yYEtoPP5fPGPjRzkZPx67KUM3f14L3InziJZJ0wVecCh7uKfgYkbRKJSeq6PlbND7iuCGdTplN6Q==}
     dev: false
@@ -4362,6 +4375,21 @@ packages:
       - react-native
     dev: false
 
+  /@tanstack/react-query-devtools/4.19.1_7qupc7bnczsno2oapilw5zv53i:
+    resolution: {integrity: sha512-U63A+ly9JLPJj7ryR9omdXT3n+gS7jlExrHty4klsd/6xdUhC38CKZyZ0Gi3vctaVYRGTU8/vI+uKzBYdFqLaA==}
+    peerDependencies:
+      '@tanstack/react-query': 4.19.1
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/match-sorter-utils': 8.7.0
+      '@tanstack/react-query': 4.19.1_7fu7l4wal7urtkprbqv5gbhurm
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      superjson: 1.12.0
+      use-sync-external-store: 1.2.0_react@18.1.0
+    dev: false
+
   /@tanstack/react-query-persist-client/4.3.4_7fu7l4wal7urtkprbqv5gbhurm:
     resolution: {integrity: sha512-Bj4IX1r12teGnMIASymHoa5RI5D2omKklJ8+RPbWalgYsfD/OOGO2KQiFZGfsfbnj2xtkrgSq4dGxLOBmgdxXw==}
     dependencies:
@@ -4371,6 +4399,25 @@ packages:
       - react
       - react-dom
       - react-native
+    dev: false
+
+  /@tanstack/react-query/4.19.1_7fu7l4wal7urtkprbqv5gbhurm:
+    resolution: {integrity: sha512-5dvHvmc0vrWI03AJugzvKfirxCyCLe+qawrWFCXdu8t7dklIhJ7D5ZhgTypv7mMtIpdHPcECtCiT/+V74wCn2A==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.19.1
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      react-native: 0.70.0_6r3645qvjf36nqonsy5br2iqpa
+      use-sync-external-store: 1.2.0_react@18.1.0
     dev: false
 
   /@tanstack/react-query/4.3.4_7fu7l4wal7urtkprbqv5gbhurm:
@@ -4388,7 +4435,7 @@ packages:
       '@tanstack/query-core': 4.3.4
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
-      react-native: 0.70.0_6r3645qvjf36nqonsy5br2iqpa
+      react-native: 0.70.0_54md7p3jw3ru3lahxqgw5vptci
       use-sync-external-store: 1.2.0_react@18.1.0
     dev: false
 
@@ -6041,6 +6088,13 @@ packages:
   /cookie/0.4.2:
     resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /copy-anything/3.0.3:
+    resolution: {integrity: sha512-fpW2W/BqEzqPp29QS+MwwfisHCQZtiduTe/m8idFo0xbti9fIZ2WVhAsCv4ggFVH3AgCkVdpoOCtQC6gBrdhjw==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.8
     dev: false
 
   /copy-descriptor/0.1.1:
@@ -8128,6 +8182,11 @@ packages:
     resolution: {integrity: sha512-qctsuLZmIQ0+vSSMfoVvyFe2+GSEvnmZ2ezTup1SBse9+twCCeial6EEi3Nc2KFcf6+qz2FBPnjXsk8xhKSaPQ==}
     dependencies:
       call-bind: 1.0.2
+    dev: false
+
+  /is-what/4.1.8:
+    resolution: {integrity: sha512-yq8gMao5upkPoGEU9LsB2P+K3Kt8Q3fQFCGyNCWOAnJAMzEXVV9drYb0TXr42TTliLLhKIBvulgAXgtLLnwzGA==}
+    engines: {node: '>=12.13'}
     dev: false
 
   /is-windows/1.0.2:
@@ -11145,6 +11204,13 @@ packages:
 
   /sudo-prompt/9.2.1:
     resolution: {integrity: sha512-Mu7R0g4ig9TUuGSxJavny5Rv0egCEtpZRNMrZaYS1vxkiIxGiGUwoezU3LazIQ+KE04hTrTfNPgxU5gzi7F5Pw==}
+
+  /superjson/1.12.0:
+    resolution: {integrity: sha512-B4tefmFqj8KDShHi2br2rz0kBlUJuQHtxMCydEuHvooL+6EscROTNWRfOLMDxW1dS/daK2zZr3C3N9DU+jXATQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      copy-anything: 3.0.3
+    dev: false
 
   /superstruct/0.14.2:
     resolution: {integrity: sha512-nPewA6m9mR3d6k7WkZ8N8zpTWfenFH3q9pA2PkuiZxINr9DKB2+40wEQf0ixn8VaGuJ78AB6iWOtStI+/4FKZQ==}

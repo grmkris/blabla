@@ -2718,7 +2718,6 @@ type _Meta_ {
   deployment: String!
   """If `true`, the subgraph encountered indexing errors at some past block"""
   hasIndexingErrors: Boolean!
-  chainName: String!
   subgraphUrl: String!
 }
 

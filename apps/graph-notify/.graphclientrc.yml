@@ -4,11 +4,9 @@ sources:
     handler:
       graphql:
         endpoint: https://{context.indexer_url:api.thegraph.com/subgraphs/name/airswap/airswap}
-        chainName: { context.chainName }
 
 additionalTypeDefs: |
   extend type _Meta_ {
-    chainName: String!
     subgraphUrl: String!
   }
 
