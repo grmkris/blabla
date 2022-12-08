@@ -10,7 +10,7 @@ function RemoveButton({ rowId }: Props) {
 
   return (
     <button
-      className="btn btn-square btn-sm btn-outline"
+      className="btn btn-error btn-square btn-sm btn-outline"
       onClick={() => removeSubgraph(rowId)}
     >
       <svg

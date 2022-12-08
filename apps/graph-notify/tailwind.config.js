@@ -11,6 +11,14 @@ module.exports = {
     require("daisyui"),
   ],
   mode: "jit",
+  theme: {
+    extend: {
+      colors: {
+        primary: "#4338ca",
+        secondary: "#3b82f6",
+      },
+    },
+  },
   // daisyUI config (optional)
   daisyui: {
     styled: true,

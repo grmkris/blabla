@@ -21,7 +21,7 @@ export const TextField = (props: {
       <input
         placeholder={props.placeholder}
         autoComplete="off"
-        className={clsx("input input-bordered input-primary", [
+        className={clsx("input ", [
           props.error && "input-error",
           props.className,
         ])}

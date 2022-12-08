@@ -18,14 +18,14 @@ export const SubgraphsDashboard = () => {
   };
 
   return (
-    <div className={"flex flex-col w-full pt-14"}>
-      <button
+    <div className={"flex flex-col w-full pt-14 "}>
+      <div
         onClick={onClickHandler}
-        className="w-48 self-end btn btn-info btn-outline flex items-center my-2"
+        className="self-end flex cursor-pointer hover:text-primary items-center px-6 py-2 font-semibold capitalize text-lg text-secondary"
       >
         Share table
         <FiShare2 className="ml-2" />
-      </button>
+      </div>
 
       {inputs.length ? <SubgraphTable inputs={inputs} /> : <NoDataAlert />}
     </div>

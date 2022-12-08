@@ -43,7 +43,9 @@ export function SubgraphTable({ inputs: tableData }: Props) {
   const columns = [
     columnHelper.accessor("name", {
       header: () => <span>Title</span>,
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <span className="text-lg capitalize">{info.getValue()}</span>
+      ),
       enableSorting: true,
       enableGrouping: false,
     }),
@@ -59,9 +61,9 @@ export function SubgraphTable({ inputs: tableData }: Props) {
         // 2 urls buttons inline next to each other
         <div className={"flex flex-row gap-2"}>
           <a href={info.getValue()} target="_blank" rel="noopener noreferrer">
-            <button className="btn btn-sm btn-info btn-outline gap-2 inline-flex">
+            <button className=" text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold">
               <HiExternalLink />
-              graphQL
+              <div>GraphQL</div>
             </button>
           </a>
         </div>
@@ -282,7 +284,7 @@ export const ChainIdToLink = (props: { chainId: number }) => {
       target="_blank"
       rel="noreferrer"
     >
-      <button className="btn btn-sm btn-info btn-outline gap-2 inline-flex">
+      <button className=" text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold">
         <HiExternalLink />
         <div>{chainData?.name}</div>
       </button>
