@@ -25,6 +25,9 @@ import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
 import RemoveButton from "./RemoveButton";
 import { getDataForChain } from "../../utils/functions";
+import { encode } from "js-base64";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 type GraphRow = {
   name: string;
@@ -39,6 +42,11 @@ type Props = {
 };
 
 export function SubgraphTable({ inputs: tableData }: Props) {
+  const copyToClipboardHandler = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast.success(`Subgraph URL copied to clipboard 👏`);
+  };
+
   const columnHelper = createColumnHelper<GraphRow>();
   const columns = [
     columnHelper.accessor("name", {
@@ -57,15 +65,31 @@ export function SubgraphTable({ inputs: tableData }: Props) {
     }),
     columnHelper.accessor("indexer", {
       header: () => <span>GraphQL</span>,
-      cell: (info) => (
+      cell: (cell) => (
         // 2 urls buttons inline next to each other
         <div className={"flex flex-row gap-2"}>
-          <a href={info.getValue()} target="_blank" rel="noopener noreferrer">
+          <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
             <button className=" text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold">
               <HiExternalLink />
               <div>GraphQL</div>
             </button>
           </a>
+          <button
+            className="btn btn-sm text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold"
+            onClick={() => {
+              copyToClipboardHandler(cell.getValue());
+            }}
+          >
+            <HiExternalLink />
+            <div>Copy</div>
+          </button>
+
+          <Link
+            href={`/subgraph/${encode(cell.getValue())}`}
+            className="btn btn-sm flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold"
+          >
+            <div>Playground</div>
+          </Link>
         </div>
       ),
       enableGrouping: false,

@@ -46,7 +46,9 @@
     "use-immer": "^0.7.0",
     "wagmi": "^0.6.6",
     "zod": "^3.19.1",
-    "zustand": "^4.1.1"
+    "zustand": "^4.1.1",
+    "graphiql": "^2.2.0",
+    "@graphiql/toolkit": "^0.8.0"
   },
   "devDependencies": {
     "@graphprotocol/client-cli": "^2.2.15",
