@@ -23,8 +23,6 @@ export const CreateSubgraphForm = () => {
     reset();
   };
 
-  console.log("errors", errors);
-  console.log("getValues", getValues());
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)} className="form-control w-full">
@@ -66,6 +64,15 @@ export const CreateSubgraphForm = () => {
                       borderRadius: "0.5em",
                     }),
                   }}
+                  theme={(theme) => ({
+                    ...theme,
+                    borderRadius: 0,
+                    colors: {
+                      ...theme.colors,
+                      primary25: "#818cf8",
+                      primary: "#818cf8",
+                    },
+                  })}
                 />
               )}
             />
@@ -79,7 +86,7 @@ export const CreateSubgraphForm = () => {
           error={errors.name && "This field is required"}
         />
 
-        <input type="submit" className={"mt-4 btn"} />
+        <input type="submit" className={"mt-4 btn bg-primary"} />
       </form>
     </div>
   );

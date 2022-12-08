@@ -18,12 +18,12 @@ const Home: NextPage = () => {
           <div className="lg:w-2/3 flex flex-col items-center justify-center">
             <h1 className="text-5xl md:text-6xl font-bold">
               Subgraph{" "}
-              <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-blue-800 to-gray-900">
+              <a className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                 Observer
               </a>
               🧙‍
             </h1>
-            <p className="mt-5 text-2xl">
+            <p className="mt-5 text-2xl text-slate-500">
               Realtime monitoring of subgraph health
             </p>
           </div>
