@@ -11,10 +11,10 @@ const SubgraphExplorer = () => {
   const url = decode(id as string);
   const subgraphStatus = useGetSubgraphStatus(url);
 
-  console.log("SubgraphExplorer", subgraphStatus.data, url);
   const fetcher = createGraphiQLFetcher({
     url: url,
   });
+
   return (
     <>
       {subgraphStatus.data && (
