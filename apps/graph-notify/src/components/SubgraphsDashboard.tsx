@@ -21,7 +21,7 @@ export const SubgraphsDashboard = () => {
     <div className={"flex flex-col w-full pt-14 "}>
       <div
         onClick={onClickHandler}
-        className="self-end flex cursor-pointer hover:text-primary items-center px-6 py-2 font-semibold capitalize text-lg text-secondary"
+        className="self-end flex cursor-pointer hover:text-primary items-center py-2 font-semibold capitalize text-lg text-secondary"
       >
         Share table
         <FiShare2 className="ml-2" />

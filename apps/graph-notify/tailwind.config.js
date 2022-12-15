@@ -11,18 +11,19 @@ module.exports = {
     require("daisyui"),
   ],
   mode: "jit",
-  theme: {
-    extend: {
-      colors: {
-        primary: "#4338ca",
-        secondary: "#3b82f6",
-      },
-    },
-  },
+  theme: {},
   // daisyUI config (optional)
   daisyui: {
     styled: true,
-    themes: "light",
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/colors/themes")["[data-theme=light]"],
+          primary: "#4338ca",
+          secondary: "#3b82f6",
+        },
+      },
+    ],
     base: true,
     utils: true,
     logs: true,
