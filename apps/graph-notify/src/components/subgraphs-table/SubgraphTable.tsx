@@ -20,6 +20,7 @@ import {
   HiExternalLink,
   HiChevronUp,
   HiChevronDown,
+  HiOutlineClipboard,
 } from "react-icons/hi";
 import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
@@ -33,7 +34,8 @@ type GraphRow = {
   name: string;
   indexer: string;
   chainId: number;
-  status?: any;
+  status?: string;
+  playground?: string;
   removeButton?: any;
   subRows?: GraphRow[];
 };
@@ -66,31 +68,26 @@ export function SubgraphTable({ inputs: tableData }: Props) {
     columnHelper.accessor("indexer", {
       header: () => <span>GraphQL</span>,
       cell: (cell) => (
-        // 2 urls buttons inline next to each other
-        <div className={"flex flex-row gap-2"}>
+        <div className={"flex items-center"}>
           <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
-            <button className=" text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold">
+            <button className="table_link">
               <HiExternalLink />
               <div>GraphQL</div>
             </button>
           </a>
-          <button
-            className="btn btn-sm text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold"
-            onClick={() => {
-              copyToClipboardHandler(cell.getValue());
-            }}
-          >
-            <HiExternalLink />
-            <div>Copy</div>
-          </button>
-
-          <Link
-            href={`/subgraph/${encode(cell.getValue())}`}
-            className="btn btn-sm flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold"
-          >
-            <div>Playground</div>
-          </Link>
         </div>
+      ),
+      enableGrouping: false,
+    }),
+    columnHelper.accessor("playground", {
+      header: () => "Playground",
+      cell: (cell) => (
+        <Link
+          href={`/subgraph/${encode(cell.row.getValue("indexer"))}`}
+          className="btn btn-sm btn-outline btn-secondary"
+        >
+          <div>Playground</div>
+        </Link>
       ),
       enableGrouping: false,
     }),
@@ -106,7 +103,20 @@ export function SubgraphTable({ inputs: tableData }: Props) {
     }),
     columnHelper.accessor("removeButton", {
       header: () => "Remove",
-      cell: (info) => <RemoveButton rowId={info.row.index} />,
+      cell: (info) => (
+        <div className="flex space-x-5">
+          <button
+            className="table_link btn btn-sm btn-ghost btn-primary font-bold"
+            onClick={() => {
+              copyToClipboardHandler(info.row.getValue("indexer"));
+            }}
+          >
+            <HiOutlineClipboard />
+            <div>Copy</div>
+          </button>
+          <RemoveButton rowId={info.row.index} />
+        </div>
+      ),
       enableGrouping: false,
     }),
   ];
@@ -308,7 +318,7 @@ export const ChainIdToLink = (props: { chainId: number }) => {
       target="_blank"
       rel="noreferrer"
     >
-      <button className=" text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold">
+      <button className="table_link">
         <HiExternalLink />
         <div>{chainData?.name}</div>
       </button>

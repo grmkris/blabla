@@ -3,7 +3,6 @@ import Head from "next/head";
 import { CreateSubgraphForm } from "../components/CreateSubgraphForm";
 import { SubgraphsDashboard } from "../components/SubgraphsDashboard";
 import NonSSRWrapper from "../components/common/NonSSRWrapper";
-import { useGraphNotifyStore } from "../store";
 
 const Home: NextPage = () => {
   return (

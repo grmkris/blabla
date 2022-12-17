@@ -33,9 +33,7 @@ const LatestBlockLabel = ({ chainId }: { chainId: number }) => {
   return (
     <>
       {latestBlock.data ? (
-        <div
-          className={`badge border-primary bg-primary/90 text-white rounded px-3 py-4  font-semibold`}
-        >
+        <div className={`badge_primary`}>
           Latest block: {BigNumber.from(latestBlock?.data).toString()}
         </div>
       ) : (
@@ -58,9 +56,7 @@ const SubgraphBlockLabel = ({
   return (
     <>
       {data?._meta?.block.number ? (
-        <div
-          className={`badge border-primary bg-primary/90 text-white rounded px-3 py-4  font-semibold`}
-        >
+        <div className={`badge_primary`}>
           Subgraph: {data?._meta?.block.number}
         </div>
       ) : (
@@ -92,7 +88,7 @@ const BlocksBehindLabel = ({
     <>
       {(blockBehind !== undefined && (
         <div
-          className={`badge rounded px-3 py-4 text-white font-semibold ${clsx(
+          className={`badge rounded px-3 py-4 text-white w-48 font-semibold ${clsx(
             { "badge-success": blockBehind < 10 },
             { "badge-warning": blockBehind > 10 && blockBehind < 100 },
             { "badge-error": blockBehind > 100 }
