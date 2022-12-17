@@ -1,8 +1,0 @@
-query getSubgraphStatus {
-    _meta {
-        block {
-            hash
-            number
-        }
-    }
-}

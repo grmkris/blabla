@@ -1,9 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "globalDependencies": [
-    "tsconfig.json",
-    "$NEXTAUTH_URL",
-    "$NEXTAUTH_SECRET",
     "$VERCEL_URL"
   ],
   "pipeline": {
@@ -13,18 +10,12 @@
       ],
       "outputs": [".next/**, build/**"]
     },
-    "graph-notify#build": {
+    "subgraph-observer#build": {
       "dependsOn": [
         "^build",
-        "$NEXT_PUBLIC_ALCHEMY_ID",
-        "$NEXTAUTH_URL",
-        "$NEXTAUTH_SECRET",
         "$VERCEL_URL"
       ],
       "env": [
-        "NEXT_PUBLIC_ALCHEMY_ID",
-        "NEXTAUTH_URL",
-        "NEXTAUTH_SECRET",
         "VERCEL_URL"
       ],
       "outputs": [".next/**, build/**"]
