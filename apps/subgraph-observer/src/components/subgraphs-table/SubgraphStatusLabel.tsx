@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function SubgraphStatusLabel({ chainId, indexer }: Props) {
-  const subgraphStatus = useGetSubgraphStatus(indexer);
+  const subgraphStatus = useGetSubgraphStatus(new URL(indexer));
   const latestBlock = useGetNodeLatestBlock(chainId);
 
   if (subgraphStatus.isLoading || latestBlock.isLoading)
@@ -49,7 +49,7 @@ const SubgraphBlockLabel = ({
   chainId: number;
   indexer: string;
 }) => {
-  const { data } = useGetSubgraphStatus(indexer);
+  const { data } = useGetSubgraphStatus(new URL(indexer));
 
   return (
     <>
@@ -73,7 +73,7 @@ const BlocksBehindLabel = ({
   chainId: number;
   indexer: string;
 }) => {
-  const { data } = useGetSubgraphStatus(indexer);
+  const { data } = useGetSubgraphStatus(new URL(indexer));
 
   const latestBlock = useGetNodeLatestBlock(chainId);
 

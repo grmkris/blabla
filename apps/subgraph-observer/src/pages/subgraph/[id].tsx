@@ -12,7 +12,7 @@ import { base64Decode } from "../../utils/functions";
 const SubgraphExplorer = () => {
   const { id } = useRouter().query;
   const url = id && base64Decode(id as string);
-  const subgraphStatus = useGetSubgraphStatus(url);
+  const subgraphStatus = useGetSubgraphStatus(url ? new URL(url as string) : undefined);
   const fetcher = useQuery(['createGraphiQLFetcher', url], () => {
     if (!url) {
       throw new Error("No url");

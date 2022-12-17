@@ -1,9 +1,8 @@
-import { decode } from "js-base64";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { useGraphNotifyStore } from "../../../store";
-import { SubgraphFormSchema } from "../../../types/types";
 import toast from "react-hot-toast";
+import { base64DecodeToSubgraphFormData } from "../../../utils/functions";
 
 function SharePage() {
   const router = useRouter();
@@ -13,10 +12,7 @@ function SharePage() {
     const hash = router.asPath.split("/")[2];
     if (hash) {
       try {
-        const arrays = JSON.parse(decode(hash));
-        const mappedSubgraphForms = arrays.map((a: unknown) =>
-          SubgraphFormSchema.parse(a)
-        );
+        const mappedSubgraphForms = base64DecodeToSubgraphFormData(hash);
         setSubgraphs(mappedSubgraphForms);
         toast.success("Subgraphs imported successfully", {
           position: "bottom-center"

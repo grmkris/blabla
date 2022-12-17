@@ -24,17 +24,6 @@ export const CreateSubgraphForm = () => {
     reset();
   };
 
-  const SubgraphStatusLabel = (props: { url: string }) => {
-    const subgraphStatus = useGetSubgraphStatus(props.url);
-    console.log("SubgraphStatusLabel", subgraphStatus.data);
-
-    if (subgraphStatus.isFetching && !subgraphStatus.data)
-      return <span className={"inline"}>Subgraph url ⏳</span>;
-    if (subgraphStatus.error) return <div>Subgraph url ❌</div>;
-    if (subgraphStatus.data) return <div>Subgraph url ✅</div>;
-    return <div>Subgraph url</div>;
-  };
-
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)} className="form-control w-full">
@@ -104,4 +93,14 @@ export const CreateSubgraphForm = () => {
       </form>
     </div>
   );
+};
+
+const SubgraphStatusLabel = (props: { url?: string }) => {
+  const subgraphStatus = useGetSubgraphStatus(props.url ? new URL(props.url) : undefined);
+  console.log("SubgraphStatusLabel", subgraphStatus.data);
+  if (subgraphStatus.isFetching && !subgraphStatus.data)
+    return <span className={"inline"}>Subgraph url ⏳</span>;
+  if (subgraphStatus.error) return <div>Subgraph url ❌</div>;
+  if (subgraphStatus.data) return <div>Subgraph url ✅</div>;
+  return <div>Subgraph url</div>;
 };
