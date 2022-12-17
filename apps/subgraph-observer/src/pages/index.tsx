@@ -9,7 +9,7 @@ const Home: NextPage = () => {
     <NonSSRWrapper>
       <Head>
         <title>Observer</title>
-        <link rel="icon" href="/apps/graph-notify/public/favicon.ico" />
+        <link rel="icon" href="/apps/subgraph-observer/public/favicon.ico" />
       </Head>
 
       <div className="flex flex-col space-y-5 items-center justify-center w-full">
