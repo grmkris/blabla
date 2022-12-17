@@ -25,8 +25,7 @@ import {
 import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
 import RemoveButton from "./RemoveButton";
-import { getDataForChain } from "../../utils/functions";
-import { encode } from "js-base64";
+import { base64Encode, getDataForChain } from "../../utils/functions";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
@@ -36,7 +35,7 @@ type GraphRow = {
   chainId: number;
   status?: string;
   playground?: string;
-  removeButton?: any;
+  manage?: string;
   subRows?: GraphRow[];
 };
 type Props = {
@@ -83,7 +82,7 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       header: () => "Playground",
       cell: (cell) => (
         <Link
-          href={`/subgraph/${encode(cell.row.getValue("indexer"))}`}
+          href={`/subgraph/${base64Encode(cell.row.getValue("indexer"))}`}
           className="btn btn-sm btn-outline btn-secondary"
         >
           <div>Playground</div>
@@ -101,10 +100,10 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       ),
       enableGrouping: false,
     }),
-    columnHelper.accessor("removeButton", {
-      header: () => "Remove",
+    columnHelper.accessor("manage", {
+      header: () => "",
       cell: (info) => (
-        <div className="flex space-x-5">
+        <div className={'flex flex-row'}>
           <button
             className="table_link btn btn-sm btn-ghost btn-primary font-bold"
             onClick={() => {
@@ -112,13 +111,13 @@ export function SubgraphTable({ inputs: tableData }: Props) {
             }}
           >
             <HiOutlineClipboard />
-            <div>Copy</div>
+            <div>Copy URL</div>
           </button>
           <RemoveButton rowId={info.row.index} />
         </div>
       ),
       enableGrouping: false,
-    }),
+    })
   ];
 
   const [grouping, setGrouping] = useState<GroupingState>([]);

@@ -32,10 +32,10 @@ const LatestBlockLabel = ({ chainId }: { chainId: number }) => {
     <>
       {latestBlock.data ? (
         <div className={`badge_primary`}>
-          Latest block: {latestBlock?.data.toString()}
+          Latest block: {parseInt(latestBlock?.data.toString(), 16)}
         </div>
       ) : (
-        <div className="badge rounded px-3 py-4  font-semibold badge-error gap-2">
+        <div className="badge rounded px-3 py-4 font-semibold badge-error gap-2">
           Latest block: Not available
         </div>
       )}

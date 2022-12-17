@@ -1,5 +1,4 @@
 import z from "zod";
-import { Base64 } from "js-base64";
 
 export const SubgraphFormSchema = z.object({
   chainId: z.number({
@@ -54,10 +53,4 @@ export type TableDataRow = {
   latestBlock: number;
   blocksBehind: number;
   subRows?: TableDataRow[];
-};
-
-export const base64Decode = (str: string): SubgraphForm[] => {
-  const data = Base64.decode(str);
-  const arrays = JSON.parse(data);
-  return arrays.map((a: unknown) => SubgraphFormSchema.parse(a));
 };

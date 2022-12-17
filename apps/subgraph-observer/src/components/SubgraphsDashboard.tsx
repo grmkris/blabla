@@ -1,9 +1,9 @@
 import { useGraphNotifyStore } from "../store";
 import NoDataAlert from "./subgraphs-table/NoDataAlert";
 import { SubgraphTable } from "./subgraphs-table/SubgraphTable";
-import { encode } from "js-base64";
 import toast from "react-hot-toast";
 import { FiShare2 } from "react-icons/fi";
+import { base64Encode } from "../utils/functions";
 
 export const SubgraphsDashboard = () => {
   const { inputs } = useGraphNotifyStore((state) => ({
@@ -11,9 +11,8 @@ export const SubgraphsDashboard = () => {
   }));
 
   const onClickHandler = () => {
-    const hash = encode(JSON.stringify(inputs));
+    const hash = base64Encode(JSON.stringify(inputs));
     navigator.clipboard.writeText(`${window.location.href}share/${hash}`);
-
     toast.success(`URL copied to clipboard 👏`);
   };
 

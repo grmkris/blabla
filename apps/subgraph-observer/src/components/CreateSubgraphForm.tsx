@@ -26,10 +26,10 @@ export const CreateSubgraphForm = () => {
 
   const SubgraphStatusLabel = (props: { url: string }) => {
     const subgraphStatus = useGetSubgraphStatus(props.url);
-    console.log("SubgraphStatusLabel", subgraphStatus);
+    console.log("SubgraphStatusLabel", subgraphStatus.data);
 
     if (subgraphStatus.isFetching && !subgraphStatus.data)
-      return <span className={"ixnline"}>Subgraph url ⏳</span>;
+      return <span className={"inline"}>Subgraph url ⏳</span>;
     if (subgraphStatus.error) return <div>Subgraph url ❌</div>;
     if (subgraphStatus.data) return <div>Subgraph url ✅</div>;
     return <div>Subgraph url</div>;

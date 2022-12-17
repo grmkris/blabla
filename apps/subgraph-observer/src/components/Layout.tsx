@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { FaTwitter } from "react-icons/fa";
+import { useRouter } from "next/router";
 
 function Footer() {
   return (
@@ -25,6 +26,16 @@ function SocialLinks() {
 }
 
 export const Layout = (props: { children: ReactNode }) => {
+  const router = useRouter();
+  console.log(router.pathname);
+
+  if (router.pathname.includes("/subgraph/")) {
+    return (
+      <div className={"max-w-full max-h-screen"}>
+            {props.children}
+      </div>
+    );
+  }
   return (
     <div className={"max-w-full"}>
       <div className="min-h-screen">
@@ -51,7 +62,7 @@ export const LensIcons = (props: {
       xmlns="http://www.w3.org/2000/svg"
       className="absolute"
     >
-      <g clip-path="url(#clip0_876_1616)">
+      <g clipPath="url(#clip0_876_1616)">
         <path
           d="M0.642578 78.8548V61.9927H2.66596V77.0243H11.4691V78.8548H0.642578Z"
           fill="#00501E"

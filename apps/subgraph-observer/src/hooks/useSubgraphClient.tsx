@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GraphQLClient } from "graphql-request";
 import { getSubgraphMetadataSdk } from "subgraph-client/src";
 
-export const useSubgraphClient = (indexer?: string) => {
+export const useSubgraphClient = (indexer?: URL) => {
 
   return useQuery(
     ["useSubgraphClient", { indexer }],
@@ -10,16 +10,10 @@ export const useSubgraphClient = (indexer?: string) => {
         if (!indexer) {
           throw new Error("No indexer");
         }
-        if (indexer.startsWith("http://")) {
-          indexer = indexer?.replace("http://", "");
-        }
-        if (indexer.startsWith("https://")) {
-          indexer = indexer?.replace("https://", "");
-        }
-        const subgraphClient = new GraphQLClient(indexer);
+        const subgraphClient = new GraphQLClient(indexer.toString());
       return getSubgraphMetadataSdk(subgraphClient);
       }, {
-        enabled: !!indexer && indexer.length > 5,
+        enabled: !!indexer
       }
   );
 }

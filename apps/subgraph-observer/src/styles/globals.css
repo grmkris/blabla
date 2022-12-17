@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input:focus {
+    @apply outline-indigo-400 !important;
+}
+
+.badge_primary {
+    @apply badge border-primary bg-primary/90 text-white rounded-lg px-3 py-4 font-semibold;
+}
+
+.table_link {
+    @apply text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold;
+}
