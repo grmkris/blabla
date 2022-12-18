@@ -22,7 +22,8 @@
     "@preconstruct/cli": "^2.2.2",
     "copyfiles": "^2.4.1",
     "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "latest",
+    "turbo-ignore": "latest"
   },
   "engines": {
     "node": ">=14.0.0"
