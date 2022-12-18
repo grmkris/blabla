@@ -8,11 +8,19 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { base64Decode } from "../../utils/functions";
+import { useMemo } from "react";
 
 const SubgraphExplorer = () => {
   const { id } = useRouter().query;
   const url = id && base64Decode(id as string);
-  const subgraphStatus = useGetSubgraphStatus(url ? new URL(url as string) : undefined);
+  const subgraphUrl = useMemo(() => {
+    try {
+      return url ? new URL(url as string) : undefined
+    } catch (error) {
+      return undefined
+    }
+  }, [url]);
+  const subgraphStatus = useGetSubgraphStatus();
   const fetcher = useQuery(['createGraphiQLFetcher', url], () => {
     if (!url) {
       throw new Error("No url");
@@ -21,7 +29,7 @@ const SubgraphExplorer = () => {
   }, {
     enabled: !!url,
   })
-  if (subgraphStatus.isLoading || !url || !fetcher.data) {
+  if (subgraphStatus.isLoading || !url || !fetcher.data || !subgraphUrl) {
     return <div>Loading...</div>;
   }
   return (
@@ -37,7 +45,7 @@ const SubgraphExplorer = () => {
           {subgraphStatus.data && (
             <div className="flex flex-col">
               <div className="flex flex-row gap-2">
-                <SubgraphStatusLabel chainId={80001} indexer={url} />
+                <SubgraphStatusLabel chainId={80001} indexer={subgraphUrl} />
               </div>
             </div>
           )}

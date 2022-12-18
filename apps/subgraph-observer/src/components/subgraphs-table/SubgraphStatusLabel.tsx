@@ -4,11 +4,11 @@ import { clsx } from "clsx";
 
 type Props = {
   chainId: number;
-  indexer: string;
+  indexer: URL;
 };
 
 export function SubgraphStatusLabel({ chainId, indexer }: Props) {
-  const subgraphStatus = useGetSubgraphStatus(new URL(indexer));
+  const subgraphStatus = useGetSubgraphStatus(indexer);
   const latestBlock = useGetNodeLatestBlock(chainId);
 
   if (subgraphStatus.isLoading || latestBlock.isLoading)
@@ -47,9 +47,9 @@ const SubgraphBlockLabel = ({
   indexer,
 }: {
   chainId: number;
-  indexer: string;
+  indexer: URL;
 }) => {
-  const { data } = useGetSubgraphStatus(new URL(indexer));
+  const { data } = useGetSubgraphStatus(indexer);
 
   return (
     <>
@@ -71,9 +71,9 @@ const BlocksBehindLabel = ({
   indexer,
 }: {
   chainId: number;
-  indexer: string;
+  indexer: URL;
 }) => {
-  const { data } = useGetSubgraphStatus(new URL(indexer));
+  const { data } = useGetSubgraphStatus(indexer);
 
   const latestBlock = useGetNodeLatestBlock(chainId);
 
