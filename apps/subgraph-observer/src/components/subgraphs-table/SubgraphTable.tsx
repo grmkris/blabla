@@ -21,7 +21,6 @@ import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
 import RemoveButton from "./RemoveButton";
 import { base64Encode, getDataForChain } from "../../utils/functions";
-import toast from "react-hot-toast";
 import Link from "next/link";
 import { copyToClipboard } from "../SubgraphsDashboard";
 
