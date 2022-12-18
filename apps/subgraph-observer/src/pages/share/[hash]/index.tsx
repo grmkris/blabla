@@ -15,6 +15,7 @@ function SharePage() {
       try {
         const mappedSubgraphForms = base64DecodeToSubgraphFormData(hash);
         console.log(mappedSubgraphForms);
+        console.log('updateSubgraphs', mappedSubgraphForms);
         updateSubgraphs(mappedSubgraphForms);
         toast.success("Subgraphs imported successfully", {
           position: "bottom-center"
