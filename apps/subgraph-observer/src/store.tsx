@@ -22,10 +22,8 @@ const storage: StateStorage = {
 
 export type IGraphNotifyStoreStore = {
   subgraphs: SubgraphForm[];
-  setSubgraphs: (inputs: SubgraphForm[]) => void;
   addSubgraph: (input: SubgraphForm) => void;
   removeSubgraph: (index: number) => void;
-  // updateSubgraphs should not add duplicates and should update existing subgraphs if they exist
   updateSubgraphs: (inputs: SubgraphForm[]) => void;
 };
 
@@ -35,7 +33,6 @@ export const useGraphNotifyStore = create<IGraphNotifyStoreStore>()(
       persist(
         (set) => ({
           subgraphs: [],
-          setSubgraphs: (subgraphs) => set({ subgraphs }),
           addSubgraph: (subgraph) =>
             set((state) => {
               state.subgraphs.push(subgraph);
