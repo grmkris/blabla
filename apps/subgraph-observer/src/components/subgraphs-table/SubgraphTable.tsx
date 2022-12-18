@@ -1,7 +1,6 @@
 import {
   GroupingState,
   useReactTable,
-  getPaginationRowModel,
   getFilteredRowModel,
   getCoreRowModel,
   getGroupedRowModel,
@@ -13,10 +12,6 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import {
-  HiChevronLeft,
-  HiChevronRight,
-  HiChevronDoubleRight,
-  HiChevronDoubleLeft,
   HiExternalLink,
   HiChevronUp,
   HiChevronDown,
@@ -136,7 +131,6 @@ export function SubgraphTable({ inputs: tableData }: Props) {
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     debugTable: true,
   });
@@ -253,55 +247,6 @@ export function SubgraphTable({ inputs: tableData }: Props) {
           })}
         </tbody>
       </table>
-      {
-        // Paginationation shown if there are more than 10 rows
-        table.getRowModel().rows.length > 10 && (
-          <>
-            <div className="h-2" />
-            <div className="flex justify-between items-center gap-2">
-              <div className="flex space-x-4">
-                <button
-                  className="border rounded p-1 disabled:text-slate-500"
-                  onClick={() => table.setPageIndex(0)}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  <HiChevronDoubleLeft />
-                </button>
-                <button
-                  className="border rounded p-1 disabled:text-slate-500"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  <HiChevronLeft />
-                </button>
-                <button
-                  className="border rounded p-1 disabled:text-slate-500"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  <HiChevronRight />
-                </button>
-                <button
-                  className="border rounded p-1 disabled:text-slate-500"
-                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                  disabled={!table.getCanNextPage()}
-                >
-                  <HiChevronDoubleRight />
-                </button>
-              </div>
-              <div>
-                <span className="flex items-center gap-1">
-                  <div>Page</div>
-                  <strong>
-                    {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
-                  </strong>
-                </span>
-              </div>
-            </div>
-          </>
-        )
-      }
     </div>
   );
 }
