@@ -6,14 +6,16 @@ import { base64DecodeToSubgraphFormData } from "../../../utils/functions";
 
 function SharePage() {
   const router = useRouter();
-  const { setSubgraphs } = useGraphNotifyStore();
+  const { hash } = router.query;
+  const { updateSubgraphs } = useGraphNotifyStore();
 
   useEffect(() => {
-    const hash = router.asPath.split("/")[2];
-    if (hash) {
+    console.log('hash', hash);
+    if (hash && typeof hash === 'string') {
       try {
         const mappedSubgraphForms = base64DecodeToSubgraphFormData(hash);
-        setSubgraphs(mappedSubgraphForms);
+        console.log(mappedSubgraphForms);
+        updateSubgraphs(mappedSubgraphForms);
         toast.success("Subgraphs imported successfully", {
           position: "bottom-center"
         });
@@ -22,9 +24,14 @@ function SharePage() {
           position: "bottom-center"
         });
       }
+      router.push("/");
+    } else if (hash) {
+      toast.error("Error importing subgraphs", {
+        position: "bottom-center"
+      });
+      router.push("/");
     }
-    router.push("/");
-  }, []);
+  }, [hash]);
 
   return (
     <div className="w-full flex justify-center items-center">

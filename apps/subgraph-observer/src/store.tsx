@@ -25,6 +25,8 @@ export type IGraphNotifyStoreStore = {
   setSubgraphs: (inputs: SubgraphForm[]) => void;
   addSubgraph: (input: SubgraphForm) => void;
   removeSubgraph: (index: number) => void;
+  // updateSubgraphs should not add duplicates and should update existing subgraphs if they exist
+  updateSubgraphs: (inputs: SubgraphForm[]) => void;
 };
 
 export const useGraphNotifyStore = create<IGraphNotifyStoreStore>()(
@@ -41,6 +43,20 @@ export const useGraphNotifyStore = create<IGraphNotifyStoreStore>()(
           removeSubgraph: (index) =>
             set((state) => {
               state.subgraphs.splice(index, 1);
+            }),
+          // updateSubgraphs should not add duplicates and should update existing subgraphs if they exist
+          updateSubgraphs: (subgraphs) =>
+            set((state) => {
+              for (const subgraph of subgraphs) {
+                const index = state.subgraphs.findIndex(
+                  (s) => s.indexer === subgraph.indexer
+                );
+                if (index === -1) {
+                  state.subgraphs.push(subgraph);
+                } else {
+                  state.subgraphs[index] = subgraph;
+                }
+              }
             }),
         }),
         {
