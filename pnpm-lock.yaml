@@ -44,6 +44,7 @@ importers:
       '@types/react-dom': ^18.0.9
       '@typescript-eslint/eslint-plugin': ^5.46.1
       '@typescript-eslint/parser': ^5.46.1
+      '@vercel/analytics': ^0.1.6
       autoprefixer: ^10.4.10
       clsx: ^1.2.1
       daisyui: ^2.27.0
@@ -83,6 +84,7 @@ importers:
       '@trpc/next': 10.5.0_mn5xuvrpncffxfw5isuprumd5e
       '@trpc/react-query': 10.5.0_i3ykvnz4igoclzsim3lzrnoi4y
       '@trpc/server': 10.5.0
+      '@vercel/analytics': 0.1.6_react@18.2.0
       clsx: 1.2.1
       daisyui: 2.27.0_r4gnkvssmvyxmi2wmat5xbx36a
       graphiql: 2.2.0_urxs7sr7xajz37plhsqhtv3pcm
@@ -3313,6 +3315,14 @@ packages:
       '@typescript-eslint/types': 5.46.1
       eslint-visitor-keys: 3.3.0
     dev: true
+
+  /@vercel/analytics/0.1.6_react@18.2.0:
+    resolution: {integrity: sha512-zNd5pj3iDvq8IMBQHa1YRcIteiw6ZiPB8AsONHd8ieFXlNpLqhXfIYnf4WvTfZ7S1NSJ++mIM14aJnNac/VMXQ==}
+    peerDependencies:
+      react: ^16.8||^17||^18
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /@whatwg-node/fetch/0.5.3:
     resolution: {integrity: sha512-cuAKL3Z7lrJJuUrfF1wxkQTb24Qd1QO/lsjJpM5ZSZZzUMms5TPnbGeGUKWA3hVKNHh30lVfr2MyRCT5Jfkucw==}

@@ -38,7 +38,8 @@
     "react-select": "^5.7.0",
     "subgraph-client": "workspace:*",
     "graphql": "^16.6.0",
-    "graphql-request": "^5.0.0"
+    "graphql-request": "^5.0.0",
+    "@vercel/analytics": "^0.1.6"
   },
   "devDependencies": {
     "@preconstruct/next": "^4.0.0",
