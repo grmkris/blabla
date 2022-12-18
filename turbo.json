@@ -1,26 +1,24 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
-  "globalDependencies": [
-    "$VERCEL_URL"
-  ],
+  "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [".next/**, build/**"]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**"]
     },
-    "subgraph-observer#build": {
-      "dependsOn": [
-        "^build",
-        "$VERCEL_URL"
-      ],
-      "env": [
-        "VERCEL_URL"
-      ],
-      "outputs": [".next/**, build/**"]
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
     },
     "dev": {
+      "cache": false
+    },
+    "start": {
+      "cache": false
+    },
+    "clean": {
       "cache": false
     }
   }
