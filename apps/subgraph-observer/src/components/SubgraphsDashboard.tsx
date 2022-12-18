@@ -10,16 +10,10 @@ export const SubgraphsDashboard = () => {
     inputs: state.subgraphs,
   }));
 
-  const onClickHandler = () => {
-    const hash = base64Encode(JSON.stringify(inputs));
-    navigator.clipboard.writeText(`${window.location.href}share/${hash}`);
-    toast.success(`URL copied to clipboard 👏`);
-  };
-
   return (
     <div className={"flex flex-col w-full pt-14 "}>
       <div
-        onClick={onClickHandler}
+        onClick={() => copyToClipboard(inputs)}
         className="self-end flex cursor-pointer hover:text-primary items-center py-2 font-semibold capitalize text-lg text-secondary"
       >
         Share table
@@ -29,4 +23,15 @@ export const SubgraphsDashboard = () => {
       {inputs.length ? <SubgraphTable inputs={inputs} /> : <NoDataAlert />}
     </div>
   );
+};
+
+
+export const copyToClipboard = async (inputs: unknown) => {
+  try {
+    const hash = base64Encode(JSON.stringify(inputs));
+    await navigator.clipboard.writeText(`${window.location.href}share/${hash}`);
+    toast.success(`URL copied to clipboard 👏`);
+  } catch (e) {
+    toast.error(`Error copying URL to clipboard`);
+  }
 };

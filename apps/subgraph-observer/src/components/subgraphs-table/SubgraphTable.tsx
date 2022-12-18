@@ -23,6 +23,7 @@ import RemoveButton from "./RemoveButton";
 import { base64Encode, getDataForChain } from "../../utils/functions";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { copyToClipboard } from "../SubgraphsDashboard";
 
 type GraphRow = {
   name: string;
@@ -38,11 +39,6 @@ type Props = {
 };
 
 export function SubgraphTable({ inputs: tableData }: Props) {
-  const copyToClipboardHandler = (url: string) => {
-    navigator.clipboard.writeText(url);
-    toast.success(`Subgraph URL copied to clipboard 👏`);
-  };
-
   const columnHelper = createColumnHelper<GraphRow>();
   const columns = [
     columnHelper.accessor("name", {
@@ -101,8 +97,8 @@ export function SubgraphTable({ inputs: tableData }: Props) {
         <div className={'flex flex-row'}>
           <button
             className="table_link btn btn-sm btn-ghost btn-primary font-bold"
-            onClick={() => {
-              copyToClipboardHandler(info.row.getValue("indexer"));
+            onClick={async () => {
+              await copyToClipboard(info.row.getValue("indexer"));
             }}
           >
             <HiOutlineClipboard />

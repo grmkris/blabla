@@ -24,13 +24,12 @@ function SharePage() {
           position: "bottom-center"
         });
       }
-      router.push("/");
     } else if (hash) {
       toast.error("Error importing subgraphs", {
         position: "bottom-center"
       });
-      router.push("/");
     }
+    router.push('/');
   }, [hash]);
 
   return (
