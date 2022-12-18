@@ -1,12 +1,12 @@
 import React from "react";
-import { useGraphNotifyStore } from "../../store";
+import { useAppStore } from "../../store";
 
 type Props = {
   rowId: number;
 };
 
 function RemoveButton({ rowId }: Props) {
-  const { removeSubgraph } = useGraphNotifyStore();
+  const { removeSubgraph } = useAppStore();
 
   return (
     <button

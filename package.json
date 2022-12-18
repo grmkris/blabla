@@ -22,6 +22,7 @@
     "@preconstruct/cli": "^2.2.2",
     "copyfiles": "^2.4.1",
     "prettier": "latest",
+    "eslint": "^8.30.0",
     "turbo": "latest",
     "turbo-ignore": "latest"
   },

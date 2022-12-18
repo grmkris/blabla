@@ -1,4 +1,4 @@
-import { useGraphNotifyStore } from "../store";
+import { useAppStore } from "../store";
 import NoDataAlert from "./subgraphs-table/NoDataAlert";
 import { SubgraphTable } from "./subgraphs-table/SubgraphTable";
 import toast from "react-hot-toast";
@@ -6,7 +6,7 @@ import { FiShare2 } from "react-icons/fi";
 import { base64Encode } from "../utils/functions";
 
 export const SubgraphsDashboard = () => {
-  const { inputs } = useGraphNotifyStore((state) => ({
+  const { inputs } = useAppStore((state) => ({
     inputs: state.subgraphs,
   }));
 

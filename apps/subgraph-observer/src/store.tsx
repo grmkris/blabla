@@ -1,8 +1,9 @@
 import create from "zustand";
-import { devtools, persist, StateStorage } from "zustand/middleware";
+import type { StateStorage } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { del, get, set } from "idb-keyval";
-import { SubgraphForm } from "./types/types";
+import type { SubgraphForm } from "./types/types";
 
 // Custom storage object
 const storage: StateStorage = {
@@ -27,7 +28,7 @@ export type IGraphNotifyStoreStore = {
   updateSubgraphs: (inputs: SubgraphForm[]) => void;
 };
 
-export const useGraphNotifyStore = create<IGraphNotifyStoreStore>()(
+export const useAppStore = create<IGraphNotifyStoreStore>()(
   immer(
     devtools(
       persist(

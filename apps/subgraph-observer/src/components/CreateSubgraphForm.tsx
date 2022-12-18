@@ -1,13 +1,14 @@
 import { useGetChainData } from "../hooks/useGetChainData";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import type { SubmitHandler} from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
-import { useGraphNotifyStore } from "../store";
+import { useAppStore } from "../store";
 import { TextField } from "./common/TextField";
 import { useGetSubgraphStatus } from "../hooks/useGetSubgraphStatus";
-import { SubgraphForm } from "../types/types";
+import type { SubgraphForm } from "../types/types";
 
 export const CreateSubgraphForm = () => {
-  const { addInput } = useGraphNotifyStore((state) => ({
+  const { addInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
   }));
   const chainList = useGetChainData();
