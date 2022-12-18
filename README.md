@@ -1,6 +1,6 @@
 # Turborepo starter
 
-This is an official pnpm starter turborepo.
+This is an official pnpm starter turborepo.  
 
 ## What's inside?
 
