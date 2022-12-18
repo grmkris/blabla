@@ -7,27 +7,28 @@ import { SubgraphStatusLabel } from "../../components/subgraphs-table/SubgraphSt
 import { IoArrowBackSharp } from "react-icons/io5";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { base64Decode } from "../../utils/functions";
 import { useMemo } from "react";
+import { base64Decode } from "../../utils/functions";
 
 const SubgraphExplorer = () => {
-  const { id } = useRouter().query;
-  const url = id && base64Decode(id as string);
+  const { url } = useRouter().query;
   const subgraphUrl = useMemo(() => {
     try {
-      return url ? new URL(url as string) : undefined
+      const urlDecoded = base64Decode(url as string);
+      return new URL(urlDecoded);
     } catch (error) {
       return undefined
     }
   }, [url]);
-  const subgraphStatus = useGetSubgraphStatus();
+  console.log('subgraphUrl', subgraphUrl)
+  const subgraphStatus = useGetSubgraphStatus(subgraphUrl);
   const fetcher = useQuery(['createGraphiQLFetcher', url], () => {
-    if (!url) {
+    if (!subgraphUrl) {
       throw new Error("No url");
     }
-    return createGraphiQLFetcher({ url })
+    return createGraphiQLFetcher({ url: subgraphUrl.href })
   }, {
-    enabled: !!url,
+    enabled: !!subgraphUrl,
   })
   if (subgraphStatus.isLoading || !url || !fetcher.data || !subgraphUrl) {
     return <div>Loading...</div>;
