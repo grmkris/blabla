@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { base64Decode } from "../../utils/functions";
+import Head from "next/head";
 
 const SubgraphExplorer = () => {
   const { url } = useRouter().query;
@@ -17,28 +18,41 @@ const SubgraphExplorer = () => {
       const urlDecoded = base64Decode(url as string);
       return new URL(urlDecoded);
     } catch (error) {
-      return undefined
+      return undefined;
     }
   }, [url]);
-  console.log('subgraphUrl', subgraphUrl)
+  console.log("subgraphUrl", subgraphUrl);
   const subgraphStatus = useGetSubgraphStatus(subgraphUrl);
-  const fetcher = useQuery(['createGraphiQLFetcher', url], () => {
-    if (!subgraphUrl) {
-      throw new Error("No url");
+  const fetcher = useQuery(
+    ["createGraphiQLFetcher", url],
+    () => {
+      if (!subgraphUrl) {
+        throw new Error("No url");
+      }
+      return createGraphiQLFetcher({ url: subgraphUrl.href });
+    },
+    {
+      enabled: !!subgraphUrl,
     }
-    return createGraphiQLFetcher({ url: subgraphUrl.href })
-  }, {
-    enabled: !!subgraphUrl,
-  })
+  );
   if (subgraphStatus.isLoading || !url || !fetcher.data || !subgraphUrl) {
     return <div>Loading...</div>;
   }
   return (
     <>
+      <Head>
+        <title>
+          Subgraph Observer - {subgraphUrl.pathname.split("/").pop()}
+          <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧙‍</text></svg>"
+          />
+        </title>
+      </Head>
       <main className="flex flex-col">
-        <div className="flex justify-between items-center p-2 flex-col md:flex-row space-y-2">
+        <div className="flex flex-col items-center justify-between space-y-2 p-2 md:flex-row">
           <Link href="/">
-            <button className="btn btn-sm btn-outline btn-secondary">
+            <button className="btn-outline btn-secondary btn-sm btn">
               <IoArrowBackSharp className="mr-2" />
               back
             </button>
