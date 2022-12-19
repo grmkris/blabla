@@ -1,15 +1,22 @@
 import { useGetChainData } from "../hooks/useGetChainData";
-import type { SubmitHandler} from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
 import { useAppStore } from "../store";
 import { TextField } from "./common/TextField";
 import { useGetSubgraphStatus } from "../hooks/useGetSubgraphStatus";
 import type { SubgraphForm } from "../types/types";
+import { useEffect } from "react";
 
-export const CreateSubgraphForm = () => {
-  const { addInput } = useAppStore((state) => ({
+type Props = {
+  formData?: SubgraphForm;
+  setModalOpen?: (setModal: boolean) => void;
+};
+
+export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
+  const { addInput, editInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
+    editInput: state.updateSubgraph,
   }));
   const chainList = useGetChainData();
   const {
@@ -21,9 +28,16 @@ export const CreateSubgraphForm = () => {
     watch,
   } = useForm<SubgraphForm>();
   const onSubmit: SubmitHandler<SubgraphForm> = (data) => {
-    addInput(data);
+    !formData ? addInput(data) : editInput(data);
+    setModalOpen && setModalOpen(false);
     reset();
   };
+
+  useEffect(() => {
+    if (formData) {
+      reset(formData);
+    }
+  }, [formData]);
 
   return (
     <div>
@@ -90,7 +104,7 @@ export const CreateSubgraphForm = () => {
           error={errors.name && "This field is required"}
         />
 
-        <input type="submit" className={"mt-4 btn bg-primary"} />
+        <input type="submit" className={"btn mt-4 bg-primary"} />
       </form>
     </div>
   );
@@ -98,8 +112,10 @@ export const CreateSubgraphForm = () => {
 
 const SubgraphStatusLabel = (props: { url?: string }) => {
   try {
-    const subgraphStatus = useGetSubgraphStatus(props.url ? new URL(props.url) : undefined);
-    console.log("SubgraphStatusLabel", subgraphStatus.data);
+    const subgraphStatus = useGetSubgraphStatus(
+      props.url ? new URL(props.url) : undefined
+    );
+
     if (subgraphStatus.isFetching && !subgraphStatus.data)
       return <span className={"inline"}>Subgraph url ⏳</span>;
     if (subgraphStatus.error) return <div>Subgraph url ❌</div>;

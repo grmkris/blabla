@@ -23,6 +23,9 @@ import RemoveButton from "./RemoveButton";
 import { base64Encode, getDataForChain } from "../../utils/functions";
 import Link from "next/link";
 import { copyToClipboard } from "../SubgraphsDashboard";
+import EditButton from "./EditButton";
+import Modal from "../Modal";
+import { SubgraphForm } from "../../types/types";
 
 type GraphRow = {
   name: string;
@@ -73,7 +76,7 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       cell: (cell) => (
         <Link
           href={`/subgraph/${base64Encode(cell.row.getValue("indexer"))}`}
-          className="btn btn-sm btn-outline btn-secondary"
+          className="btn-outline btn-secondary btn-sm btn"
         >
           <div>Playground</div>
         </Link>
@@ -93,9 +96,9 @@ export function SubgraphTable({ inputs: tableData }: Props) {
     columnHelper.accessor("manage", {
       header: () => "",
       cell: (info) => (
-        <div className={'flex flex-row'}>
+        <div className={"flex flex-row space-x-2"}>
           <button
-            className="table_link btn btn-sm btn-ghost btn-primary font-bold"
+            className="table_link btn-primary btn-ghost btn-sm btn font-bold"
             onClick={async () => {
               await copyToClipboard(info.row.getValue("indexer"));
             }}
@@ -103,15 +106,23 @@ export function SubgraphTable({ inputs: tableData }: Props) {
             <HiOutlineClipboard />
             <div>Copy URL</div>
           </button>
+
+          <EditButton
+            rowId={info.row.index}
+            setOpenModal={setOpenModal}
+            setModalData={setModalData}
+          />
           <RemoveButton rowId={info.row.index} />
         </div>
       ),
       enableGrouping: false,
-    })
+    }),
   ];
 
   const [grouping, setGrouping] = useState<GroupingState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalData, setModalData] = useState<SubgraphForm>();
 
   const table = useReactTable({
     data: tableData,
@@ -131,7 +142,7 @@ export function SubgraphTable({ inputs: tableData }: Props) {
   });
 
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="w-full overflow-x-auto">
       <div className="h-2" />
       <table className="table w-full">
         <thead>
@@ -242,6 +253,8 @@ export function SubgraphTable({ inputs: tableData }: Props) {
           })}
         </tbody>
       </table>
+
+      <Modal formData={modalData!} open={openModal} setOpen={setOpenModal} />
     </div>
   );
 }

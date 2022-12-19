@@ -3,13 +3,18 @@
 @tailwind utilities;
 
 input:focus {
-    @apply outline-indigo-400 !important;
+  @apply outline-indigo-400 !important;
 }
 
 .badge_primary {
-    @apply badge border-primary bg-primary/90 text-white rounded-lg px-3 py-4 font-semibold;
+  @apply badge w-44 rounded-lg border-primary bg-primary/90 px-3 py-4 font-semibold text-white;
 }
 
 .table_link {
-    @apply text-secondary flex items-center space-x-1 underline-offset-2 hover:decoration-2 hover:underline font-semibold;
+  @apply flex items-center space-x-1 font-semibold text-secondary underline-offset-2 hover:underline hover:decoration-2;
+}
+
+/* tailwind default z-index was 11*/
+.table th:first-child {
+  z-index: 5;
 }

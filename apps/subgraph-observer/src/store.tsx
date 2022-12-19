@@ -26,6 +26,7 @@ export type IGraphNotifyStoreStore = {
   addSubgraph: (input: SubgraphForm) => void;
   removeSubgraph: (index: number) => void;
   updateSubgraphs: (inputs: SubgraphForm[]) => void;
+  updateSubgraph: (editInput: SubgraphForm) => void;
 };
 
 export const useAppStore = create<IGraphNotifyStoreStore>()(
@@ -55,6 +56,14 @@ export const useAppStore = create<IGraphNotifyStoreStore>()(
                   state.subgraphs[index] = subgraph;
                 }
               }
+            }),
+          updateSubgraph: (subgraph) =>
+            set((state) => {
+              const index = state.subgraphs.findIndex(
+                (s) => s.indexer === subgraph.indexer
+              );
+
+              state.subgraphs[index] = subgraph;
             }),
         }),
         {

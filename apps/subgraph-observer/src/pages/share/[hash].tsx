@@ -6,47 +6,46 @@ import { base64DecodeToSubgraphFormData } from "../../utils/functions";
 import NonSSRWrapper from "../../components/common/NonSSRWrapper";
 
 function SharePage() {
-  return <NonSSRWrapper>
-    <ShareComponent />
-  </NonSSRWrapper>;
-
+  return (
+    <NonSSRWrapper>
+      <ShareComponent />
+    </NonSSRWrapper>
+  );
 }
 
 export default SharePage;
 
-
 const ShareComponent = () => {
   const router = useRouter();
   const { hash } = router.query;
-  const updateSubgraphs = useAppStore(state => state.updateSubgraphs);
+  const updateSubgraphs = useAppStore((state) => state.updateSubgraphs);
 
   useEffect(() => {
     console.log("hash", hash);
     if (hash && typeof hash === "string") {
       try {
         const mappedSubgraphForms = base64DecodeToSubgraphFormData(hash);
-        console.log(mappedSubgraphForms);
-        console.log("updateSubgraphs", mappedSubgraphForms);
+
         updateSubgraphs(mappedSubgraphForms);
         toast.success("Subgraphs imported successfully", {
-          position: "bottom-center"
+          position: "bottom-center",
         });
         router.push("/");
       } catch (e) {
         toast.error("Error importing subgraphs", {
-          position: "bottom-center"
+          position: "bottom-center",
         });
       }
     } else if (hash) {
       toast.error("Error importing subgraphs", {
-        position: "bottom-center"
+        position: "bottom-center",
       });
     }
   }, [hash]);
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <button className="btn loading btn-outline">loading</button>
+    <div className="flex w-full items-center justify-center">
+      <button className="btn-outline loading btn">loading</button>
     </div>
   );
 };
