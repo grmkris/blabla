@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 input:focus {
-  @apply outline-indigo-400 !important;
+  @apply outline-indigo-400 ring-0 !important;
 }
 
 .badge_primary {

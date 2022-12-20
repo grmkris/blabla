@@ -11,10 +11,10 @@ export const SubgraphsDashboard = () => {
   }));
 
   return (
-    <div className={"flex flex-col w-full pt-14 "}>
+    <div className={"flex w-full flex-col pt-5 md:pt-6 "}>
       <div
         onClick={() => copyToClipboard(inputs)}
-        className="self-end flex cursor-pointer hover:text-primary items-center py-2 font-semibold capitalize text-lg text-secondary"
+        className="flex cursor-pointer items-center self-end py-2 text-lg font-semibold capitalize text-secondary hover:text-primary"
       >
         Share table
         <FiShare2 className="ml-2" />
@@ -24,7 +24,6 @@ export const SubgraphsDashboard = () => {
     </div>
   );
 };
-
 
 export const copyToClipboard = async (inputs: unknown) => {
   try {
