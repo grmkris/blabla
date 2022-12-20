@@ -117,6 +117,12 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
             render={({ field: { onChange, value } }) => (
               <Select
                 onChange={(option) => onChange(option?.value)}
+                value={{
+                  label: tagValues
+                    .map((tag) => tag.name)
+                    .find((tag) => tag?.includes(value?.toString())),
+                  value,
+                }}
                 options={tagValues.map((tag) => ({
                   label: tag.name,
                   value: tag.name,
@@ -145,7 +151,7 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
           />
         </>
 
-        <input type="submit" className={"btn mt-4 bg-primary"} />
+        <input type="submit" className={"btn my-6 bg-primary"} />
       </form>
     </div>
   );
