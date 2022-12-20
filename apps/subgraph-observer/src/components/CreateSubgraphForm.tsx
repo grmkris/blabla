@@ -13,6 +13,8 @@ type Props = {
   setModalOpen?: (setModal: boolean) => void;
 };
 
+const tagValues = [{ name: "Production" }, { name: "Development" }];
+
 export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
   const { addInput, editInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
@@ -103,6 +105,45 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
           placeholder="Name"
           error={errors.name && "This field is required"}
         />
+
+        <>
+          <label className="label">
+            <span className="label-text font-bold">Subgraph Tag</span>
+          </label>
+          <Controller
+            control={control}
+            rules={{ required: true }}
+            name="tag"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                onChange={(option) => onChange(option?.value)}
+                options={tagValues.map((tag) => ({
+                  label: tag.name,
+                  value: tag.name,
+                }))}
+                styles={{
+                  input: (provided) => ({
+                    ...provided,
+                    height: "2.4em",
+                  }),
+                  control: (provided) => ({
+                    ...provided,
+                    borderRadius: "0.5em",
+                  }),
+                }}
+                theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 0,
+                  colors: {
+                    ...theme.colors,
+                    primary25: "#818cf8",
+                    primary: "#818cf8",
+                  },
+                })}
+              />
+            )}
+          />
+        </>
 
         <input type="submit" className={"btn mt-4 bg-primary"} />
       </form>

@@ -8,6 +8,7 @@ export const SubgraphFormSchema = z.object({
   indexer: z.string(),
   name: z.string(),
   email: z.string().email({ message: "Enter correct email" }).nullish(),
+  tag: z.string({ required_error: "Subgraph Tag is required" }),
 });
 export type SubgraphForm = z.infer<typeof SubgraphFormSchema>;
 

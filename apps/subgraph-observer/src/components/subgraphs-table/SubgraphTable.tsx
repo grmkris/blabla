@@ -17,6 +17,7 @@ import {
   HiChevronDown,
   HiOutlineClipboard,
 } from "react-icons/hi";
+import { GrGroup, GrFormClose } from "react-icons/gr";
 import { SubgraphStatusLabel } from "./SubgraphStatusLabel";
 import { useGetChainData } from "../../hooks/useGetChainData";
 import RemoveButton from "./RemoveButton";
@@ -34,6 +35,7 @@ type GraphRow = {
   status?: string;
   playground?: string;
   manage?: string;
+  tag: string;
   subRows?: GraphRow[];
 };
 type Props = {
@@ -50,6 +52,14 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       ),
       enableSorting: true,
       enableGrouping: false,
+    }),
+    columnHelper.accessor("tag", {
+      header: () => <span>Tag</span>,
+      cell: (info) => (
+        <span className="text-lg capitalize">{info.getValue()}</span>
+      ),
+      enableSorting: true,
+      enableGrouping: true,
     }),
     columnHelper.accessor("chainId", {
       header: () => <span>Chain</span>,
@@ -161,9 +171,11 @@ export function SubgraphTable({ inputs: tableData }: Props) {
                           },
                         }}
                       >
-                        {header.column.getIsGrouped()
-                          ? `🛑(${header.column.getGroupedIndex()}) `
-                          : `👊 `}
+                        {header.column.getIsGrouped() ? (
+                          <GrFormClose className="mr-2 h-4 w-4" />
+                        ) : (
+                          <GrGroup className="mr-2 h-4 w-4" />
+                        )}
                       </button>
                     ) : null}
                     <div
@@ -196,17 +208,11 @@ export function SubgraphTable({ inputs: tableData }: Props) {
                 {row.getVisibleCells().map((cell, index) => {
                   return (
                     <td
-                      {...{
-                        style: {
-                          background: cell.getIsGrouped()
-                            ? "#0aff0082"
-                            : cell.getIsAggregated()
-                            ? "#ffa50078"
-                            : cell.getIsPlaceholder()
-                            ? "#ff000042"
-                            : "white",
-                        },
-                      }}
+                      className={`${
+                        cell.getIsGrouped()
+                          ? "bg-secondary font-semibold text-white"
+                          : ""
+                      }`}
                       key={index}
                     >
                       {cell.getIsGrouped() ? (
