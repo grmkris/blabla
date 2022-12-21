@@ -26,6 +26,7 @@ export type IGraphNotifyStoreStore = {
   addSubgraph: (input: SubgraphForm) => void;
   removeSubgraph: (index: number) => void;
   updateSubgraphs: (inputs: SubgraphForm[]) => void;
+  updateSubgraph: (editInput: SubgraphForm) => void;
 };
 
 export const useAppStore = create<IGraphNotifyStoreStore>()(
@@ -56,9 +57,50 @@ export const useAppStore = create<IGraphNotifyStoreStore>()(
                 }
               }
             }),
+          updateSubgraph: (subgraph) =>
+            set((state) => {
+              const index = state.subgraphs.findIndex(
+                (s) => s.indexer === subgraph.indexer
+              );
+
+              state.subgraphs[index] = subgraph;
+            }),
         }),
         {
           name: "SubgraphObserverStorage",
+          getStorage: () => storage,
+        }
+      )
+    )
+  )
+);
+
+type TagStore = {
+  tags: string[];
+  addTag: (tag: string) => void;
+  removeTag: (index: number) => void;
+};
+
+export const useTagStore = create<TagStore>()(
+  immer(
+    devtools(
+      persist(
+        (set) => ({
+          tags: ["Production", "Development"],
+
+          addTag: (tag) =>
+            set((state) => {
+              state.tags.push(tag);
+            }),
+
+          removeTag: (index) => {
+            set((state) => {
+              state.tags.splice(index, 1);
+            });
+          },
+        }),
+        {
+          name: "TagStorage",
           getStorage: () => storage,
         }
       )
