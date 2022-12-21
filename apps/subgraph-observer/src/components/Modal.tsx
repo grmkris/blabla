@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CreateSubgraphForm } from "./CreateSubgraphForm";
+import { CreateSubgraphForm } from "./form/CreateSubgraphForm";
 import { SubgraphForm } from "../types/types";
 import { AiOutlineClose } from "react-icons/ai";
 

@@ -10,8 +10,8 @@ input:focus {
   @apply badge w-44 rounded-lg border-primary bg-primary/90 px-3 py-4 font-semibold text-white;
 }
 
-.table_link {
-  @apply flex items-center space-x-1 font-semibold text-secondary underline-offset-2 hover:underline hover:decoration-2;
+.text_link {
+  @apply flex cursor-pointer items-center space-x-1 font-semibold text-secondary underline-offset-4 hover:underline hover:decoration-2;
 }
 
 /* tailwind default z-index was 11*/

@@ -1,12 +1,13 @@
-import { useGetChainData } from "../hooks/useGetChainData";
+import { useGetChainData } from "../../hooks/useGetChainData";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
-import { useAppStore, useTagStore } from "../store";
-import { TextField } from "./common/TextField";
-import { useGetSubgraphStatus } from "../hooks/useGetSubgraphStatus";
-import type { SubgraphForm } from "../types/types";
-import { useEffect } from "react";
+import { useAppStore, useTagStore } from "../../store";
+import { TextField } from "../common/TextField";
+import { useGetSubgraphStatus } from "../../hooks/useGetSubgraphStatus";
+import type { SubgraphForm } from "../../types/types";
+import { useEffect, useState } from "react";
+import NewTagField from "./NewTagField";
 
 type Props = {
   formData?: SubgraphForm;
@@ -14,13 +15,17 @@ type Props = {
 };
 
 export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
+  const [newInputTag, setNewInputTag] = useState({
+    isShown: false,
+    newTag: "",
+  });
+
   const { addInput, editInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
     editInput: state.updateSubgraph,
   }));
 
   const { tags, addTag } = useTagStore();
-
   const chainList = useGetChainData();
   const {
     register,
@@ -29,18 +34,27 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
     control,
     reset,
     watch,
+    setValue,
   } = useForm<SubgraphForm>();
-  const onSubmit: SubmitHandler<SubgraphForm> = (data) => {
-    !formData ? addInput(data) : editInput(data);
-    setModalOpen && setModalOpen(false);
-    reset();
-  };
 
   useEffect(() => {
     if (formData) {
       reset(formData);
     }
   }, [formData]);
+
+  const onSubmit: SubmitHandler<SubgraphForm> = (data) => {
+    !formData ? addInput(data) : editInput(data);
+    setModalOpen && setModalOpen(false);
+    reset();
+  };
+
+  const addNewTagHandler = () => {
+    addTag(newInputTag.newTag);
+    setNewInputTag({ isShown: false, newTag: "" });
+
+    setValue("tag", newInputTag.newTag);
+  };
 
   return (
     <div>
@@ -131,7 +145,9 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                   <span className="label-text-alt text-error">Required</span>
                 )}
               </label>
+
               <Select
+                className="w-full"
                 instanceId={"tag_select"}
                 onChange={(option) => onChange(option?.value)}
                 value={{
@@ -145,6 +161,7 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                 styles={{
                   input: (provided) => ({
                     ...provided,
+
                     height: "2.4em",
                   }),
                   control: (provided) => ({
@@ -163,8 +180,27 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                   },
                 })}
               />
+              <div className="flex justify-end py-1">
+                <p
+                  className="text_link text-sm"
+                  onClick={() =>
+                    setNewInputTag({
+                      ...newInputTag,
+                      isShown: !newInputTag.isShown,
+                    })
+                  }
+                >
+                  {!newInputTag.isShown ? " Add new tag?" : "Close input"}
+                </p>
+              </div>
             </>
           )}
+        />
+
+        <NewTagField
+          newInputTag={newInputTag}
+          setNewInputTag={setNewInputTag}
+          addNewTagHandler={addNewTagHandler}
         />
 
         <input type="submit" className={"btn my-6 bg-primary"} />

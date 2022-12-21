@@ -72,7 +72,7 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       cell: (cell) => (
         <div className={"flex items-center"}>
           <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
-            <button className="table_link">
+            <button className="text_link">
               <HiExternalLink />
               <div>GraphQL</div>
             </button>
@@ -108,7 +108,7 @@ export function SubgraphTable({ inputs: tableData }: Props) {
       cell: (info) => (
         <div className={"flex flex-row space-x-2"}>
           <button
-            className="table_link btn-primary btn-ghost btn-sm btn font-bold"
+            className="text_link btn-primary btn-ghost btn-sm btn font-bold"
             onClick={async () => {
               await copyToClipboard(info.row.getValue("indexer"));
             }}
@@ -276,7 +276,7 @@ export const ChainIdToLink = (props: { chainId: number }) => {
       target="_blank"
       rel="noreferrer"
     >
-      <button className="table_link">
+      <button className="text_link">
         <HiExternalLink />
         <div>{chainData?.name}</div>
       </button>

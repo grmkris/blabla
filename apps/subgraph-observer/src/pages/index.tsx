@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { CreateSubgraphForm } from "../components/CreateSubgraphForm";
+import { CreateSubgraphForm } from "../components/form/CreateSubgraphForm";
 import { SubgraphsDashboard } from "../components/SubgraphsDashboard";
 import NonSSRWrapper from "../components/common/NonSSRWrapper";
 
