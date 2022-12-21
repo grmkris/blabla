@@ -50,6 +50,8 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
   };
 
   const addNewTagHandler = () => {
+    if (!newInputTag.newTag) return;
+
     addTag(newInputTag.newTag);
     setNewInputTag({ isShown: false, newTag: "" });
 
