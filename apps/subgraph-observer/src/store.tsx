@@ -74,3 +74,36 @@ export const useAppStore = create<IGraphNotifyStoreStore>()(
     )
   )
 );
+
+type TagStore = {
+  tags: string[];
+  addTag: (tag: string) => void;
+  removeTag: (index: number) => void;
+};
+
+export const useTagStore = create<TagStore>()(
+  immer(
+    devtools(
+      persist(
+        (set) => ({
+          tags: ["Production", "Development"],
+
+          addTag: (tag) =>
+            set((state) => {
+              state.tags.push(tag);
+            }),
+
+          removeTag: (index) => {
+            set((state) => {
+              state.tags.splice(index, 1);
+            });
+          },
+        }),
+        {
+          name: "TagStorage",
+          getStorage: () => storage,
+        }
+      )
+    )
+  )
+);

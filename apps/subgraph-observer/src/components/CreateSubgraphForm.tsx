@@ -2,7 +2,7 @@ import { useGetChainData } from "../hooks/useGetChainData";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
-import { useAppStore } from "../store";
+import { useAppStore, useTagStore } from "../store";
 import { TextField } from "./common/TextField";
 import { useGetSubgraphStatus } from "../hooks/useGetSubgraphStatus";
 import type { SubgraphForm } from "../types/types";
@@ -13,13 +13,14 @@ type Props = {
   setModalOpen?: (setModal: boolean) => void;
 };
 
-const tagValues = [{ name: "Production" }, { name: "Development" }];
-
 export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
   const { addInput, editInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
     editInput: state.updateSubgraph,
   }));
+
+  const { tags, addTag } = useTagStore();
+
   const chainList = useGetChainData();
   const {
     register,
@@ -54,46 +55,58 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
         />
         {chainList.data && (
           <>
-            <label className="label">
-              <span className="label-text font-bold">Chain</span>
-            </label>
             <Controller
               control={control}
               rules={{ required: true }}
               name="chainId"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  onChange={(option) => onChange(option?.value)}
-                  value={{
-                    label: chainList.data
-                      .map((chain) => chain.chainId + "-" + chain.name)
-                      .find((chain) => chain?.includes(value?.toString())),
-                    value,
-                  }}
-                  options={chainList.data.map((chain) => ({
-                    label: chain.chainId + "-" + chain.name,
-                    value: chain.chainId,
-                  }))}
-                  styles={{
-                    input: (provided) => ({
-                      ...provided,
-                      height: "2.4em",
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderRadius: "0.5em",
-                    }),
-                  }}
-                  theme={(theme) => ({
-                    ...theme,
-                    borderRadius: 0,
-                    colors: {
-                      ...theme.colors,
-                      primary25: "#818cf8",
-                      primary: "#818cf8",
-                    },
-                  })}
-                />
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <label className="label">
+                    <span className="label-text font-bold">Chain</span>
+                    {error && (
+                      <span className="label-text-alt text-error">
+                        Required
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    instanceId={"chain_select"}
+                    onChange={(option) => onChange(option?.value)}
+                    value={{
+                      label: chainList.data
+                        .map((chain) => chain.chainId + "-" + chain.name)
+                        .find((chain) => chain?.includes(value?.toString())),
+                      value,
+                    }}
+                    options={chainList.data.map((chain) => ({
+                      label: chain.chainId + "-" + chain.name,
+                      value: chain.chainId,
+                    }))}
+                    styles={{
+                      input: (provided) => ({
+                        ...provided,
+                        height: "2.4em",
+                      }),
+                      control: (provided) => ({
+                        ...provided,
+                        borderColor: error ? "#f87171" : "",
+                        borderRadius: "0.5em",
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      borderRadius: 0,
+                      colors: {
+                        ...theme.colors,
+                        primary25: "#818cf8",
+                        primary: "#818cf8",
+                      },
+                    })}
+                  />
+                </>
               )}
             />
           </>
@@ -106,26 +119,28 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
           error={errors.name && "This field is required"}
         />
 
-        <>
-          <label className="label">
-            <span className="label-text font-bold">Subgraph Tag</span>
-          </label>
-          <Controller
-            control={control}
-            rules={{ required: true }}
-            name="tag"
-            render={({ field: { onChange, value } }) => (
+        <Controller
+          control={control}
+          rules={{ required: true }}
+          name="tag"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <>
+              <label className="label">
+                <span className="label-text font-bold">Subgraph Tag</span>
+                {error && (
+                  <span className="label-text-alt text-error">Required</span>
+                )}
+              </label>
               <Select
+                instanceId={"tag_select"}
                 onChange={(option) => onChange(option?.value)}
                 value={{
-                  label: tagValues
-                    .map((tag) => tag.name)
-                    .find((tag) => tag?.includes(value?.toString())),
+                  label: tags.find((tag) => tag?.includes(value?.toString())),
                   value,
                 }}
-                options={tagValues.map((tag) => ({
-                  label: tag.name,
-                  value: tag.name,
+                options={tags.map((tag) => ({
+                  label: tag,
+                  value: tag,
                 }))}
                 styles={{
                   input: (provided) => ({
@@ -134,6 +149,7 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                   }),
                   control: (provided) => ({
                     ...provided,
+                    borderColor: error ? "#f87171" : "",
                     borderRadius: "0.5em",
                   }),
                 }}
@@ -147,9 +163,9 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                   },
                 })}
               />
-            )}
-          />
-        </>
+            </>
+          )}
+        />
 
         <input type="submit" className={"btn my-6 bg-primary"} />
       </form>
