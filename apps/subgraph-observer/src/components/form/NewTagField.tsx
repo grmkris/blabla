@@ -1,6 +1,6 @@
-import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useRef } from "react";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import autoAnimate from "@formkit/auto-animate";
 
 type Props = {
   newInputTag: { isShown: boolean; newTag: string };
@@ -9,41 +9,18 @@ type Props = {
 };
 
 function NewTagField({ newInputTag, setNewInputTag, addNewTagHandler }: Props) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (parentRef.current) {
+      autoAnimate(parentRef.current);
+    }
+  }, [parentRef]);
+
   return (
-    <AnimatePresence mode="wait">
+    <div ref={parentRef}>
       {newInputTag.isShown && (
-        <motion.div
-          initial={{
-            height: 0,
-            opacity: 0,
-          }}
-          animate={{
-            height: "auto",
-            opacity: 1,
-            transition: {
-              height: {
-                duration: 0.4,
-              },
-              opacity: {
-                duration: 0.25,
-                delay: 0.15,
-              },
-            },
-          }}
-          exit={{
-            height: 0,
-            opacity: 0,
-            transition: {
-              height: {
-                duration: 0.4,
-              },
-              opacity: {
-                duration: 0.25,
-              },
-            },
-          }}
-          transition={{ duration: 1 }}
-        >
+        <div>
           <div className="flex items-end space-x-1">
             <div className="form-control indicator w-full">
               <label className="label">
@@ -67,9 +44,9 @@ function NewTagField({ newInputTag, setNewInputTag, addNewTagHandler }: Props) {
               <PlusIcon className="h-6 w-6 text-secondary" />
             </button>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </div>
   );
 }
 
