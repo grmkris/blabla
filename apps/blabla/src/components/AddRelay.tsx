@@ -1,6 +1,7 @@
 import { WifiIcon } from "@heroicons/react/20/solid";
 import { useAppStore } from "../store";
 import { useState } from "react";
+import { Button, Input } from "./common/Input";
 
 export const AddRelay = () => {
   const addOrUpdateRelay = useAppStore.use.addOrUpdateRelay();
@@ -15,23 +16,22 @@ export const AddRelay = () => {
           Relayer Url
         </label>
         <div className="mt-1">
-          <input
-            type="relayUrl"
+          <Input
+            type="text"
             name="relayUrl"
             id="relayUrl"
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             placeholder="wss://nostr.rocks"
             value={relayUrl}
             onChange={(e) => setRelayUrl(e.target.value)}
           />
         </div>
       </div>
-      <button
+      <Button
         onClick={() => {
           addOrUpdateRelay({
             url: relayUrl,
             id: relayUrl,
-            labels: [],
+            status: "idle",
           });
           setRelayUrl("");
         }}
@@ -40,7 +40,7 @@ export const AddRelay = () => {
       >
         <WifiIcon className="-ml-0.5 mr-2 h-4 w-4" aria-hidden="true" />
         Connect
-      </button>
+      </Button>
     </div>
   );
 };

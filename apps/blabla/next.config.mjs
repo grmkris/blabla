@@ -13,5 +13,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ['pbs.twimg.com', 'abs.twimg.com']
+  }
 };
 export default config;

@@ -2,7 +2,7 @@ export type Identity = {
   id: string;
   name: string;
   publicKey: string;
-  privateKey: string;
+  privateKey?: string;
 };
 
 export const Identity = (props: { identity: Identity }) => {

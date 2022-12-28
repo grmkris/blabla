@@ -73,10 +73,11 @@ const storage: StateStorage = {
   },
 };
 
+export type NostrRelayStatus = "idle" | "connecting" | "connected" | "error";
 export type NostrRelay = {
   id: string;
   url: string;
-  labels: string[];
+  status: NostrRelayStatus;
 };
 
 export type BlaBlaEvent = Event & { seen: boolean };
@@ -88,6 +89,9 @@ export type IBlaBlaNostrStore = {
 export type IBlaBlaAppStore = {
   identities: Identity[];
   nostrRelays: NostrRelay[];
+  following: Identity[];
+  addFollowing: (identity: Identity) => void;
+  removeFollowing: (identity: Identity) => void;
   addOrUpdatIdentity: (identity: Identity) => void;
   removeIdentity: (identity: Identity) => void;
   removeRelay: (index: number) => void;
@@ -104,9 +108,22 @@ const useAppStoreBase = create<IBlaBlaAppStore>()(
             return {
               id: url,
               url,
-              labels: [],
+              status: "idle",
             };
           }),
+          following: [],
+          addFollowing: (identity: Identity) => {
+            set((state) => {
+              state.following.push(identity);
+            });
+          },
+          removeFollowing: (identity: Identity) => {
+            set((state) => {
+              state.following = state.following.filter(
+                (i) => i.id !== identity.id
+              );
+            });
+          },
           removeRelay: (index) =>
             set((state) => {
               state.nostrRelays.splice(index, 1);

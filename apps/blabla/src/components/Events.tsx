@@ -2,6 +2,7 @@ import { BlaBlaEvent, useNostrStore } from "../store";
 
 export const Events = () => {
   const events = useNostrStore.use.events();
+  console.log("events", events);
   return (
     <div className="flex flex-col space-y-4 text-white">
       <h1>Events</h1>
@@ -14,7 +15,7 @@ export const Events = () => {
 
 export const EventComponent = (props: { event: BlaBlaEvent }) => {
   return (
-    <div className="">
+    <div className="max-w-prose">
       <p>
         <b>ID:</b> {props.event.id}
       </p>
