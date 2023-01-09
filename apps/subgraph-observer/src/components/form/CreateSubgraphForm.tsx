@@ -15,11 +15,6 @@ type Props = {
 };
 
 export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
-  const [newInputTag, setNewInputTag] = useState({
-    isShown: false,
-    newTag: "",
-  });
-
   const { addInput, editInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
     editInput: state.updateSubgraph,
