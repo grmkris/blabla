@@ -1,21 +1,23 @@
 import { Relay } from "../components/Relay";
 import { Layout } from "../components/Layout";
 import NoSSR from "../components/NoSSR";
-import { useNostrRelays } from "../hooks/useNostrRelays";
+import { AddRelay } from "../components/AddRelay";
+import { useNostr } from "nostr-react";
 
 export default function Relays() {
-  const { relayStatus } = useNostrRelays();
+  const { connectedRelays } = useNostr();
   return (
     <Layout>
       <NoSSR>
         <div className={"flex flex-wrap"}>
-          {relayStatus.map((relayUrl, index) => (
+          <AddRelay />
+          {connectedRelays.map((relay, index) => (
             <Relay
-              key={relayUrl.relayUrl}
+              key={relay.url}
               relay={{
-                url: relayUrl.relayUrl,
-                id: relayUrl.relayUrl,
-                status: relayUrl.status,
+                url: relay.url,
+                id: relay.url,
+                status: relay.status === 1 ? "connected" : "connecting",
               }}
               index={index}
             />

@@ -6,7 +6,7 @@ import { del, get, set } from "idb-keyval";
 import { Identity } from "./components/Identity";
 import { Event } from "nostr-tools";
 
-const relays = [
+const relays1 = [
   "wss://nostr.bongbong.com",
   "wss://nostr-pub.wellorder.net",
   "wss://nostr.cercatrova.me",
@@ -57,6 +57,12 @@ const relays = [
   "wss://nostr.coollamer.com",
 ];
 
+const relays = [
+  "wss://nostream-production-6f68.up.railway.app",
+  "wss://nostr-pub.wellorder.net",
+  "wss://relay.nostr.ch",
+];
+
 // Custom storage object
 const storage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
@@ -92,7 +98,7 @@ export type IBlaBlaAppStore = {
   following: Identity[];
   addFollowing: (identity: Identity) => void;
   removeFollowing: (identity: Identity) => void;
-  addOrUpdatIdentity: (identity: Identity) => void;
+  addOrUpdateIdentity: (identity: Identity) => void;
   removeIdentity: (identity: Identity) => void;
   removeRelay: (index: number) => void;
   addOrUpdateRelay: (editInput: NostrRelay) => void;
@@ -139,7 +145,7 @@ const useAppStoreBase = create<IBlaBlaAppStore>()(
                 state.nostrRelays[index] = relay;
               }
             }),
-          addOrUpdatIdentity: (identity) =>
+          addOrUpdateIdentity: (identity) =>
             set((state) => {
               const index = state.identities.findIndex(
                 (s) => s.id === identity.id

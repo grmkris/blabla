@@ -1,94 +1,52 @@
-import nostrPeople1 from "../test.json";
 import { useState } from "react";
-import { Button, classNames, Dropdown, Input } from "./common/Input";
+import { Button, classNames, Input } from "./common/Input";
 import Image from "next/image";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useAppStore } from "../store";
+import { SearchResults } from "./search-profiles/SearchResults";
 
-const Element = (props: { element: Element }) => {
+const Element = (props: { element: NostrElement }) => {
   console.log("element", props.element["data.nPubKey"]);
   return (
-    <>
-      <div className="flex items-center">
-        <Image
-          src={props.element["data.profileImageUrl"]}
-          alt=""
-          layout={"fill"}
-          className="h-6 w-6 flex-shrink-0 rounded-full"
-        />
-        <span
-          className={classNames(
-            false ? "font-semibold" : "font-normal",
-            "ml-3 block truncate"
-          )}
-        >
-          {props.element["data.screenName"]}
-        </span>
-      </div>
-
-      {false ? (
-        <span
-          className={classNames(
-            false ? "text-white" : "text-indigo-600",
-            "absolute inset-y-0 right-0 flex items-center pr-4"
-          )}
-        >
-          <CheckIcon className="h-5 w-5" aria-hidden="true" />
-        </span>
-      ) : null}
-    </>
+    <div className="flex items-center">
+      <Image
+        src={props.element["data.profileImageUrl"]}
+        width={40}
+        height={40}
+        alt={"profile image"}
+        className="h-6 w-6 flex-shrink-0 rounded-full"
+      />
+      <span className={classNames("font-normal", "ml-3 block truncate")}>
+        {props.element["data.screenName"]}
+      </span>
+    </div>
   );
 };
 export const SearchIdentities = () => {
-  const [selectedIdentity, setSelectedIdentity] = useState<Element | null>(
+  const [selectedIdentity, setSelectedIdentity] = useState<NostrElement | null>(
     null
   );
   const [inputValue, setInputValue] = useState("");
   const following = useAppStore.use.following();
   const addFollowing = useAppStore.use.addFollowing();
 
-  const handleSelect = (value: Element) => {
+  const handleSelect = (value: NostrElement) => {
     console.log("handleSelect", value);
     setSelectedIdentity(value);
     addFollowing({
       id: value["data.nPubKey"],
       publicKey: value["data.hexPubKey"],
-      name: value["data.screenName"],
+      externalData: {
+        name: value["data.screenName"],
+        image: value["data.profileImageUrl"],
+        description: value["data.user.description"],
+      },
     });
   };
 
   return (
     <div className="flex flex-col space-y-4 text-white">
       <h1>Search Identities</h1>
-      <Dropdown
-        values={nostrPeople1.elements}
-        onChange={handleSelect}
-        selected={selectedIdentity}
-        Option={Element}
-        Button={(props: { element: Element }) => {
-          return (
-            <>
-              <span className="flex items-center">
-                <Image
-                  src={props.element["data.profileImageUrl"]}
-                  alt=""
-                  className="h-6 w-6 flex-shrink-0 rounded-full"
-                />
-                <span className="ml-3 block truncate">
-                  {props.element["data.screenName"]}
-                </span>
-              </span>
-              <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                <ChevronUpDownIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </span>
-            </>
-          );
-        }}
-      />
-
+      <SearchResults />
       <div className="flex flex-col space-y-4">
         <Input
           name={"name"}
@@ -100,9 +58,13 @@ export const SearchIdentities = () => {
         <Button
           onClick={() => {
             addFollowing({
-              name: inputValue,
               id: inputValue,
               publicKey: inputValue,
+              externalData: {
+                name: inputValue,
+                image: inputValue,
+                description: inputValue,
+              },
             });
           }}
         >
@@ -112,7 +74,7 @@ export const SearchIdentities = () => {
     </div>
   );
 };
-export interface Element {
+export interface NostrElement {
   path: string;
   "data.retweeted": boolean;
   "data.extended_tweet.full_text": string;

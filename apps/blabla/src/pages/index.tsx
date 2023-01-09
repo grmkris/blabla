@@ -1,11 +1,33 @@
 import { type NextPage } from "next";
 import NoSSR from "../components/NoSSR";
-import { Events } from "../components/Events";
+import { EventComponent } from "../components/Events";
 import { AddRelay } from "../components/AddRelay";
-import { Identities } from "../components/Identities";
 import { Layout } from "../components/Layout";
-import { SearchIdentities } from "../components/SearchIdentities";
-import { useAppStore } from "../store";
+import { useRef } from "react";
+import { dateToUnix, useNostrEvents } from "nostr-react";
+import { EventKinds } from "../types";
+
+export const GloboalFeed = () => {
+  const now = useRef(new Date()); // Make sure current time isn't re-rendered
+
+  const { events } = useNostrEvents({
+    filter: {
+      since: dateToUnix(now.current), // all new events from now
+      kinds: [EventKinds.TEXT_NOTE],
+    },
+  });
+
+  return (
+    <>
+      <h1 className="text-2xl font-bold">Global Feed</h1>
+      <div className="flex flex-col items-start space-y-1">
+        {events.map((event) => (
+          <EventComponent event={{ ...event, seen: false }} key={event.id} />
+        ))}
+      </div>
+    </>
+  );
+};
 
 const Home: NextPage = () => {
   return (
@@ -14,11 +36,8 @@ const Home: NextPage = () => {
         Welcome to <a>Blabla</a>!
       </h1>
       <NoSSR>
-        <div className="flex max-w-prose flex-wrap items-center justify-center gap-4">
-          <SearchIdentities />
-          <AddRelay />
-          <Identities />
-          <Events />
+        <div className="max-w-prose items-center">
+          <GloboalFeed />
         </div>
       </NoSSR>
     </Layout>

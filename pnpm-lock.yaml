@@ -22,7 +22,7 @@ importers:
       '@preconstruct/cli': 2.2.2
       copyfiles: 2.4.1
       eslint: 8.30.0
-      prettier: 2.8.1
+      prettier: 2.8.2
       turbo: 1.6.3
       turbo-ignore: 0.5.0
 
@@ -45,11 +45,13 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.47.1
       '@typescript-eslint/parser': ^5.47.1
       autoprefixer: ^10.4.7
+      daisyui: ^2.46.1
       eslint: ^8.26.0
       eslint-config-next: 13.1.1
       idb-keyval: ^6.2.0
       next: 13.1.1
-      nostr-tools: ^1.1.0
+      nostr-react: ^0.6.1
+      nostr-tools: ^1.1.1
       postcss: ^8.4.14
       prettier: ^2.8.1
       prettier-plugin-tailwindcss: ^0.2.1
@@ -70,8 +72,11 @@ importers:
       '@trpc/next': 10.5.0_zvbwhveth6q3mqhgtvd43hxo4m
       '@trpc/react-query': 10.5.0_i3ykvnz4igoclzsim3lzrnoi4y
       '@trpc/server': 10.5.0
+      daisyui: 2.46.1_r4gnkvssmvyxmi2wmat5xbx36a
       idb-keyval: 6.2.0
       next: 13.1.1_biqbaboplfbrettd7655fr4n2y
+      nostr-react: 0.6.1_react@18.2.0
+      nostr-tools: 1.1.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.41.1_react@18.2.0
@@ -92,7 +97,6 @@ importers:
       autoprefixer: 10.4.13_postcss@8.4.20
       eslint: 8.30.0
       eslint-config-next: 13.1.1_lzzuuodtsqwxnvqeq4g4likcqa
-      nostr-tools: 1.1.0
       postcss: 8.4.20
       prettier: 2.8.1
       prettier-plugin-tailwindcss: 0.2.1_prettier@2.8.1
@@ -2769,15 +2773,15 @@ packages:
 
   /@noble/hashes/0.5.9:
     resolution: {integrity: sha512-7lN1Qh6d8DUGmfN36XRsbN/WcGIPNtTGhkw26vWId/DlCIGsYJJootTtPGghTLcn/AaXPx2Q0b3cacrwXa7OVw==}
-    dev: true
+    dev: false
 
   /@noble/hashes/1.1.5:
     resolution: {integrity: sha512-LTMZiiLc+V4v1Yi16TD6aX2gmtKszNye0pQgbaLqkvhIqP7nVsSaJsWloGQjJfJ8offaoP5GtX3yY5swbcJxxQ==}
-    dev: true
+    dev: false
 
   /@noble/secp256k1/1.7.0:
     resolution: {integrity: sha512-kbacwGSsH/CTout0ZnZWxnW1B+jH/7r/WAAKLBtrRJ/+CUH7lgmQzl3GTrQua3SGKWNSDsS6lmjnDpIJ5Dxyaw==}
-    dev: true
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3188,7 +3192,7 @@ packages:
 
   /@scure/base/1.1.1:
     resolution: {integrity: sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==}
-    dev: true
+    dev: false
 
   /@scure/bip32/1.1.1:
     resolution: {integrity: sha512-UmI+liY7np2XakaW+6lMB6HZnpczWk1yXZTxvg8TM8MdOcKHCGL1YkraGj8eAjPfMwFNiAyek2hXmS/XFbab8g==}
@@ -3196,14 +3200,14 @@ packages:
       '@noble/hashes': 1.1.5
       '@noble/secp256k1': 1.7.0
       '@scure/base': 1.1.1
-    dev: true
+    dev: false
 
   /@scure/bip39/1.1.0:
     resolution: {integrity: sha512-pwrPOS16VeTKg98dYXQyIjJEcWfz7/1YJIwxUEPFfQPtc86Ym/1sVgQ2RLoD43AazMk2l/unK4ITySSpW2+82w==}
     dependencies:
       '@noble/hashes': 1.1.5
       '@scure/base': 1.1.1
-    dev: true
+    dev: false
 
   /@swc/helpers/0.4.11:
     resolution: {integrity: sha512-rEUrBSGIoSFuYxwBYtlUFMlE2CwGhmW+w9355/5oduSw8e5h2+Tj4UrAGNNgP9915++wj5vkQo0UuOBqOAq4nw==}
@@ -4567,6 +4571,22 @@ packages:
 
   /daisyui/2.27.0_r4gnkvssmvyxmi2wmat5xbx36a:
     resolution: {integrity: sha512-AhFGhTore1Kdnae+5RGc2PGESSXOjAQDHJfvryP+KY41gxMcNErtuaGZG+nOmvOzNKgxViSDSaOn/VZq6H8kxA==}
+    peerDependencies:
+      autoprefixer: ^10.0.2
+      postcss: ^8.1.6
+    dependencies:
+      autoprefixer: 10.4.13_postcss@8.4.20
+      color: 4.2.3
+      css-selector-tokenizer: 0.8.0
+      postcss: 8.4.20
+      postcss-js: 4.0.0_postcss@8.4.20
+      tailwindcss: 3.2.4_postcss@8.4.20
+    transitivePeerDependencies:
+      - ts-node
+    dev: false
+
+  /daisyui/2.46.1_r4gnkvssmvyxmi2wmat5xbx36a:
+    resolution: {integrity: sha512-i59+nLuzzPAVOhNhot3KLtt6stfYeCIPXs9uiLcpXjykpqxHfBA3W6hQWOUWPMwfqhyQd0WKub3sydtPGjzLtA==}
     peerDependencies:
       autoprefixer: ^10.0.2
       postcss: ^8.1.6
@@ -6167,6 +6187,46 @@ packages:
       supports-color: 7.2.0
     dev: true
 
+  /jotai/1.12.1_react@18.2.0:
+    resolution: {integrity: sha512-t6gsYM1WkQHMOazaZYLykCA+fh9KPDGrA+tDYzDeV0268QsCqmX6S4lO46uswgt1LGUeG0EDFGuMd9ac8cWNTA==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@babel/core': '*'
+      '@babel/template': '*'
+      jotai-immer: '*'
+      jotai-optics: '*'
+      jotai-redux: '*'
+      jotai-tanstack-query: '*'
+      jotai-urql: '*'
+      jotai-valtio: '*'
+      jotai-xstate: '*'
+      jotai-zustand: '*'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@babel/template':
+        optional: true
+      jotai-immer:
+        optional: true
+      jotai-optics:
+        optional: true
+      jotai-redux:
+        optional: true
+      jotai-tanstack-query:
+        optional: true
+      jotai-urql:
+        optional: true
+      jotai-valtio:
+        optional: true
+      jotai-xstate:
+        optional: true
+      jotai-zustand:
+        optional: true
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /js-sdsl/4.1.4:
     resolution: {integrity: sha512-Y2/yD55y5jteOAmY50JbUZYwk3CP3wnLPEZnlR1w9oKhITrBEtAxwuWKebFf8hMrPMgbYwFoWK/lH2sBkErELw==}
     dev: true
@@ -6766,15 +6826,37 @@ packages:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
     engines: {node: '>=0.10.0'}
 
-  /nostr-tools/1.1.0:
-    resolution: {integrity: sha512-T+Fj29ff6dn1YMMDrG03OctxrWVKeei/DZatVjgoad0tYUCiBBERk37qkpCqFAoKYVreIPl/Mxrh2DVfMzLA7g==}
+  /nostr-react/0.6.1_react@18.2.0:
+    resolution: {integrity: sha512-9VWzscj5974EO+q7qxU4Cdk3l4LbadvovOHhfmT0AfRZW/T77iaqj4M4T+OeGbFSLECveNj9SQC36dc14x7gXA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      jotai: 1.12.1_react@18.2.0
+      nostr-tools: 1.1.1
+      react: 18.2.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@babel/template'
+      - jotai-immer
+      - jotai-optics
+      - jotai-redux
+      - jotai-tanstack-query
+      - jotai-urql
+      - jotai-valtio
+      - jotai-xstate
+      - jotai-zustand
+    dev: false
+
+  /nostr-tools/1.1.1:
+    resolution: {integrity: sha512-mxgjbHR6nx2ACBNa2tBpeM/glsPWqxHPT1Kszx/XfzL+kUdi1Gm3Xz1UcaODQ2F84IFtCKNLO+aF31ZfTAhSYQ==}
     dependencies:
       '@noble/hashes': 0.5.9
       '@noble/secp256k1': 1.7.0
       '@scure/base': 1.1.1
       '@scure/bip32': 1.1.1
       '@scure/bip39': 1.1.0
-    dev: true
+    dev: false
 
   /npm-bundled/1.1.2:
     resolution: {integrity: sha512-x5DHup0SuyQcmL3s7Rx/YQ8sbw/Hzg0rj48eN0dV7hf5cmQq5PXIeioroH3raV1QC1yh3uTYuMThvEQF3iKgGQ==}
@@ -7148,6 +7230,12 @@ packages:
 
   /prettier/2.8.1:
     resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
+  /prettier/2.8.2:
+    resolution: {integrity: sha512-BtRV9BcncDyI2tsuS19zzhzoxD8Dh8LiCx7j7tHzrkz8GFXAexeWFdi22mjE1d16dftH2qNaytVxqiRTGlMfpw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true

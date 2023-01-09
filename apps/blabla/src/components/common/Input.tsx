@@ -1,6 +1,11 @@
-import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowDownIcon,
+  CheckIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/20/solid";
 import { useState, Fragment, ComponentPropsWithoutRef } from "react";
 import { Listbox, Transition } from "@headlessui/react";
+import Image from "next/image";
 
 export interface InputProps extends ComponentPropsWithoutRef<"input"> {
   label?: string;
@@ -82,7 +87,7 @@ export const Button = (props: ButtonProps) => {
     <button
       type="button"
       disabled={loading || disabled}
-      className={`inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+      className={`btn inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${
         disabled
           ? "cursor-not-allowed bg-gray-300"
           : "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
@@ -209,33 +214,40 @@ export function classNames(...classes: string[]) {
  * }
  */
 
-export type ListboxProps = {
-  values: [];
-  selected: unknown;
-  Option: (props: { element: unknown }) => JSX.Element;
-  Button: (props: { element: unknown }) => JSX.Element;
-  label?: string;
-  onChange: (value: unknown) => void;
-};
+interface IDropdown<T> {
+  renderOption: (props: { item: T }) => JSX.Element;
+  onSelect: (item: T) => void;
+  items: T[];
+  label: string;
+}
 
-export const Dropdown = (props: ListboxProps) => {
-  /**
-   * Use example above to make this component
-   */
-  const [selected, setSelected] = useState(props.selected);
+export const Dropdown = <T,>(props: IDropdown<T>) => {
+  const [selectedItem, setSelectedItem] = useState<T>();
 
+  const setSelected = (item: T) => {
+    setSelectedItem(item);
+    props.onSelect(item);
+  };
   return (
-    <Listbox value={selected} onChange={props.onChange}>
+    <Listbox value={selectedItem} onChange={setSelected}>
       {({ open }) => (
         <>
           <Listbox.Label className="block text-sm font-medium text-gray-700">
             {props.label}
           </Listbox.Label>
           <div className="relative mt-1">
-            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
-              {props.button}
+            <Listbox.Button className="w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+              <div className="flex w-full justify-between p-2">
+                <ArrowDownIcon
+                  className={`${
+                    open
+                      ? "rotate-[270deg] duration-300 ease-linear"
+                      : "rotate-90 duration-300 ease-linear"
+                  } mr-2`}
+                />
+                {selectedItem && <props.renderOption item={selectedItem} />}
+              </div>
             </Listbox.Button>
-
             <Transition
               show={open}
               as={Fragment}
@@ -243,21 +255,31 @@ export const Dropdown = (props: ListboxProps) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {props.values.map((element, index) => (
-                  <Listbox.Option
-                    key={index}
-                    className={({ active }) =>
-                      classNames(
-                        active ? "bg-indigo-600 text-white" : "text-gray-900",
-                        "relative cursor-default select-none py-2 pl-3 pr-9"
-                      )
-                    }
-                    value={element}
-                  >
-                    <props.Option element={element} />
-                  </Listbox.Option>
-                ))}
+              <Listbox.Options
+                className={
+                  "mt-[-15px] flex cursor-pointer flex-col rounded-b-3xl border-[1px] border-t-0 border-solid border-[#e6e7f1] bg-[F0F1FE] pt-[25px] text-[#9498ad] "
+                }
+              >
+                {props.items.map((item, index, array) => {
+                  return (
+                    <Listbox.Option
+                      key={index}
+                      value={item}
+                      className={`flex items-center justify-between gap-2 px-4 hover:bg-[#f8f9fd] ${
+                        array.length === index + 1 && "rounded-b-3xl"
+                      }`}
+                    >
+                      {({ active, selected }) => (
+                        <>
+                          <props.renderOption item={item} />
+                          <CheckIcon
+                            className={`w-5 ${selected ? "bg-green-800" : ""}`}
+                          />
+                        </>
+                      )}
+                    </Listbox.Option>
+                  );
+                })}
               </Listbox.Options>
             </Transition>
           </div>
