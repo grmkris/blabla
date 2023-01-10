@@ -26,6 +26,7 @@ export const Navigation = () => {
       <Link href="/">Home </Link>
       <Link href="/relays">Relays</Link>
       <Link href="/identities">Identities</Link>
+      <Link href="/profile">Profile</Link>
     </nav>
   );
 };

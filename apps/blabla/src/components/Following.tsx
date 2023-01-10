@@ -1,16 +1,18 @@
 import { useAppStore } from "../store";
 import { useGetNostrPubKeyExternalData } from "../hooks/useGetNostrPubKeyExternalData";
 import Image from "next/image";
+import { ProfileCard } from "../pages/identity/[identity]";
 
 export default function Following() {
   const following = useAppStore.use.following();
+  console.log("following", following);
   return (
     <div className="flex flex-col space-y-4">
       <h1>Following</h1>
       <ul role="list" className="divide-y divide-gray-200">
         {following.map((person) => (
           <li key={person.id} className="flex py-4">
-            <FollowingRow element={{ npubKey: person.publicKey }} />
+            <ProfileCard identity={person.id} />
           </li>
         ))}
       </ul>

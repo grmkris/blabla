@@ -148,12 +148,15 @@ const useAppStoreBase = create<IBlaBlaAppStore>()(
             }),
           addOrUpdateIdentity: (identity) =>
             set((state) => {
+              console.log("addOrUpdateIdentity");
               const index = state.identities.findIndex(
                 (s) => s.id === identity.id
               );
               if (index === -1) {
+                console.log("adding addOrUpdateIdentity");
                 state.identities.push(identity);
               } else {
+                console.log("updating addOrUpdateIdentity");
                 state.identities[index] = identity;
               }
             }),

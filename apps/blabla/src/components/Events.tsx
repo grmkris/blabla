@@ -1,6 +1,7 @@
 import type { BlaBlaEvent } from "../store";
 import { useNostrStore } from "../store";
 import { useProfile } from "nostr-react";
+import Link from "next/link";
 
 export const Events = () => {
   const events = useNostrStore.use.events();
@@ -40,26 +41,29 @@ export const EventComponent = (props: { event: BlaBlaEvent }) => {
   return (
     <div className="card w-128 bg-base-100 shadow-xl">
       <div className="card-body">
-        <div className="card-title">
-          <div className="relative">
-            <img
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 ring-8 ring-white"
-              src={
-                profileData?.picture
-                  ? profileData?.picture
-                  : "/images/placeholder.png"
-              }
-              alt=""
-            />
+        <Link href={`/identity/${props.event.pubkey}`}>
+          <div className="card-title hover:bg-base-200">
+            <div className="relative">
+              <img
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 ring-8 ring-white"
+                src={
+                  profileData?.picture
+                    ? profileData?.picture
+                    : "/images/placeholder.png"
+                }
+                alt=""
+              />
+            </div>
+            <div className="truncate text-sm font-medium text-gray-500">
+              {profileData?.name} {profileData?.npub} {props.event.pubkey}
+            </div>
           </div>
-          <div className="truncate text-sm font-medium text-gray-500">
-            {profileData?.name} {profileData?.npub} {props.event.pubkey}
-          </div>
-        </div>
+        </Link>
         <div className="min-w-0 flex-1">
           <div>
             <p className="mt-0.5 text-sm text-gray-600">
-              Commented {new Date(props.event.created_at).toLocaleString()}
+              Commented{" "}
+              {new Date(props.event.created_at * 1000).toLocaleString()}
             </p>
           </div>
           <div className="mt-2 text-sm text-gray-400">
