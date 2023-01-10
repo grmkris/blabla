@@ -1,5 +1,5 @@
 import nostrPeople1 from "../../test.json";
-import { Button } from "../common/Input";
+import { Button } from "../common/common";
 import { useAppStore } from "../../store";
 export const SearchResults = () => {
   return (

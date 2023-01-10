@@ -1,9 +1,6 @@
 import type { BlaBlaEvent } from "../store";
 import { useNostrStore } from "../store";
-import Image from "next/image";
-import { ChatBubbleLeftEllipsisIcon } from "@heroicons/react/20/solid";
-import { useGetNostrPubKeyExternalData } from "../hooks/useGetNostrPubKeyExternalData";
-import Link from "next/link";
+import { useProfile } from "nostr-react";
 
 export const Events = () => {
   const events = useNostrStore.use.events();
@@ -39,32 +36,33 @@ export const Events = () => {
 };
 
 export const EventComponent = (props: { event: BlaBlaEvent }) => {
-  const { data } = useGetNostrPubKeyExternalData(props.event.pubkey);
+  const { data: profileData } = useProfile({ pubkey: props.event.pubkey });
   return (
     <div className="card w-128 bg-base-100 shadow-xl">
       <div className="card-body">
         <div className="card-title">
           <div className="relative">
-            <Image
-              className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-400 ring-8 ring-white"
-              fill={true}
-              src={data?.image ? data.image : "/images/placeholder.png"}
+            <img
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 ring-8 ring-white"
+              src={
+                profileData?.picture
+                  ? profileData?.picture
+                  : "/images/placeholder.png"
+              }
               alt=""
             />
           </div>
-          <div className="truncate text-sm font-medium text-gray-900">
-            <Link href={"/"}>
-              {data?.name ? data.name : props.event.pubkey}
-            </Link>
+          <div className="truncate text-sm font-medium text-gray-500">
+            {profileData?.name} {profileData?.npub} {props.event.pubkey}
           </div>
         </div>
         <div className="min-w-0 flex-1">
           <div>
-            <p className="mt-0.5 text-sm text-gray-500">
+            <p className="mt-0.5 text-sm text-gray-600">
               Commented {new Date(props.event.created_at).toLocaleString()}
             </p>
           </div>
-          <div className="mt-2 text-sm text-gray-700">
+          <div className="mt-2 text-sm text-gray-400">
             <p>{props.event.content}</p>
           </div>
         </div>

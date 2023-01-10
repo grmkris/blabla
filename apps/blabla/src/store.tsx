@@ -1,10 +1,11 @@
-import create, { StoreApi, UseBoundStore } from "zustand";
+import type { StoreApi, UseBoundStore } from "zustand";
+import create from "zustand";
 import type { StateStorage } from "zustand/middleware";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { del, get, set } from "idb-keyval";
-import { Identity } from "./components/Identity";
-import { Event } from "nostr-tools";
+import type { Identity } from "./components/Identity";
+import type { Event } from "nostr-tools";
 
 const relays1 = [
   "wss://nostr.bongbong.com",

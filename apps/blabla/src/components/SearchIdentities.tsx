@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, classNames, Input } from "./common/Input";
+import { Button, classNames, Common } from "./common/common";
 import Image from "next/image";
 import { useAppStore } from "../store";
 import { SearchResults } from "./search-profiles/SearchResults";
@@ -48,7 +48,7 @@ export const SearchIdentities = () => {
       <h1>Search Identities</h1>
       <SearchResults />
       <div className="flex flex-col space-y-4">
-        <Input
+        <Common
           name={"name"}
           label={"Name"}
           onChange={(e) => {

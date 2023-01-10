@@ -1,11 +1,11 @@
 import { type NextPage } from "next";
 import NoSSR from "../components/NoSSR";
 import { EventComponent } from "../components/Events";
-import { AddRelay } from "../components/AddRelay";
 import { Layout } from "../components/Layout";
 import { useRef } from "react";
 import { dateToUnix, useNostrEvents } from "nostr-react";
 import { EventKinds } from "../types";
+import { NewPost } from "../components/NewPost";
 
 export const GloboalFeed = () => {
   const now = useRef(new Date()); // Make sure current time isn't re-rendered
@@ -19,7 +19,8 @@ export const GloboalFeed = () => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Global Feed</h1>
+      <h1 className="w-128 text-2xl font-bold">Global Feed</h1>
+      <NewPost />
       <div className="flex flex-col items-start space-y-1">
         {events.map((event) => (
           <EventComponent event={{ ...event, seen: false }} key={event.id} />

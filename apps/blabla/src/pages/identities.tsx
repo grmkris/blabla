@@ -10,6 +10,7 @@ export default function Identities() {
       <NoSSR>
         <div className={"flex flex-wrap"}>
           <h1>Identities</h1>
+          <UserIdentities />
           <SearchIdentities />
           <Following />
         </div>

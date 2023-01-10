@@ -1,6 +1,7 @@
-import { NostrRelay, useAppStore } from "../store";
+import type { NostrRelay } from "../store";
+import { useAppStore } from "../store";
 import { useMemo } from "react";
-import { Button } from "./common/Input";
+import { Button } from "./common/common";
 import { SearchIdentities } from "./SearchIdentities";
 
 export const Relay = (props: { relay: NostrRelay; index: number }) => {

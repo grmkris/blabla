@@ -1,7 +1,7 @@
 import { Identity } from "./Identity";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
 import { useAppStore } from "../store";
-import { Button } from "./common/Input";
+import { Button } from "./common/common";
 
 export const UserIdentities = () => {
   const addOrUpdatIdentity = useAppStore.use.addOrUpdateIdentity();

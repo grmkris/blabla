@@ -1,8 +1,7 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Button } from "./common/Input";
 
 export const Layout = (props: { children: ReactNode }) => {
   const router = useRouter();

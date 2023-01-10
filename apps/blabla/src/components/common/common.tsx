@@ -3,7 +3,8 @@ import {
   CheckIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/20/solid";
-import { useState, Fragment, ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
+import { useState, Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import Image from "next/image";
 
@@ -15,7 +16,7 @@ export interface InputProps extends ComponentPropsWithoutRef<"input"> {
   error?: string;
   className?: string;
 }
-export const Input = (props: InputProps) => {
+export const Common = (props: InputProps) => {
   const {
     label,
     name,

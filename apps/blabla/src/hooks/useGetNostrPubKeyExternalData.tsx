@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import nostrPeople from "../test.json";
-import { NostrElement } from "../components/SearchIdentities";
+import type { NostrElement } from "../components/SearchIdentities";
 import { number } from "zod";
 
 export const useGetNostrPubKeyExternalData = (publicKey: string) => {

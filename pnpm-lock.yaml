@@ -30,6 +30,7 @@ importers:
     specifiers:
       '@headlessui/react': ^1.7.7
       '@heroicons/react': ^2.0.13
+      '@hookform/resolvers': ^2.9.10
       '@tailwindcss/aspect-ratio': ^0.4.2
       '@tailwindcss/forms': ^0.5.3
       '@tailwindcss/line-clamp': ^0.4.2
@@ -38,6 +39,7 @@ importers:
       '@trpc/next': ^10.0.0
       '@trpc/react-query': ^10.0.0
       '@trpc/server': ^10.0.0
+      '@ts-react/form': ^1.0.10
       '@types/node': ^18.0.0
       '@types/prettier': ^2.7.2
       '@types/react': ^18.0.14
@@ -67,11 +69,13 @@ importers:
     dependencies:
       '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
       '@heroicons/react': 2.0.13_react@18.2.0
+      '@hookform/resolvers': 2.9.10_react-hook-form@7.41.1
       '@tanstack/react-query': 4.19.1_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.5.0_@trpc+server@10.5.0
       '@trpc/next': 10.5.0_zvbwhveth6q3mqhgtvd43hxo4m
       '@trpc/react-query': 10.5.0_i3ykvnz4igoclzsim3lzrnoi4y
       '@trpc/server': 10.5.0
+      '@ts-react/form': 1.0.10_nqu456whxarwbzvpa3s4etzk3a
       daisyui: 2.46.1_r4gnkvssmvyxmi2wmat5xbx36a
       idb-keyval: 6.2.0
       next: 13.1.1_biqbaboplfbrettd7655fr4n2y
@@ -2426,6 +2430,14 @@ packages:
       react-hook-form: 7.35.0_react@18.2.0
     dev: false
 
+  /@hookform/resolvers/2.9.10_react-hook-form@7.41.1:
+    resolution: {integrity: sha512-JIL1DgJIlH9yuxcNGtyhsWX/PgNltz+5Gr6+8SX9fhXc/hPbEIk6wPI82nhgvp3uUb6ZfAM5mqg/x7KR7NAb+A==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.41.1_react@18.2.0
+    dev: false
+
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
     engines: {node: '>=10.10.0'}
@@ -3391,6 +3403,20 @@ packages:
 
   /@trpc/server/10.5.0:
     resolution: {integrity: sha512-AJ4ckDpnN8xuqWBox68KDTFpG12ZxKkW7fi9XJ+TLtyyNyqOMVUvKH9070CdxhqBZjebTASryE+/6lntkDFQxA==}
+    dev: false
+
+  /@ts-react/form/1.0.10_nqu456whxarwbzvpa3s4etzk3a:
+    resolution: {integrity: sha512-jer98Y/yuLb9nwX45FFbrDZoSWLAXE6A89cDTb5utvwA34acWmpy0WrKYst1s8rVc9LCdFucPn4fyXVU3l1CWg==}
+    peerDependencies:
+      '@hookform/resolvers': ^2.8.0
+      react: ^18.0.0
+      react-hook-form: ^7.39.0
+      zod: ^3.19.0
+    dependencies:
+      '@hookform/resolvers': 2.9.10_react-hook-form@7.41.1
+      react: 18.2.0
+      react-hook-form: 7.41.1_react@18.2.0
+      zod: 3.19.1
     dev: false
 
   /@tsconfig/node10/1.0.9:
