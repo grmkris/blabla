@@ -6,30 +6,19 @@ import { Button } from "../../components/common/common";
 import { useAppStore } from "../../store";
 import Link from "next/link";
 import NoSSR from "../../components/NoSSR";
+import { z } from "zod";
 
 export const Identity = () => {
   // get identity id from url
   const router = useRouter();
-  const { param } = router.query;
-  const identity = (param as string) ?? "";
-  console.log("identity", identity);
-  const { events } = useNostrEvents({
-    filter: { authors: [identity], limit: 20 },
-    enabled: !!identity,
-  });
+  const { identity } = router.query;
+  const parsed = z.string().safeParse(identity);
   return (
     <Layout>
-      <div className="mt-5 flex flex-col">
-        <ProfileCard identity={identity as string} />
-      </div>
-
       <div className="flex flex-col space-y-4">
         <h1>Events</h1>
-        {events.map((event) => {
-          return (
-            <EventComponent event={{ ...event, seen: false }} key={event.id} />
-          );
-        })}
+        {parsed.success && <IdentityView identity={parsed.data} />}
+        {!parsed.success && <div>Invalid identity</div>}
       </div>
     </Layout>
   );
@@ -37,9 +26,19 @@ export const Identity = () => {
 
 export default Identity;
 
-export const ProfileCard = (props: { identity: string }) => {
+export const IdentityView = (props: { identity: string }) => {
+  return (
+    <NoSSR>
+      <div className="mt-5 flex flex-col">
+        <IdentityInformationCard identity={props.identity} />
+        <IdentityEvents identity={props.identity} />
+      </div>
+    </NoSSR>
+  );
+};
+
+export const IdentityInformationCard = (props: { identity: string }) => {
   const addFollowing = useAppStore.use.addFollowing();
-  console.log("props.identity", props.identity);
   const { data: profileData } = useProfile({
     pubkey: props.identity,
   });
@@ -94,5 +93,22 @@ export const ProfileCard = (props: { identity: string }) => {
         </div>
       </Link>
     </NoSSR>
+  );
+};
+
+export const IdentityEvents = (props: { identity: string }) => {
+  const { events } = useNostrEvents({
+    filter: { authors: [props.identity], limit: 20 },
+    enabled: !!props.identity,
+  });
+  return (
+    <div className="flex flex-col space-y-4">
+      <h1>Events</h1>
+      {events.map((event) => {
+        return (
+          <EventComponent event={{ ...event, seen: false }} key={event.id} />
+        );
+      })}
+    </div>
   );
 };

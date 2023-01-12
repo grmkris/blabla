@@ -1,7 +1,7 @@
 import { useAppStore } from "../store";
 import { useGetNostrPubKeyExternalData } from "../hooks/useGetNostrPubKeyExternalData";
 import Image from "next/image";
-import { ProfileCard } from "../pages/identity/[identity]";
+import { IdentityInformationCard } from "../pages/identity/[identity]";
 
 export default function Following() {
   const following = useAppStore.use.following();
@@ -12,7 +12,7 @@ export default function Following() {
       <ul role="list" className="divide-y divide-gray-200">
         {following.map((person) => (
           <li key={person.id} className="flex py-4">
-            <ProfileCard identity={person.id} />
+            <IdentityInformationCard identity={person.id} />
           </li>
         ))}
       </ul>
