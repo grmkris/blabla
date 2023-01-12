@@ -16,26 +16,25 @@ export const GloboalFeed = () => {
     },
   });
   return (
-    <>
-      <h1 className="w-128 text-2xl font-bold">Global Feed</h1>
-      <NewPost />
-      <div className="flex flex-col items-start space-y-1">
-        {events.map((event) => (
-          <EventComponent event={{ ...event, seen: false }} key={event.id} />
-        ))}
+    <div className={"w-screen md:max-w-prose"}>
+      <div className={"m-4 mb-20"}>
+        <h1 className="text-2xl font-bold">Global Feed</h1>
+        <NewPost />
+        <div className="flex max-w-full flex-col items-start space-y-1">
+          {events.map((event) => (
+            <EventComponent event={{ ...event, seen: false }} key={event.id} />
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
 const Home: NextPage = () => {
   return (
     <Layout>
-      <h1 className="text-4xl font-bold text-white">
-        Welcome to <a>Blabla</a>!
-      </h1>
       <NoSSR>
-        <div className="max-w-prose items-center">
+        <div className="max-w-screen-sm items-center">
           <GloboalFeed />
         </div>
       </NoSSR>

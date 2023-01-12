@@ -49,7 +49,7 @@ export const ProfileCard = (props: { identity: string }) => {
   return (
     <NoSSR>
       <Link href={"/identity/" + props.identity}>
-        <div className="w-120 card bg-base-100 shadow-xl hover:bg-base-200">
+        <div className="card bg-base-100 shadow-xl hover:bg-base-200">
           <figure className="px-10 pt-10">
             <div className="avatar">
               <div className="w-24 rounded-xl">
@@ -63,7 +63,7 @@ export const ProfileCard = (props: { identity: string }) => {
               </div>
             </div>
           </figure>
-          <div className="max-w-120 card-body items-center text-center">
+          <div className="card-body items-center text-center">
             <h2 className="card-title">{profileData?.display_name}</h2>
             <h3 className="card-title">{profileData?.name}</h3>
             <p>{profileData?.about}</p>
@@ -76,16 +76,16 @@ export const ProfileCard = (props: { identity: string }) => {
             </div>
             <div className="card-actions">
               <div className="btn-group">
-                <Button className="btn btn-sm">Follow</Button>
+                <Button className="btn-sm btn">Follow</Button>
                 <Button
-                  className="btn btn-sm"
+                  className="btn-sm btn"
                   onClick={() => {
                     handleBookmark(props.identity);
                   }}
                 >
                   Bookmark
                 </Button>
-                <Button className="btn btn-sm" disabled={true}>
+                <Button className="btn-sm btn" disabled={true}>
                   Donate
                 </Button>
               </div>

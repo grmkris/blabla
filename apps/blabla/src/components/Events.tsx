@@ -1,46 +1,12 @@
 import type { BlaBlaEvent } from "../store";
-import { useNostrStore } from "../store";
 import { useNostrEvents, useProfile } from "nostr-react";
 import Link from "next/link";
-
-export const Events = () => {
-  const events = useNostrStore.use.events();
-  console.log("events", events);
-  return (
-    <>
-      <div className="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900">Events</h3>
-        <div className="flow-root bg-white px-4 py-4 shadow sm:rounded-md sm:px-6">
-          <ul role="list" className="-mb-8">
-            {events.map((activityItem, activityItemIdx) => (
-              <li key={activityItem.id}>
-                <div className="relative pb-8">
-                  {activityItemIdx !== events.length - 1 ? (
-                    <span
-                      className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
-                      aria-hidden="true"
-                    />
-                  ) : null}
-                  <div className="relative flex items-start space-x-3">
-                    {events.map((event) => (
-                      <EventComponent event={event} key={event.id} />
-                    ))}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </>
-  );
-};
 
 export const EventComponent = (props: { event: BlaBlaEvent }) => {
   console.log("eventComponent", props.event);
   const { data: profileData } = useProfile({ pubkey: props.event.pubkey });
   return (
-    <div className="card w-128 bg-base-100 shadow-xl">
+    <div className="card min-w-0 max-w-full overflow-auto bg-base-100 shadow-xl">
       <div className="card-body">
         <Link href={`/identity/${props.event.pubkey}`}>
           <div className="card-title hover:bg-base-200">
@@ -68,7 +34,7 @@ export const EventComponent = (props: { event: BlaBlaEvent }) => {
               {new Date(props.event.created_at * 1000).toLocaleString()}
             </p>
           </div>
-          <div className="mt-2 text-sm text-gray-400">
+          <div className="mt-2 overflow-hidden text-ellipsis text-sm text-gray-400">
             <p>{props.event.content}</p>
           </div>
           <div className="mt-2 text-sm text-gray-400">
@@ -85,18 +51,20 @@ export const EventComponent = (props: { event: BlaBlaEvent }) => {
                 }
               })}
             </div>
-            <div className={"flex flex-col"}>
-              {props.event.tags.map((tag) => {
-                if (tag[0] === "e" && tag[1]) {
-                  return (
-                    <EventReferencedEventComponent
-                      eventId={tag[1]}
-                      key={tag[1]}
-                    />
-                  );
-                }
-              })}
-            </div>
+            {
+              <div className={"flex flex-col"}>
+                {props.event.tags.map((tag) => {
+                  if (tag[0] === "e" && tag[1]) {
+                    return (
+                      <EventReferencedEventComponent
+                        eventId={tag[1]}
+                        key={tag[1]}
+                      />
+                    );
+                  }
+                })}
+              </div>
+            }
           </div>
         </div>
       </div>
