@@ -102,13 +102,20 @@ export const IdentityEvents = (props: { identity: string }) => {
     enabled: !!props.identity,
   });
   return (
-    <div className="flex flex-col space-y-4">
-      <h1>Events</h1>
-      {events.map((event) => {
-        return (
-          <EventComponent event={{ ...event, seen: false }} key={event.id} />
-        );
-      })}
+    <div className={"w-screen md:max-w-prose"}>
+      <div className={"m-4 mb-20"}>
+        <div className="flex flex-col space-y-4">
+          <h1>Events</h1>
+          {events.map((event) => {
+            return (
+              <EventComponent
+                event={{ ...event, seen: false }}
+                key={event.id}
+              />
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

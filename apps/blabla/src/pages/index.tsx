@@ -11,7 +11,7 @@ export const GloboalFeed = () => {
   const now = useRef(new Date()); // Make sure current time isn't re-rendered
   const { events } = useNostrEvents({
     filter: {
-      since: dateToUnix(now.current), // all new events from now
+      since: dateToUnix(now.current) - 120, // all new events from now
       kinds: [EventKinds.TEXT_NOTE],
     },
   });

@@ -3,7 +3,6 @@ import { useNostrEvents, useProfile } from "nostr-react";
 import Link from "next/link";
 
 export const EventComponent = (props: { event: BlaBlaEvent }) => {
-  console.log("eventComponent", props.event);
   const { data: profileData } = useProfile({ pubkey: props.event.pubkey });
   return (
     <div className="card min-w-0 max-w-full overflow-auto bg-base-100 shadow-xl">
