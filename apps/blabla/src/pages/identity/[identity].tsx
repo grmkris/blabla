@@ -29,9 +29,11 @@ export default Identity;
 export const IdentityView = (props: { identity: string }) => {
   return (
     <NoSSR>
-      <div className="mt-5 flex flex-col">
-        <IdentityInformationCard identity={props.identity} />
-        <IdentityEvents identity={props.identity} />
+      <div className={"mt-5 flex w-screen flex-col md:max-w-prose"}>
+        <div className={"m-4 mb-20"}>
+          <IdentityInformationCard identity={props.identity} />
+          <IdentityEvents identity={props.identity} />
+        </div>
       </div>
     </NoSSR>
   );
@@ -66,7 +68,7 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             <h2 className="card-title">{profileData?.display_name}</h2>
             <h3 className="card-title">{profileData?.name}</h3>
             <p>{profileData?.about}</p>
-            <div className={"flex justify-between"}>
+            <div className={"flex flex-col justify-between md:flex-row"}>
               <div className="badge-outline badge max-w-xs truncate hover:text-clip">
                 {profileData?.npub}
               </div>
@@ -102,20 +104,13 @@ export const IdentityEvents = (props: { identity: string }) => {
     enabled: !!props.identity,
   });
   return (
-    <div className={"w-screen md:max-w-prose"}>
-      <div className={"m-4 mb-20"}>
-        <div className="flex flex-col space-y-4">
-          <h1>Events</h1>
-          {events.map((event) => {
-            return (
-              <EventComponent
-                event={{ ...event, seen: false }}
-                key={event.id}
-              />
-            );
-          })}
-        </div>
-      </div>
+    <div className="flex flex-col space-y-4">
+      <h1>Events</h1>
+      {events.map((event) => {
+        return (
+          <EventComponent event={{ ...event, seen: false }} key={event.id} />
+        );
+      })}
     </div>
   );
 };
