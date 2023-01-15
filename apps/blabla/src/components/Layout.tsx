@@ -2,6 +2,12 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import {
+  BookmarkSquareIcon,
+  ChevronUpIcon,
+  HomeIcon,
+  InboxStackIcon,
+} from "@heroicons/react/20/solid";
 
 export const Layout = (props: { children: ReactNode }) => {
   const [mode, setMode] = useState("dark");
@@ -37,10 +43,18 @@ export const Layout = (props: { children: ReactNode }) => {
 export const Navigation = () => {
   return (
     <nav className="btm-nav">
-      <Link href="/">Home </Link>
-      <Link href="/relays">Relays</Link>
-      <Link href="/saved">Saved</Link>
-      <Link href="/profile">Profile</Link>
+      <Link href="/">
+        <HomeIcon className={"h-5 w-5"} />{" "}
+      </Link>
+      <Link href="/relays">
+        <InboxStackIcon className={"h-5 w-5"} />
+      </Link>
+      <Link href="/saved">
+        <BookmarkSquareIcon className={"h-5 w-5"} />
+      </Link>
+      <Link href="/profile">
+        <ChevronUpIcon className={"h-5 w-5"} />
+      </Link>
     </nav>
   );
 };
