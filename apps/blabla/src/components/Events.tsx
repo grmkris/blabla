@@ -51,7 +51,7 @@ export const EventComponent = (props: { note: Note }) => {
                 );
               })}
             </div>
-            <div className={"flex flex-col flex-col-reverse"}>
+            <div className={"flex flex-col"}>
               {props.note.referencedNotes.map((tag) => {
                 return (
                   <EventReferencedEventComponent eventId={tag} key={tag} />

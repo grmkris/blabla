@@ -17,8 +17,9 @@ export default function Saved() {
   return (
     <Layout>
       <NoSSR>
-        <div className={"flex flex-wrap"}>
-          <div className="tabs tabs-boxed" onClick={handleTabClick}>
+        <div className={"m-4 mb-20 flex flex-col flex-wrap"}>
+          <h1 className="text-2xl font-bold">Saved</h1>
+          <div className="tabs tabs-boxed w-fit" onClick={handleTabClick}>
             <a className={`tab ${selectedTab === "profiles" && "tab-active"}`}>
               Posts
             </a>

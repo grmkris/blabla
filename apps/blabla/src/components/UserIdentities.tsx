@@ -7,16 +7,16 @@ export const UserIdentities = () => {
   const addOrUpdateLocalProfile = useAppStore.use.addOrUpdateLocalProfile();
   const localProfiles = useAppStore.use.localProfiles();
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="m-4 mb-20 flex flex-col space-y-4">
+      <h1 className="max-w-screen-sm text-xl font-bold">Identities</h1>
       {localProfiles.map((identity) => (
-        <Identity identity={identity} key={identity.npub} />
+        <Identity identity={identity} key={identity.publicKey} />
       ))}
       <Button
         onClick={() => {
           const sk = generatePrivateKey(); // `sk` is a hex string
           const pk = getPublicKey(sk); // `pk` is a hex string
           addOrUpdateLocalProfile({
-            npub: pk,
             privateKey: sk,
             publicKey: pk,
           });

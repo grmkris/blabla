@@ -20,7 +20,7 @@ export const GloboalFeed = () => {
     <div className={"m-4 mb-20"}>
       <h1 className="text-2xl font-bold">Global Feed</h1>
       <NewPost />
-      <div className="flex max-w-full flex-col flex-col-reverse items-start space-y-1">
+      <div className="flex max-w-full flex-col flex-col items-start space-y-2">
         {events.map(eventToNoteMapper).map((note) => (
           <EventComponent note={note} key={note.event.id} />
         ))}
