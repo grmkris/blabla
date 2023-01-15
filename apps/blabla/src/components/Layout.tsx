@@ -20,7 +20,6 @@ export const Layout = (props: { children: ReactNode }) => {
       <Head>
         <title>Blabla</title>
         <meta name="description" content="Blabla is nostr client app" />
-        <meta name="viewport" content="viewport-fit=cover" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
