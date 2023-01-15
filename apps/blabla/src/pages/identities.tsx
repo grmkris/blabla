@@ -7,7 +7,7 @@ export default function Identities() {
   return (
     <Layout>
       <NoSSR>
-        <div className={"flex flex-wrap text-white"}>
+        <div className={"flex flex-wrap"}>
           <h1>Identities</h1>
           <Following />
           <SearchIdentities />

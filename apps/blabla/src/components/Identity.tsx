@@ -13,7 +13,7 @@ export type ExternalIdentityData = {
 
 export const Identity = (props: { identity: Identity }) => {
   return (
-    <div className={"text-white"}>
+    <div>
       <h1>Identity</h1>
       <p>Name: {props.identity.externalData?.name}</p>
       <p>Public Key: {props.identity.publicKey}</p>
