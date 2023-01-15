@@ -7,7 +7,7 @@ import { TextField } from "../common/TextField";
 import { useGetSubgraphStatus } from "../../hooks/useGetSubgraphStatus";
 import type { SubgraphForm } from "../../types/types";
 import { useEffect, useState } from "react";
-import NewTagField from "./NewTagField";
+import CreatableSelect from "react-select/creatable";
 
 type Props = {
   formData?: SubgraphForm;
@@ -15,11 +15,6 @@ type Props = {
 };
 
 export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
-  const [newInputTag, setNewInputTag] = useState({
-    isShown: false,
-    newTag: "",
-  });
-
   const { addInput, editInput } = useAppStore((state) => ({
     addInput: state.addSubgraph,
     editInput: state.updateSubgraph,
@@ -49,13 +44,12 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
     reset();
   };
 
-  const addNewTagHandler = () => {
-    if (!newInputTag.newTag) return;
+  const addNewTagHandler = (inputValue: string) => {
+    if (!inputValue) return;
 
-    addTag(newInputTag.newTag);
-    setNewInputTag({ isShown: false, newTag: "" });
+    addTag(inputValue);
 
-    setValue("tag", newInputTag.newTag);
+    setValue("tag", inputValue);
   };
 
   return (
@@ -148,7 +142,7 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                 )}
               </label>
 
-              <Select
+              <CreatableSelect
                 className="w-full"
                 instanceId={"tag_select"}
                 onChange={(option) => onChange(option?.value)}
@@ -181,28 +175,11 @@ export const CreateSubgraphForm = ({ formData, setModalOpen }: Props) => {
                     primary: "#818cf8",
                   },
                 })}
+                onCreateOption={addNewTagHandler}
+                isClearable
               />
-              <div className="flex justify-end py-1">
-                <p
-                  className="text_link text-sm"
-                  onClick={() =>
-                    setNewInputTag({
-                      ...newInputTag,
-                      isShown: !newInputTag.isShown,
-                    })
-                  }
-                >
-                  {!newInputTag.isShown ? " Add new tag?" : "Close input"}
-                </p>
-              </div>
             </>
           )}
-        />
-
-        <NewTagField
-          newInputTag={newInputTag}
-          setNewInputTag={setNewInputTag}
-          addNewTagHandler={addNewTagHandler}
         />
 
         <input type="submit" className={"btn my-6 bg-primary"} />
