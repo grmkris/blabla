@@ -9,6 +9,7 @@ import { z } from "zod";
 import type { NostrProfile } from "../../store/appStore";
 import { useAppStore } from "../../store/appStore";
 import { eventToNoteMapper } from "../../store/nostrStore";
+import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -41,6 +42,7 @@ export const IdentityView = (props: { identity: string }) => {
 
 export const IdentityInformationCard = (props: { identity: string }) => {
   const addOrUpdateSavedProfile = useAppStore.use.addOrUpdateSavedProfile();
+  const removeSavedProfile = useAppStore.use.removeSavedProfile();
   const savedProfile = useAppStore.use
     .saved()
     .profiles.find((x) => x.pubkey === props.identity);
@@ -49,6 +51,9 @@ export const IdentityInformationCard = (props: { identity: string }) => {
   });
   const handleSave = (profileData: NostrProfile) => {
     addOrUpdateSavedProfile(profileData);
+  };
+  const handleRemove = (profileData: NostrProfile) => {
+    removeSavedProfile(profileData);
   };
 
   const profile = savedProfile || profileData;
@@ -74,8 +79,8 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             <h2 className="card-title">{profile?.display_name}</h2>
             <h3 className="card-title">{profile?.name}</h3>
             <p>{profile?.about}</p>
-            <div className={"flex flex-col justify-between md:flex-row"}>
-              <div className="badge-outline badge max-w-xs truncate hover:text-clip">
+            <div className={"flex flex-col md:flex-row"}>
+              <div className="badge-outline badge w-56 truncate">
                 {profile?.npub}
               </div>
               <div className="badge-outline badge">{profile?.website}</div>
@@ -87,10 +92,18 @@ export const IdentityInformationCard = (props: { identity: string }) => {
                 <Button
                   className="btn-sm btn"
                   onClick={() => {
-                    handleSave({ ...profileData, pubkey: props.identity });
+                    if (savedProfile) {
+                      handleRemove({ ...profileData, pubkey: props.identity });
+                    } else {
+                      handleSave({ ...profileData, pubkey: props.identity });
+                    }
                   }}
                 >
-                  Save
+                  {savedProfile ? (
+                    <BookmarkSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <BookmarkIcon className="h-5 w-5" />
+                  )}
                 </Button>
               </div>
             </div>

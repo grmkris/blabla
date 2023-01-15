@@ -117,7 +117,7 @@ export const useAppStore = createSelectors(
             removeSavedProfile: (profile) => {
               set((state) => {
                 state.saved.profiles = state.saved.profiles.filter(
-                  (i) => i.npub !== profile.npub
+                  (i) => i.pubkey !== profile.pubkey
                 );
               });
             },
