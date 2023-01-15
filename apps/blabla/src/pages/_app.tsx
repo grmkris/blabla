@@ -4,13 +4,14 @@ import { trpc } from "../utils/trpc";
 
 import "../styles/globals.css";
 import { NostrProvider } from "nostr-react";
-import { useAppStore } from "../store";
 import { Toaster } from "react-hot-toast";
+import { useAppStore } from "../store/appStore";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  const relayUrls = useAppStore.use.nostrRelays();
+  const { nostrRelays } = useAppStore.use.saved();
+
   return (
-    <NostrProvider relayUrls={relayUrls.map((x) => x.url)} debug={true}>
+    <NostrProvider relayUrls={nostrRelays.map((x) => x.url)} debug={true}>
       <Component {...pageProps} />
       <Toaster />
     </NostrProvider>

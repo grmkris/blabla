@@ -5,12 +5,12 @@ import {
   Kind,
   signEvent,
 } from "nostr-tools";
-import { useAppStore } from "../store";
 import { Button } from "./common/common";
 import { createTsForm } from "@ts-react/form";
 import { z } from "zod";
 import { TextArea } from "./common/TextArea";
 import toast from "react-hot-toast";
+import { useAppStore } from "../store/appStore";
 
 // create the mapping
 const mapping = [[z.string(), TextArea]] as const; // 👈 `as const` is necessary
@@ -23,7 +23,7 @@ const NewPostSchema = z.object({
 });
 export const NewPost = () => {
   const { publish } = useNostr();
-  const identities = useAppStore.use.identities();
+  const identities = useAppStore.use.localProfiles();
   function onSubmit(data: z.infer<typeof NewPostSchema>) {
     if (identities.length === 0 || !identities[0]?.privateKey) {
       toast.custom((t) => (

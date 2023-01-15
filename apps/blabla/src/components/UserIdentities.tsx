@@ -1,22 +1,22 @@
 import { Identity } from "./Identity";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
-import { useAppStore } from "../store";
 import { Button } from "./common/common";
+import { useAppStore } from "../store/appStore";
 
 export const UserIdentities = () => {
-  const addOrUpdatIdentity = useAppStore.use.addOrUpdateIdentity();
-  const identities = useAppStore.use.identities();
+  const addOrUpdateLocalProfile = useAppStore.use.addOrUpdateLocalProfile();
+  const localProfiles = useAppStore.use.localProfiles();
   return (
     <div className="flex flex-col space-y-4">
-      {identities.map((identity) => (
-        <Identity identity={identity} key={identity.id} />
+      {localProfiles.map((identity) => (
+        <Identity identity={identity} key={identity.npub} />
       ))}
       <Button
         onClick={() => {
           const sk = generatePrivateKey(); // `sk` is a hex string
           const pk = getPublicKey(sk); // `pk` is a hex string
-          addOrUpdatIdentity({
-            id: pk,
+          addOrUpdateLocalProfile({
+            npub: pk,
             privateKey: sk,
             publicKey: pk,
           });

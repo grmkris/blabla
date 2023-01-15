@@ -1,10 +1,10 @@
 import { WifiIcon } from "@heroicons/react/20/solid";
-import { useAppStore } from "../store";
 import { useState } from "react";
 import { Button, Common } from "./common/common";
+import { useAppStore } from "../store/appStore";
 
 export const AddRelay = () => {
-  const addOrUpdateRelay = useAppStore.use.addOrUpdateRelay();
+  const addOrUpdateRelay = useAppStore.use.addOrUpdateNostrRelay();
   const [relayUrl, setRelayUrl] = useState<string>("");
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
@@ -30,7 +30,6 @@ export const AddRelay = () => {
         onClick={() => {
           addOrUpdateRelay({
             url: relayUrl,
-            id: relayUrl,
             status: "idle",
           });
           setRelayUrl("");

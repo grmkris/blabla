@@ -1,11 +1,10 @@
-import type { NostrRelay } from "../store";
-import { useAppStore } from "../store";
 import { useMemo } from "react";
 import { Button } from "./common/common";
-import { SearchIdentities } from "./SearchIdentities";
+import type { NostrRelay } from "../store/appStore";
+import { useAppStore } from "../store/appStore";
 
 export const Relay = (props: { relay: NostrRelay; index: number }) => {
-  const removeRelay = useAppStore.use.removeRelay();
+  const removeRelay = useAppStore.use.removeNostrRelay();
   const relayStatusTextColor = useMemo(() => {
     switch (props.relay.status) {
       case "connected":
@@ -22,7 +21,7 @@ export const Relay = (props: { relay: NostrRelay; index: number }) => {
       <h1>Nostr Relay</h1>
       <p>Relay: {props.relay.url}</p>
       <p className={relayStatusTextColor}>Status: {props.relay.status}</p>
-      <Button onClick={() => removeRelay(props.index)}>Remove Relay</Button>
+      <Button onClick={() => removeRelay(props.relay.url)}>Remove Relay</Button>
     </div>
   );
 };

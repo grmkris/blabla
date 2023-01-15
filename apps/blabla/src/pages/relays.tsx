@@ -16,7 +16,6 @@ export default function Relays() {
               key={relay.url}
               relay={{
                 url: relay.url,
-                id: relay.url,
                 status: relay.status === 1 ? "connected" : "connecting",
               }}
               index={index}

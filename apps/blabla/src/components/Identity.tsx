@@ -1,10 +1,3 @@
-export type Identity = {
-  id: string;
-  publicKey: string;
-  privateKey?: string;
-  externalData?: ExternalIdentityData;
-};
-
 export type ExternalIdentityData = {
   name: string;
   image: string;

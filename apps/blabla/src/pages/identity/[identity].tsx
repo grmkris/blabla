@@ -3,12 +3,14 @@ import { useNostrEvents, useProfile } from "nostr-react";
 import { Layout } from "../../components/Layout";
 import { EventComponent } from "../../components/Events";
 import { Button } from "../../components/common/common";
-import { useAppStore } from "../../store";
 import Link from "next/link";
 import NoSSR from "../../components/NoSSR";
 import { z } from "zod";
+import type { NostrProfile } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore";
+import { eventToNoteMapper } from "../../store/nostrStore";
 
-export const Identity = () => {
+export const IdentityPage = () => {
   // get identity id from url
   const router = useRouter();
   const { identity } = router.query;
@@ -24,29 +26,33 @@ export const Identity = () => {
   );
 };
 
-export default Identity;
+export default IdentityPage;
 
 export const IdentityView = (props: { identity: string }) => {
   return (
     <NoSSR>
-      <div className={"mt-5 flex w-screen flex-col md:max-w-prose"}>
-        <div className={"m-4 mb-20"}>
-          <IdentityInformationCard identity={props.identity} />
-          <IdentityEvents identity={props.identity} />
-        </div>
+      <div className={"m-4 mb-20"}>
+        <IdentityInformationCard identity={props.identity} />
+        <IdentityEvents identity={props.identity} />
       </div>
     </NoSSR>
   );
 };
 
 export const IdentityInformationCard = (props: { identity: string }) => {
-  const addFollowing = useAppStore.use.addFollowing();
+  const addOrUpdateSavedProfile = useAppStore.use.addOrUpdateSavedProfile();
+  const savedProfile = useAppStore.use
+    .saved()
+    .profiles.find((x) => x.pubkey === props.identity);
   const { data: profileData } = useProfile({
     pubkey: props.identity,
   });
-  const handleBookmark = (pubkey: string) => {
-    addFollowing({ id: pubkey, publicKey: pubkey });
+  const handleSave = (profileData: NostrProfile) => {
+    addOrUpdateSavedProfile(profileData);
   };
+
+  const profile = savedProfile || profileData;
+
   return (
     <NoSSR>
       <Link href={"/identity/" + props.identity}>
@@ -56,8 +62,8 @@ export const IdentityInformationCard = (props: { identity: string }) => {
               <div className="w-24 rounded-xl">
                 <img
                   src={
-                    profileData?.picture
-                      ? profileData?.picture
+                    profile?.picture
+                      ? profile?.picture
                       : "/images/placeholder.png"
                   }
                 />
@@ -65,15 +71,15 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             </div>
           </figure>
           <div className="card-body items-center text-center">
-            <h2 className="card-title">{profileData?.display_name}</h2>
-            <h3 className="card-title">{profileData?.name}</h3>
-            <p>{profileData?.about}</p>
+            <h2 className="card-title">{profile?.display_name}</h2>
+            <h3 className="card-title">{profile?.name}</h3>
+            <p>{profile?.about}</p>
             <div className={"flex flex-col justify-between md:flex-row"}>
               <div className="badge-outline badge max-w-xs truncate hover:text-clip">
-                {profileData?.npub}
+                {profile?.npub}
               </div>
-              <div className="badge-outline badge">{profileData?.website}</div>
-              <div className="badge-outline badge">{profileData?.lud16}</div>
+              <div className="badge-outline badge">{profile?.website}</div>
+              <div className="badge-outline badge">{profile?.lud16}</div>
             </div>
             <div className="card-actions">
               <div className="btn-group">
@@ -81,13 +87,10 @@ export const IdentityInformationCard = (props: { identity: string }) => {
                 <Button
                   className="btn-sm btn"
                   onClick={() => {
-                    handleBookmark(props.identity);
+                    handleSave({ ...profileData, pubkey: props.identity });
                   }}
                 >
-                  Bookmark
-                </Button>
-                <Button className="btn-sm btn" disabled={true}>
-                  Donate
+                  Save
                 </Button>
               </div>
             </div>
@@ -103,13 +106,12 @@ export const IdentityEvents = (props: { identity: string }) => {
     filter: { authors: [props.identity], limit: 20 },
     enabled: !!props.identity,
   });
+
   return (
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
-      {events.map((event) => {
-        return (
-          <EventComponent event={{ ...event, seen: false }} key={event.id} />
-        );
+      {events.map(eventToNoteMapper).map((note) => {
+        return <EventComponent note={note} key={note.event.id} />;
       })}
     </div>
   );

@@ -2,10 +2,11 @@ import { type NextPage } from "next";
 import NoSSR from "../components/NoSSR";
 import { EventComponent } from "../components/Events";
 import { Layout } from "../components/Layout";
+import { NewPost } from "../components/NewPost";
+import { eventToNoteMapper } from "../store/nostrStore";
 import { useRef } from "react";
 import { dateToUnix, useNostrEvents } from "nostr-react";
 import { EventKinds } from "../types";
-import { NewPost } from "../components/NewPost";
 
 export const GloboalFeed = () => {
   const now = useRef(new Date()); // Make sure current time isn't re-rendered
@@ -16,15 +17,13 @@ export const GloboalFeed = () => {
     },
   });
   return (
-    <div className={"w-screen md:max-w-prose"}>
-      <div className={"m-4 mb-20"}>
-        <h1 className="text-2xl font-bold">Global Feed</h1>
-        <NewPost />
-        <div className="flex max-w-full flex-col items-start space-y-1">
-          {events.map((event) => (
-            <EventComponent event={{ ...event, seen: false }} key={event.id} />
-          ))}
-        </div>
+    <div className={"m-4 mb-20"}>
+      <h1 className="text-2xl font-bold">Global Feed</h1>
+      <NewPost />
+      <div className="flex max-w-full flex-col flex-col-reverse items-start space-y-1">
+        {events.map(eventToNoteMapper).map((note) => (
+          <EventComponent note={note} key={note.event.id} />
+        ))}
       </div>
     </div>
   );
