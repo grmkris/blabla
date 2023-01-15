@@ -39,7 +39,6 @@ export const Navigation = () => {
       <Link href="/relays">Relays</Link>
       <Link href="/identities">Identities</Link>
       <Link href="/profile">Profile</Link>
-      <Link href="/profile">Profile</Link>
     </nav>
   );
 };
