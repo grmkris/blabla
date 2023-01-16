@@ -60,7 +60,7 @@ export const IdentityInformationCard = (props: { identity: string }) => {
 
   return (
     <NoSSR>
-      <Link href={"/identity/" + props.identity}>
+      <Link href={"/identity/" + props.identity} shallow>
         <div className="card bg-base-100 shadow-xl hover:bg-base-200">
           <figure className="px-10 pt-10">
             <div className="avatar">

@@ -43,16 +43,16 @@ export const Layout = (props: { children: ReactNode }) => {
 export const Navigation = () => {
   return (
     <nav className="btm-nav">
-      <Link href="/">
+      <Link href="/" shallow>
         <HomeIcon className={"h-5 w-5"} />{" "}
       </Link>
-      <Link href="/relays">
+      <Link href="/relays" shallow>
         <InboxStackIcon className={"h-5 w-5"} />
       </Link>
-      <Link href="/saved">
+      <Link href="/saved" shallow>
         <BookmarkSquareIcon className={"h-5 w-5"} />
       </Link>
-      <Link href="/profile">
+      <Link href="/profile" shallow>
         <ChevronUpIcon className={"h-5 w-5"} />
       </Link>
     </nav>

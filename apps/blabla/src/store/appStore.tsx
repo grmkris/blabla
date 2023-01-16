@@ -3,6 +3,7 @@ import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { Event } from "nostr-tools";
 import { createSelectors, LocalStateStorage } from "../utils/utils";
+import type { Note } from "./nostrStore";
 
 const relays: NostrRelay[] = [
   "wss://nostream-production-6f68.up.railway.app",
@@ -49,7 +50,7 @@ export const useAppStore = createSelectors(
             localProfiles: [],
             saved: {
               nostrRelays: relays,
-              events: [],
+              notes: [],
               profiles: [],
             },
             addOrUpdateLocalProfile: (identity) => {
@@ -88,15 +89,15 @@ export const useAppStore = createSelectors(
                 }
               });
             },
-            addOrUpdateSavedEvent: (event) => {
+            addOrUpdateNote: (event) => {
               set((state) => {
-                const index = state.saved.events.findIndex(
+                const index = state.saved.notes.findIndex(
                   (i) => i.id === event.id
                 );
                 if (index !== -1) {
-                  state.saved.events[index] = event;
+                  state.saved.notes[index] = event;
                 } else {
-                  state.saved.events.push(event);
+                  state.saved.notes.push(event);
                 }
               });
             },
@@ -121,9 +122,9 @@ export const useAppStore = createSelectors(
                 );
               });
             },
-            removeSavedEvent: (event) => {
+            removeNote: (event) => {
               set((state) => {
-                state.saved.events = state.saved.events.filter(
+                state.saved.notes = state.saved.notes.filter(
                   (i) => i.id !== event.id
                 );
               });
@@ -144,14 +145,14 @@ export interface IBlaBlaAppStore {
   saved: {
     nostrRelays: NostrRelay[];
     profiles: NostrProfile[];
-    events: BlaBlaEvent[];
+    notes: Note[];
   };
   addOrUpdateLocalProfile: (identity: NostrLocalProfile) => void;
   addOrUpdateNostrRelay: (relay: NostrRelay) => void;
   addOrUpdateSavedProfile: (profile: NostrProfile) => void;
-  addOrUpdateSavedEvent: (event: BlaBlaEvent) => void;
+  addOrUpdateNote: (event: Note) => void;
   removeLocalProfile: (identity: Pick<NostrLocalProfile, "publicKey">) => void;
   removeNostrRelay: (relay: Pick<NostrRelay, "url">) => void;
   removeSavedProfile: (profile: NostrProfile) => void;
-  removeSavedEvent: (event: BlaBlaEvent) => void;
+  removeNote: (event: Note) => void;
 }

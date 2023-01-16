@@ -20,18 +20,20 @@ export default function Saved() {
   return (
     <Layout>
       <NoSSR>
-        <div className={"m-4 mb-20 flex flex-col flex-wrap"}>
+        <div className={"m-4 mb-20 flex flex-col"}>
           <h1 className="text-2xl font-bold">Saved</h1>
           <div className="tabs tabs-boxed w-fit" onClick={handleTabClick}>
             <a className={`tab ${selectedTab === "profiles" && "tab-active"}`}>
-              Posts
-            </a>
-            <a className={`tab ${selectedTab === "events" && "tab-active"}`}>
               People
             </a>
+            <a className={`tab ${selectedTab === "events" && "tab-active"}`}>
+              Posts
+            </a>
           </div>
-          {selectedTab === "profiles" && <SavedProfiles />}
-          {selectedTab === "events" && <SavedEvents />}
+          <div>
+            {selectedTab === "profiles" && <SavedProfiles />}
+            {selectedTab === "events" && <SavedEvents />}
+          </div>
         </div>
       </NoSSR>
     </Layout>
@@ -55,18 +57,14 @@ function SavedProfiles() {
 }
 
 function SavedEvents() {
-  const events = useAppStore.use.saved().events;
-  console.log("events", events);
+  const notes = useAppStore.use.saved().notes;
   return (
     <div className="flex flex-col space-y-4">
       <h1>Saved profiles</h1>
-      <ul role="list" className="divide-y divide-gray-200">
-        {events.map(eventToNoteMapper).map((note, index) => (
-          <li key={index} className="flex py-4">
-            {note?.event && <EventComponent note={note} key={note.event.id} />}
-          </li>
-        ))}
-      </ul>
+      {notes.map(
+        (note, index) =>
+          note?.event && <EventComponent note={note} key={note.event.id} />
+      )}
     </div>
   );
 }
