@@ -1,14 +1,23 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { get } from "../sqlite";
 import type { EventTable } from "../types";
 import { EventTableSchema } from "../types";
 import { eventToNoteMapper } from "../store/nostrStore";
+import { useRef } from "react";
+import { dateToUnix } from "nostr-react";
 
 const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
-  return useInfiniteQuery({
+  const now = useRef(dateToUnix(new Date())); // Make sure current time isn't re-rendered
+  const queryCLient = useQueryClient();
+  console.log("USING NOW", now.current);
+  const globalFeed = useInfiniteQuery({
     queryKey: ["globalFeed"],
-    queryFn: async ({ pageParam = Date.now() }) => {
+    queryFn: async ({ pageParam = now.current }) => {
       const select = `select * from events where created_at < ${pageParam} order by created_at desc limit ${PAGE_SIZE}`;
       console.log("Select statement", select);
       const res1 = (await get(select)) as any[];
@@ -38,4 +47,28 @@ export const useGlobalFeed = () => {
         : undefined;
     },
   });
+
+  const numberOfNewItems = useQuery({
+    queryKey: ["numberOfNewItems"],
+    queryFn: async () => {
+      const select = `select count(*) from events where created_at > ${now.current}`;
+      const res1 = (await get(select)) as any[];
+      const count = res1[0][0]["count(*)"];
+      console.log("numberOfNewItems", count, now.current);
+      console.log("numberOfNewItems", count);
+      return count;
+    },
+    refetchInterval: 3000,
+  });
+
+  const refresh = () => {
+    now.current = dateToUnix(new Date());
+    queryCLient.invalidateQueries();
+  };
+
+  return {
+    globalFeed,
+    numberOfNewItems,
+    refresh,
+  };
 };
