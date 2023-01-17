@@ -15,6 +15,13 @@ const config = {
   },
   images: {
     domains: ['pbs.twimg.com', 'abs.twimg.com']
+  },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Important: return the modified config
+    if (!isServer) {
+      config.resolve.fallback = { ...config.resolve.fallback, fs: false };
+    }
+    return config;
   }
 };
 export default config;

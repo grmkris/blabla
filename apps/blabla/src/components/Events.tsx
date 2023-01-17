@@ -66,9 +66,9 @@ export const EventComponent = (props: { note: Note }) => {
           </div>
           <div className="card-actions mt-2 text-sm text-gray-400">
             <div className="avatar-group -space-x-6">
-              {props.note.referencedProfiles.map((tag) => {
+              {props.note.referencedProfiles.map((tag, index) => {
                 return (
-                  <EventReferencedAvatarComponent pubkey={tag} key={tag} />
+                  <EventReferencedAvatarComponent pubkey={tag} key={index} />
                 );
               })}
             </div>
@@ -88,9 +88,9 @@ export const EventComponent = (props: { note: Note }) => {
               </button>
             </div>
             <div className={"flex flex-col"}>
-              {props.note.referencedNotes.map((tag) => {
+              {props.note.referencedNotes.map((tag, index) => {
                 return (
-                  <EventReferencedEventComponent eventId={tag} key={tag} />
+                  <EventReferencedEventComponent eventId={tag} key={index} />
                 );
               })}
             </div>
@@ -102,7 +102,6 @@ export const EventComponent = (props: { note: Note }) => {
 };
 
 const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
-  console.log("EventReferencedAvatarComponent", props.pubkey);
   const { data: profileData } = useProfile({ pubkey: props.pubkey });
 
   if (!profileData) {

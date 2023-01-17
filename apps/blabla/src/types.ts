@@ -1,4 +1,6 @@
 // above is the enum version which we don't want to use, let's use the object version instead
+import { z } from "zod";
+
 export const EventKinds = {
   SET_METADATA: 0,
   TEXT_NOTE: 1,
@@ -37,3 +39,27 @@ export enum EventTags {
   Delegation = "delegation",
   Deduplication = "d",
 }
+
+export const EventTableSchema = z.object({
+  id: z.string(),
+  pubkey: z.string(),
+  kind: z.number(),
+  created_at: z.number(),
+  content: z.string(),
+  tags_full: z.string(),
+  sig: z.string(),
+});
+export type EventTable = z.infer<typeof EventTableSchema>;
+
+export const TagsTableSchema = z.object({
+  event_id: z.string(),
+  tag: z.string(),
+  value: z.string(),
+});
+export type TagsTable = z.infer<typeof TagsTableSchema>;
+
+export const SeenTableSchema = z.object({
+  event_id: z.string(),
+  relay: z.string(),
+});
+export type SeenTable = z.infer<typeof SeenTableSchema>;
