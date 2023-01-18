@@ -19,6 +19,7 @@ export const Layout = (props: { children: ReactNode }) => {
   const [mode, setMode] = useState("dark");
   const [isSqliteReady, setIsSqliteReady] = useState(false);
   const [showClearDBMessage, setShowClearDBMessage] = useState(false);
+  const router = useRouter();
 
   function callback() {
     setIsSqliteReady(true);
@@ -47,6 +48,8 @@ export const Layout = (props: { children: ReactNode }) => {
     const req = indexedDB.deleteDatabase("db.sqlite");
     req.onsuccess = function () {
       console.log("Deleted database successfully");
+      alert("Deleted database successfully");
+      router.reload();
     };
     req.onerror = function () {
       console.log("Couldn't delete database");
@@ -129,13 +132,13 @@ const NavigationTop = () => {
       <div className="navbar-start">
         {!isHome && (
           <button
-            className="btn-outline btn btn-circle mr-1 "
+            className="btn-outline btn-circle btn mr-1 "
             onClick={router.back}
           >
             <ArrowUturnLeftIcon className={"h-3 w-3"} />
           </button>
         )}
-        <a className="btn btn-ghost text-xl normal-case">BlaBla</a>
+        <a className="btn-ghost btn text-xl normal-case">BlaBla</a>
       </div>
       <div className="navbar-center">
         <div className="form-control">
