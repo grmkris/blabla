@@ -237,6 +237,58 @@ async function getNostrProfile(pubkey: string) {
   const profile = await nostrProfileRepository.findOne({ where: { pubkey } });
   return profile;
 }
+
+async function fullTextSearchEvents(query: string) {
+  const events = await eventsRepository
+    .createQueryBuilder("events")
+    .where("events.content LIKE :query ", {
+      query: `%${query}%`,
+    })
+    .orWhereInIds(query)
+    .orWhere("events.pubkey == :query ", { query: `%${query}%` })
+    .andWhere("events.kind == 1")
+    .getMany();
+  return events;
+}
+
+/**
+ * use
+ * pubkey
+ * npub
+ * name
+ * display_name
+ * lud06
+ * lud16
+ * nip06
+ * for search
+ * @param query
+ */
+async function fullTextSearchProfiles(query: string) {
+  const profiles = await nostrProfileRepository
+    .createQueryBuilder("profiles")
+    .whereInIds(query)
+    .orWhere("profiles.display_name LIKE :query ", {
+      query: `%${query}%`,
+    })
+    .orWhere("profiles.pubkey LIKE :query ", {
+      query: `%${query}%`,
+    })
+    .orWhere("profiles.npub = :query ", {
+      query: `%${query}%`,
+    })
+    .orWhere("profiles.lud06 = :query ", {
+      query: `%${query}%`,
+    })
+    .orWhere("profiles.lud16 = :query ", {
+      query: `%${query}%`,
+    })
+    .orWhere("profiles.nip06 = :query ", {
+      query: `%${query}%`,
+    })
+    .getMany();
+  return profiles;
+}
+
 const api = {
   createOrUpdateEvent,
   getEvents,
@@ -256,6 +308,8 @@ const api = {
   createOrUpdateNostrProfile,
   getNostrProfile,
   notifyWhenReady,
+  fullTextSearchEvents,
+  fullTextSearchProfiles,
 };
 export type Api = typeof api;
 

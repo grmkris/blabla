@@ -12,7 +12,7 @@ export const GloboalFeed = () => {
   const { globalFeed, numberOfNewItems, refresh, now } = useGlobalFeed();
   const { onEvent } = useNostrEvents({
     filter: {
-      since: now.current - 600, // all new events from now
+      since: now.current - 1000, // all new events from now
       kinds: [EventKinds.TEXT_NOTE],
     },
   });

@@ -8,6 +8,7 @@ import { useAppStore } from "../store/appStore";
 import { api } from "../web-sqlite/sqlite";
 import toast from "react-hot-toast";
 import { useGlobalFeed } from "./useGlobalFeed";
+import { NoIdentitiesToast } from "../components/NewPost";
 
 export const useNewEvent = () => {
   const { publish } = useNostr();
@@ -19,6 +20,10 @@ export const useNewEvent = () => {
       data: z.infer<typeof NewPostSchema>;
       eventId?: string;
     }) => {
+      if (identities.length === 0) {
+        NoIdentitiesToast();
+        return;
+      }
       const tags = [];
       if (variables?.eventId) {
         tags.push(["e", variables.eventId]);
