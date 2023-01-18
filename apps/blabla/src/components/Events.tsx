@@ -13,11 +13,13 @@ import {
   eventToNoteMapper,
   insertOrUpdateEvent,
 } from "../web-sqlite/client-functions";
-import { useQueryClient } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { useEffect, useState } from "react";
 import type { NostrProfile } from "../web-sqlite/schema";
 import { NewPost } from "./NewPost";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkImages from "remark-images";
 
 export const EventComponent = (props: { note: Note }) => {
   const [showInputCommentArea, setShowInputCommentArea] = useState(false);
@@ -89,8 +91,10 @@ export const EventComponent = (props: { note: Note }) => {
               </p>
             </Link>
           </div>
-          <div className="mt-2 overflow-hidden text-ellipsis text-sm text-gray-400">
-            <p className={"prose"}>{props.note.event.content}</p>
+          <div className="prose mt-2 overflow-hidden text-ellipsis text-sm text-gray-400">
+            <ReactMarkdown remarkPlugins={[remarkGfm, remarkImages]}>
+              {props.note.event.content}
+            </ReactMarkdown>
           </div>
           <div className="card-actions mt-2 text-sm text-gray-400">
             <div className="avatar-group -space-x-6">
@@ -102,7 +106,7 @@ export const EventComponent = (props: { note: Note }) => {
             </div>
             <div className="btn-group">
               <button
-                className="btn btn-sm"
+                className="btn-sm btn"
                 onClick={handleBookmarkEventClicked}
               >
                 {isBookmarked() ? (
@@ -111,10 +115,10 @@ export const EventComponent = (props: { note: Note }) => {
                   <BookmarkIcon className="h-5 w-5" />
                 )}
               </button>
-              <button className="btn btn-sm">
+              <button className="btn-sm btn">
                 <HeartIcon className={"h-5 w-5"} />
               </button>
-              <button className="btn btn-sm" onClick={handleCommentClick}>
+              <button className="btn-sm btn" onClick={handleCommentClick}>
                 <ChatBubbleLeftIcon className={"h-5 w-5"} />
               </button>
             </div>
@@ -123,7 +127,7 @@ export const EventComponent = (props: { note: Note }) => {
                 <NewPost eventId={props.note.event.id} />
               </div>
             )}
-            <div className={"flex flex-col"}>
+            <div className={"flex max-w-full flex-col"}>
               {props.note.referencedNotes.map((tag, index) => {
                 return (
                   <EventReferencedEventComponent eventId={tag} key={index} />
