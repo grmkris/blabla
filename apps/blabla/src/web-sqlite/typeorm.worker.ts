@@ -4,8 +4,14 @@ import IndexedDBBackend from "@nikvdp/absurd-sql/dist/indexeddb-backend";
 import type { Connection, Repository } from "typeorm";
 import { createConnection, MoreThan } from "typeorm";
 import { expose } from "comlink";
-import { BookmarkedEvents } from "./schema";
-import { BookmarkedProfiles, Events, NostrProfile, Seen, Tags } from "./schema";
+import {
+  BookmarkedEvents,
+  BookmarkedProfiles,
+  Events,
+  NostrProfile,
+  Seen,
+  Tags,
+} from "./schema";
 
 let isReady = false;
 async function setupTypeormEnvWithSqljs(dbPath: string) {
@@ -289,6 +295,20 @@ async function fullTextSearchProfiles(query: string) {
   return profiles;
 }
 
+async function getEventsByPubkeys(props: {
+  pageParam: number;
+  pageSize: number;
+  pubkeys: string[];
+}) {
+  return await eventsRepository
+    .createQueryBuilder("events")
+    .where("created_at < :pageParam", { pageParam: props.pageParam })
+    .andWhere("pubkey IN (:...pubkeys)", { pubkeys: props.pubkeys })
+    .orderBy("created_at", "DESC")
+    .limit(props.pageSize)
+    .getMany();
+}
+
 const api = {
   createOrUpdateEvent,
   getEvents,
@@ -310,6 +330,7 @@ const api = {
   notifyWhenReady,
   fullTextSearchEvents,
   fullTextSearchProfiles,
+  getEventsByPubkeys,
 };
 export type Api = typeof api;
 
