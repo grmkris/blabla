@@ -43,16 +43,6 @@ export const EventComponent = (props: { note: Note }) => {
     }
   };
 
-  const handleBookmarkProfileClicked = () => {
-    if (isBookmarkedProfile()) {
-      console.log("unbookmark", isBookmarkedProfile());
-      bookmarkProfile.mutate(props.note.event.pubkey);
-    } else {
-      console.log("bookmark");
-      unbookmarkProfile.mutate(props.note.event.pubkey);
-    }
-  };
-
   const handleNewNostrProfile = async (profile: NostrProfile) => {
     console.log("handleNewNostrProfile", profile);
     await api.createOrUpdateNostrProfile({

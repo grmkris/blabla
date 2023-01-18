@@ -16,7 +16,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEvents } from "../../hooks/useEvents";
 import type { NostrProfile } from "../../web-sqlite/schema";
 import { api } from "../../web-sqlite/sqlite";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { EventKinds } from "../../types";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -56,12 +57,13 @@ export const IdentityInformationCard = (props: { identity: string }) => {
     pubkey: props.identity,
   });
   const handleBookmarkProfileClicked = () => {
-    if (isBookmarked()) {
+    const bookmarked = isBookmarked();
+    if (bookmarked) {
       console.log("unbookmark", isBookmarked());
-      bookmarkProfile.mutate(props.identity);
+      unbookmarkProfile.mutate(props.identity);
     } else {
       console.log("bookmark");
-      unbookmarkProfile.mutate(props.identity);
+      bookmarkProfile.mutate(props.identity);
     }
   };
 
@@ -140,36 +142,19 @@ export const IdentityInformationCard = (props: { identity: string }) => {
 };
 
 export const IdentityEvents = (props: { identity: string }) => {
-  const { onEvent } = useNostrEvents({
-    filter: { authors: [props.identity], limit: 20 },
-    enabled: !!props.identity,
-  });
-  const queryClient = useQueryClient();
   const { eventsByPubkey } = useEvents({ pubkey: props.identity });
+  if (eventsByPubkey.isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  onEvent(async (event) => {
-    await insertOrUpdateEvent(event);
-    await queryClient.invalidateQueries();
-  });
-
+  console.log("eventsByPubkey", eventsByPubkey.data);
   return (
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
-      {eventsByPubkey.data
-        ?.map((x) =>
-          eventToNoteMapper({
-            pubkey: props.identity,
-            content: x.content,
-            created_at: x.created_at,
-            tags: JSON.parse(x.tags_full),
-            sig: x.sig,
-            id: x.id,
-            kind: x.kind,
-          })
-        )
-        ?.map((note) => {
-          return <EventComponent note={note} key={note.event.id} />;
-        })}
+      {eventsByPubkey.data.pages.map((page) =>
+        page.map((note) => <EventComponent note={note} key={note.event.id} />)
+      )}
+      <Button onClick={() => eventsByPubkey.fetchNextPage()}>Load more</Button>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { api } from "../web-sqlite/sqlite";
 import { useEffect, useState } from "react";
 import { proxy } from "comlink";
+import { Button } from "../components/common/common";
 
 const queryClient = new QueryClient();
 
@@ -25,8 +26,30 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     api.notifyWhenReady(proxy(callback));
   }, []);
 
+  const clearDB = () => {
+    const req = indexedDB.deleteDatabase("db.sqlite");
+    req.onsuccess = function () {
+      console.log("Deleted database successfully");
+    };
+    req.onerror = function () {
+      console.log("Couldn't delete database");
+    };
+    req.onblocked = function () {
+      console.log(
+        "Couldn't delete database due to the operation being blocked"
+      );
+    };
+  };
   if (!isSqliteReady) {
-    return <div>loading...</div>;
+    return (
+      <>
+        <div>loading...</div>
+        In case this message stays for a long time, your local data got
+        corrupted, nothing to worry about, the client will repopulate it. Please
+        clear the database by clicking the button below.
+        <Button onClick={clearDB}>Clear database</Button>
+      </>
+    );
   }
 
   return (
