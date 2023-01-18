@@ -3,23 +3,20 @@ import NoSSR from "../components/NoSSR";
 import { EventComponent } from "../components/Events";
 import { Layout } from "../components/Layout";
 import { NewPost } from "../components/NewPost";
-import { useRef } from "react";
-import { dateToUnix, useNostrEvents } from "nostr-react";
+import { useNostrEvents } from "nostr-react";
 import { EventKinds } from "../types";
 import { useGlobalFeed } from "../hooks/useGlobalFeed";
 import { Button } from "../components/common/common";
 import { insertOrUpdateEvent } from "../web-sqlite/client-functions";
 export const GloboalFeed = () => {
-  const now = useRef(new Date()); // Make sure current time isn't re-rendered
-  const { globalFeed, numberOfNewItems, refresh } = useGlobalFeed();
+  const { globalFeed, numberOfNewItems, refresh, now } = useGlobalFeed();
   const { onEvent } = useNostrEvents({
     filter: {
-      since: dateToUnix(now.current) - 120, // all new events from now
+      since: now.current - 600, // all new events from now
       kinds: [EventKinds.TEXT_NOTE],
     },
   });
-  onEvent((event) => {
-    console.log("New event", event);
+  onEvent(async (event) => {
     insertOrUpdateEvent(event);
   });
 
@@ -29,14 +26,7 @@ export const GloboalFeed = () => {
       <NewPost />
       <div className="flex max-w-full flex-col flex-col items-start space-y-2">
         {numberOfNewItems.data > 0 && (
-          <Button
-            onClick={() => {
-              refresh();
-              globalFeed.refetch();
-            }}
-          >
-            {numberOfNewItems.data} new items
-          </Button>
+          <Button onClick={refresh}>{numberOfNewItems.data} new items</Button>
         )}
         {globalFeed.data?.pages?.map((notes) =>
           notes.map((note) => (

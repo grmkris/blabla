@@ -84,7 +84,7 @@ export class Tags {
   @Column({ nullable: true })
   tag: string;
 
-  @Column()
+  @Column({ nullable: true })
   value: string;
 }
 

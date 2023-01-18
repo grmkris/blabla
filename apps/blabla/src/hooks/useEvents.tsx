@@ -7,10 +7,12 @@ import {
 import { api } from "../web-sqlite/sqlite";
 import { useCallback } from "react";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
+import { useEventFetcher } from "./useEventFetcher";
+import { Warning } from "postcss";
 
 export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
   const queryClient = useQueryClient();
-
+  const { fetch } = useEventFetcher({ eventId: props.eventId });
   const bookmarkEvent = useMutation(async (eventId: string) => {
     await api.bookmarkEvent(eventId);
     await queryClient.invalidateQueries();
@@ -32,8 +34,13 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
   const event = useQuery({
     queryKey: ["event", props.eventId],
     queryFn: async () => {
-      const event = await api.getEvent(props.eventId!);
-      if (!event) throw new Error("Event not found");
+      const event = await api.getEvent(props.eventId);
+      if (!event) {
+        fetch();
+        throw new Warning(
+          "Event not found, fetching... EventID: " + props.eventId
+        );
+      }
       return event;
     },
     enabled: !!props.eventId,

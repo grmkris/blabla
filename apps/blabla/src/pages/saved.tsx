@@ -23,7 +23,7 @@ export default function Saved() {
       <NoSSR>
         <div className={"m-4 mb-20 flex flex-col"}>
           <h1 className="text-2xl font-bold">Saved</h1>
-          <div className="tabs tabs-boxed w-fit" onClick={handleTabClick}>
+          <div className="tabs tabs-boxed mb-2 w-fit" onClick={handleTabClick}>
             <a className={`tab ${selectedTab === "profiles" && "tab-active"}`}>
               People
             </a>
@@ -45,7 +45,6 @@ function SavedProfiles() {
   const { bookmarkedProfiles } = useSqlite({});
   return (
     <div className="flex flex-col space-y-4">
-      <h1>Saved profiles</h1>
       {bookmarkedProfiles.data?.map(
         (person, index) =>
           person?.pubkey && (
@@ -60,7 +59,6 @@ function SavedEvents() {
   const { bookmarkedEvents } = useEvents({});
   return (
     <div className="flex flex-col space-y-4">
-      <h1>Saved profiles</h1>
       {bookmarkedEvents.data
         ?.map((event) =>
           eventToNoteMapper({

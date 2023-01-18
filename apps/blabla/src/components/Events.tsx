@@ -15,36 +15,30 @@ import {
 } from "../web-sqlite/client-functions";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { NostrProfile } from "../web-sqlite/schema";
+import { NewPost } from "./NewPost";
 
 export const EventComponent = (props: { note: Note }) => {
+  const [showInputCommentArea, setShowInputCommentArea] = useState(false);
   const { data: profileData } = useProfile({ pubkey: props.note.event.pubkey });
   const { bookmarkEvent, isBookmarked, unbookmarkEvent } = useEvents({
     eventId: props.note.event.id,
   });
-  const {
-    profile,
-    isBookmarked: isBookmarkedProfile,
-    followProfile,
-    bookmarkProfile,
-    unbookmarkProfile,
-    bookmarkedProfiles,
-  } = useSqlite({
+  const { profile } = useSqlite({
     pubkey: props.note.event.pubkey,
   });
+
+  const handleCommentClick = () => {
+    setShowInputCommentArea(!showInputCommentArea);
+  };
   const handleBookmarkEventClicked = () => {
-    if (isBookmarked()) {
-      console.log("unbookmark", isBookmarked());
-      unbookmarkEvent.mutate(props.note.event.id);
-    } else {
-      console.log("bookmark");
-      bookmarkEvent.mutate(props.note.event.id);
-    }
+    isBookmarked()
+      ? unbookmarkEvent.mutate(props.note.event.id)
+      : bookmarkEvent.mutate(props.note.event.id);
   };
 
   const handleNewNostrProfile = async (profile: NostrProfile) => {
-    console.log("handleNewNostrProfile", profile);
     await api.createOrUpdateNostrProfile({
       pubkey: props.note.event.pubkey,
       name: profile?.name,
@@ -108,7 +102,7 @@ export const EventComponent = (props: { note: Note }) => {
             </div>
             <div className="btn-group">
               <button
-                className="btn-sm btn"
+                className="btn btn-sm"
                 onClick={handleBookmarkEventClicked}
               >
                 {isBookmarked() ? (
@@ -117,13 +111,18 @@ export const EventComponent = (props: { note: Note }) => {
                   <BookmarkIcon className="h-5 w-5" />
                 )}
               </button>
-              <button className="btn-sm btn">
+              <button className="btn btn-sm">
                 <HeartIcon className={"h-5 w-5"} />
               </button>
-              <button className="btn-sm btn">
+              <button className="btn btn-sm" onClick={handleCommentClick}>
                 <ChatBubbleLeftIcon className={"h-5 w-5"} />
               </button>
             </div>
+            {showInputCommentArea && (
+              <div className={"flex flex-col"}>
+                <NewPost eventId={props.note.event.id} />
+              </div>
+            )}
             <div className={"flex flex-col"}>
               {props.note.referencedNotes.map((tag, index) => {
                 return (
@@ -162,7 +161,6 @@ const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
 };
 
 const EventReferencedEventComponent = (props: { eventId: string }) => {
-  const queryClient = useQueryClient();
   const { event } = useEvents({ eventId: props.eventId });
   const { onEvent } = useNostrEvents({
     filter: {
@@ -173,7 +171,6 @@ const EventReferencedEventComponent = (props: { eventId: string }) => {
 
   onEvent(async (event) => {
     await insertOrUpdateEvent(event);
-    await queryClient.invalidateQueries();
   });
 
   if (!event.data) {

@@ -12,7 +12,6 @@ const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
   const now = useRef(dateToUnix(new Date())); // Make sure current time isn't re-rendered
   const queryCLient = useQueryClient();
-  console.log("USING NOW", now.current);
   const globalFeed = useInfiniteQuery({
     queryKey: ["globalFeed"],
     queryFn: async ({ pageParam = now.current }) => {
@@ -42,6 +41,7 @@ export const useGlobalFeed = () => {
         ? firstPage[0].event.created_at
         : undefined;
     },
+    refetchInterval: false,
   });
 
   const numberOfNewItems = useQuery({
@@ -52,14 +52,16 @@ export const useGlobalFeed = () => {
     refetchInterval: 3000,
   });
 
-  const refresh = () => {
+  const refresh = async () => {
     now.current = dateToUnix(new Date());
-    queryCLient.invalidateQueries();
+    await queryCLient.invalidateQueries();
+    await globalFeed.refetch();
   };
 
   return {
     globalFeed,
     numberOfNewItems,
     refresh,
+    now,
   };
 };
