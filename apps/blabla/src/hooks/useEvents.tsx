@@ -1,6 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { useCallback } from "react";
+import { eventToNoteMapper } from "../web-sqlite/client-functions";
 
 export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
   const queryClient = useQueryClient();
@@ -38,20 +44,37 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
     return bookmarkedEvents.data.some((x) => x.id === props.eventId);
   }, [props.eventId, bookmarkedEvents.data]);
 
-  const eventsByPubkey = useQuery({
+  const PAGE_SIZE = 20;
+  const eventsByPubkey = useInfiniteQuery({
     queryKey: ["eventsByPubkey", props.pubkey],
-    queryFn: async () => {
-      return await api.getEvents({
+    queryFn: async ({ pageParam = 0 }) => {
+      const events = await api.getEvents({
         filter: "pubkey",
         filter_value: props.pubkey,
-        limit: 100,
+        limit: PAGE_SIZE,
         order: "DESC",
         filter_operator: "=",
-        offset: 0,
+        offset: pageParam,
         order_by: "created_at",
       });
+      return events.map((x) =>
+        eventToNoteMapper({
+          pubkey: x.pubkey,
+          tags: JSON.parse(x.tags_full),
+          sig: x.sig,
+          content: x.content,
+          created_at: x.created_at,
+          kind: x.kind,
+          id: x.id,
+        })
+      );
     },
-    enabled: !!props.pubkey,
+    getNextPageParam: (lastPage) => {
+      return lastPage.length === PAGE_SIZE ? PAGE_SIZE : undefined;
+    },
+    getPreviousPageParam: (firstPage) => {
+      return firstPage.length === PAGE_SIZE ? PAGE_SIZE : undefined;
+    },
   });
 
   return {
