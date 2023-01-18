@@ -3,12 +3,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { get } from "../sqlite";
-import type { EventTable } from "../types";
-import { EventTableSchema } from "../types";
-import { eventToNoteMapper } from "../store/nostrStore";
+import { get } from "../web-sqlite/sqlite";
 import { useRef } from "react";
 import { dateToUnix } from "nostr-react";
+import type { EventTable } from "../web-sqlite/schema";
+import { EventTableSchema } from "../web-sqlite/schema";
+import { eventToNoteMapper } from "../web-sqlite/client-functions";
 
 const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
@@ -21,6 +21,7 @@ export const useGlobalFeed = () => {
       const select = `select * from events where created_at < ${pageParam} order by created_at desc limit ${PAGE_SIZE}`;
       console.log("Select statement", select);
       const res1 = (await get(select)) as any[];
+      console.log("Select statement Result", res1);
       const events: EventTable[] = res1[0].map((x) =>
         EventTableSchema.parse(x)
       );

@@ -21,6 +21,8 @@ const config = {
     if (!isServer) {
       config.resolve.fallback = { ...config.resolve.fallback, fs: false };
     }
+    // FS fallback is needed for the sqlite3 package
+    config.resolve.fallback = { ...config.resolve.fallback, fs: false };
     return config;
   }
 };

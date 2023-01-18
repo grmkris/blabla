@@ -3,8 +3,8 @@ import { z } from "zod";
 import { Layout } from "../../components/Layout";
 import { useNostrEvents } from "nostr-react";
 import { EventComponent } from "../../components/Events";
-import { eventToNoteMapper } from "../../store/nostrStore";
 import NoSSR from "../../components/NoSSR";
+import { eventToNoteMapper } from "../../web-sqlite/client-functions";
 
 export const EventPage = () => {
   // get identity id from url

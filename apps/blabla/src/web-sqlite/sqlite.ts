@@ -1,8 +1,5 @@
-// sqlite helpers, lightly modified from [1] to provide better error handling
-//
-// [1]: https://github.com/ngokevin/expo-sqlite-plus-web/blob/main/src/db.web.ts
 import { initBackend } from "@nikvdp/absurd-sql/dist/indexeddb-main-thread";
-import type { EventTable, SeenTable, TagsTable } from "./types";
+import type { BookmarkTable, EventTable, SeenTable, TagsTable } from "./schema";
 
 export let worker;
 
@@ -31,7 +28,9 @@ export const ready = new Promise((resolve, reject) => {
   }
 });
 
-export async function exec(query: string | EventTable | TagsTable | SeenTable) {
+export async function exec(
+  query: string | EventTable | TagsTable | SeenTable | BookmarkTable
+) {
   await ready;
 
   return new Promise((resolve, reject) => {
@@ -39,11 +38,8 @@ export async function exec(query: string | EventTable | TagsTable | SeenTable) {
 
     function listener({ data }) {
       try {
-        const { id, result, error, type } = data;
-        console.log("Received data from worker", data);
-        if (id !== queryId) {
-          return;
-        }
+        const { id, result, error } = data;
+        if (id !== queryId) return;
         worker?.removeEventListener("message", listener);
         if (result && !error) {
           resolve(result);

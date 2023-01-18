@@ -44,7 +44,7 @@ importers:
       '@trpc/react-query': ^10.0.0
       '@trpc/server': ^10.0.0
       '@ts-react/form': ^1.0.10
-      '@types/node': ^18.11.18
+      '@types/node': ^16.11.10
       '@types/react': ^18.0.26
       '@types/react-dom': ^18.0.10
       '@typescript-eslint/eslint-plugin': ^5.48.1
@@ -64,6 +64,7 @@ importers:
       react-dom: 18.2.0
       react-hook-form: ^7.41.1
       react-hot-toast: ^2.4.0
+      sql.js: ^1.8.0
       superjson: 1.9.1
       tailwindcss: ^3.2.4
       typescript: ^4.9.4
@@ -92,6 +93,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.41.1_react@18.2.0
       react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
+      sql.js: 1.8.0
       superjson: 1.9.1
       use-immer: 0.8.1_immer@9.0.15+react@18.2.0
       zod: 3.19.1
@@ -101,7 +103,7 @@ importers:
       '@tailwindcss/aspect-ratio': 0.4.2_tailwindcss@3.2.4
       '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.4
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
-      '@types/node': 18.11.18
+      '@types/node': 16.18.11
       '@types/react': 18.0.26
       '@types/react-dom': 18.0.10
       '@typescript-eslint/eslint-plugin': 5.48.1_3jon24igvnqaqexgwtxk6nkpse
@@ -3549,6 +3551,10 @@ packages:
 
   /@types/minimist/1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
+
+  /@types/node/16.18.11:
+    resolution: {integrity: sha512-3oJbGBUWuS6ahSnEq1eN2XrCyf4YsWI8OyCvo7c64zQJNplk3mO84t53o8lfTk+2ji59g5ycfc6qQ3fdHliHuA==}
     dev: true
 
   /@types/node/18.11.18:
@@ -7832,6 +7838,10 @@ packages:
     dependencies:
       tslib: 2.4.0
     dev: true
+
+  /sql.js/1.8.0:
+    resolution: {integrity: sha512-3HD8pSkZL+5YvYUI8nlvNILs61ALqq34xgmF+BHpqxe68yZIJ1H+sIVIODvni25+CcxHUxDyrTJUL0lE/m7afw==}
+    dev: false
 
   /streamsearch/1.1.0:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}

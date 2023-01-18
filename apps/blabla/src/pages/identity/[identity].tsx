@@ -6,10 +6,16 @@ import { Button } from "../../components/common/common";
 import Link from "next/link";
 import NoSSR from "../../components/NoSSR";
 import { z } from "zod";
-import type { NostrProfile } from "../../store/appStore";
 import { useAppStore } from "../../store/appStore";
-import { eventToNoteMapper } from "../../store/nostrStore";
 import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
+import type { NostrProfileTable } from "../../web-sqlite/schema";
+import { useSqlite } from "../../hooks/useSqlite";
+import {
+  eventToNoteMapper,
+  insertOrUpdateEvent,
+} from "../../web-sqlite/client-functions";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEvents } from "../../hooks/useEvents";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -41,22 +47,20 @@ export const IdentityView = (props: { identity: string }) => {
 };
 
 export const IdentityInformationCard = (props: { identity: string }) => {
-  const addOrUpdateSavedProfile = useAppStore.use.addOrUpdateSavedProfile();
-  const removeSavedProfile = useAppStore.use.removeSavedProfile();
-  const savedProfile = useAppStore.use
-    .saved()
-    .profiles.find((x) => x.pubkey === props.identity);
+  const { bookmarkProfile, profile: savedProfile } = useSqlite({
+    pubkey: props.identity,
+  });
   const { data: profileData } = useProfile({
     pubkey: props.identity,
   });
-  const handleSave = (profileData: NostrProfile) => {
-    addOrUpdateSavedProfile(profileData);
+  const handleSave = (profileData: NostrProfileTable) => {
+    bookmarkProfile.mutate(profileData);
   };
-  const handleRemove = (profileData: NostrProfile) => {
-    removeSavedProfile(profileData);
+  const handleRemove = (profileData: NostrProfileTable) => {
+    bookmarkProfile.mutate(profileData);
   };
 
-  const profile = savedProfile || profileData;
+  const profile = savedProfile.data || profileData;
 
   return (
     <NoSSR>
@@ -115,17 +119,36 @@ export const IdentityInformationCard = (props: { identity: string }) => {
 };
 
 export const IdentityEvents = (props: { identity: string }) => {
-  const { events } = useNostrEvents({
+  const { onEvent } = useNostrEvents({
     filter: { authors: [props.identity], limit: 20 },
     enabled: !!props.identity,
+  });
+  const queryClient = useQueryClient();
+  const { eventsByPubkey } = useEvents({ pubkey: props.identity });
+
+  onEvent(async (event) => {
+    await insertOrUpdateEvent(event);
+    await queryClient.invalidateQueries();
   });
 
   return (
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
-      {events.map(eventToNoteMapper).map((note) => {
-        return <EventComponent note={note} key={note.event.id} />;
-      })}
+      {eventsByPubkey.data
+        .map((x) =>
+          eventToNoteMapper({
+            pubkey: props.identity,
+            content: x.content,
+            created_at: x.created_at,
+            tags: JSON.parse(x.tags_full),
+            sig: x.sig,
+            id: x.id,
+            kind: x.kind,
+          })
+        )
+        .map((note) => {
+          return <EventComponent note={note} key={note.event.id} />;
+        })}
     </div>
   );
 };
