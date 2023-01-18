@@ -1,7 +1,7 @@
 import type { Event as NostrEvent } from "nostr-tools/event";
 import { getEventHash, Kind, signEvent } from "nostr-tools";
 import { dateToUnix, useNostr } from "nostr-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import type { z } from "zod";
 import type { NewPostSchema } from "../components/NewPost";
 import { useAppStore } from "../store/appStore";
@@ -45,7 +45,6 @@ export const useNewEvent = () => {
         console.log("eventFromDb", eventFromDb);
       }
       console.log("eventFromDb end", eventFromDb);
-      await refresh();
       toast.success("Note sent");
     }
   );

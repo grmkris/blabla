@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import {
+  ArrowUturnLeftIcon,
+  BackwardIcon,
   BookmarkSquareIcon,
   ChevronUpIcon,
   HomeIcon,
@@ -11,6 +13,7 @@ import {
 import { api } from "../web-sqlite/sqlite";
 import { proxy } from "comlink";
 import { Button, LoadingSpinner } from "./common/common";
+import { useRouter } from "next/router";
 
 export const Layout = (props: { children: ReactNode }) => {
   const [mode, setMode] = useState("dark");
@@ -67,7 +70,10 @@ export const Layout = (props: { children: ReactNode }) => {
           mode === "dark" ? "text-white" : "text-black"
         }`}
       >
-        <div className={"w-screen md:max-w-prose"}>
+        <nav className="fixed top-0 z-50 w-full">
+          <NavigationTop />
+        </nav>
+        <div className={"mt-16 w-screen md:max-w-prose"}>
           {isSqliteReady ? (
             props.children
           ) : (
@@ -86,12 +92,12 @@ export const Layout = (props: { children: ReactNode }) => {
           )}
         </div>
       </main>
-      <Navigation />
+      <NavigationBottom />
     </>
   );
 };
 
-export const Navigation = () => {
+const NavigationBottom = () => {
   return (
     <nav className="btm-nav">
       <Link href="/" shallow>
@@ -107,5 +113,64 @@ export const Navigation = () => {
         <ChevronUpIcon className={"h-5 w-5"} />
       </Link>
     </nav>
+  );
+};
+
+const NavigationTop = () => {
+  const router = useRouter();
+  const { pathname } = router;
+  const isHome = pathname === "/";
+  const isRelays = pathname === "/relays";
+  const isSaved = pathname === "/saved";
+  const isProfile = pathname === "/profile";
+  return (
+    <div className="navbar bg-base-100">
+      <div className="navbar-start">
+        {!isHome && (
+          <button
+            className="btn-outline btn btn-circle mr-1 "
+            onClick={router.back}
+          >
+            <ArrowUturnLeftIcon className={"h-3 w-3"} />
+          </button>
+        )}
+        <a className="btn btn-ghost text-xl normal-case">BlaBla.Page</a>
+      </div>
+      <div className="navbar-center">
+        <div className="form-control">
+          <input
+            type="text"
+            placeholder="Search"
+            className="input-bordered input"
+          />
+        </div>
+      </div>
+      <div className="navbar-end">
+        <div className="dropdown-end dropdown">
+          <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+            <div className="w-10 rounded-full">
+              <img src="https://placeimg.com/80/80/people" />
+            </div>
+          </label>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-100 p-2 shadow"
+          >
+            <li>
+              <a className="justify-between">
+                Profile
+                <span className="badge">New</span>
+              </a>
+            </li>
+            <li>
+              <a>Settings</a>
+            </li>
+            <li>
+              <a>Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 };
