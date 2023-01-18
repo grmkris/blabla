@@ -6,9 +6,7 @@ import { Button } from "../../components/common/common";
 import Link from "next/link";
 import NoSSR from "../../components/NoSSR";
 import { z } from "zod";
-import { useAppStore } from "../../store/appStore";
 import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
-import type { NostrProfileTable } from "../../web-sqlite/schema";
 import { useSqlite } from "../../hooks/useSqlite";
 import {
   eventToNoteMapper,
@@ -16,6 +14,9 @@ import {
 } from "../../web-sqlite/client-functions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEvents } from "../../hooks/useEvents";
+import type { NostrProfile } from "../../web-sqlite/schema";
+import { api } from "../../web-sqlite/sqlite";
+import { useEffect } from "react";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -47,20 +48,44 @@ export const IdentityView = (props: { identity: string }) => {
 };
 
 export const IdentityInformationCard = (props: { identity: string }) => {
-  const { bookmarkProfile, profile: savedProfile } = useSqlite({
-    pubkey: props.identity,
-  });
+  const { profile, isBookmarked, bookmarkProfile, unbookmarkProfile } =
+    useSqlite({
+      pubkey: props.identity,
+    });
   const { data: profileData } = useProfile({
     pubkey: props.identity,
   });
-  const handleSave = (profileData: NostrProfileTable) => {
-    bookmarkProfile.mutate(profileData);
-  };
-  const handleRemove = (profileData: NostrProfileTable) => {
-    bookmarkProfile.mutate(profileData);
+  const handleBookmarkProfileClicked = () => {
+    if (isBookmarked()) {
+      console.log("unbookmark", isBookmarked());
+      bookmarkProfile.mutate(props.identity);
+    } else {
+      console.log("bookmark");
+      unbookmarkProfile.mutate(props.identity);
+    }
   };
 
-  const profile = savedProfile.data || profileData;
+  const handleNewNostrProfile = async (profile: NostrProfile) => {
+    console.log("handleNewNostrProfile", profile);
+    await api.createOrUpdateNostrProfile(profile);
+  };
+
+  useEffect(() => {
+    if (!profile.data) {
+      handleNewNostrProfile({
+        pubkey: props.identity,
+        name: profileData?.name,
+        picture: profileData?.picture,
+        display_name: profileData?.display_name,
+        about: profileData?.about,
+        npub: profileData?.npub,
+        lud06: profileData?.lud06,
+        lud16: profileData?.lud16,
+        nip06: profileData?.nip06,
+        website: profileData?.website,
+      });
+    }
+  });
 
   return (
     <NoSSR>
@@ -71,8 +96,8 @@ export const IdentityInformationCard = (props: { identity: string }) => {
               <div className="w-24 rounded-xl">
                 <img
                   src={
-                    profile?.picture
-                      ? profile?.picture
+                    profile?.data?.picture
+                      ? profile?.data?.picture
                       : "/images/placeholder.png"
                   }
                 />
@@ -80,30 +105,26 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             </div>
           </figure>
           <div className="card-body items-center text-center">
-            <h2 className="card-title">{profile?.display_name}</h2>
-            <h3 className="card-title">{profile?.name}</h3>
-            <p>{profile?.about}</p>
+            <h2 className="card-title">{profile?.data?.display_name}</h2>
+            <h3 className="card-title">{profile?.data?.name}</h3>
+            <p>{profile?.data?.about}</p>
             <div className={"flex flex-col md:flex-row"}>
               <div className="badge-outline badge w-56 truncate">
-                {profile?.npub}
+                {profile?.data?.npub}
               </div>
-              <div className="badge-outline badge">{profile?.website}</div>
-              <div className="badge-outline badge">{profile?.lud16}</div>
+              <div className="badge-outline badge">
+                {profile?.data?.website}
+              </div>
+              <div className="badge-outline badge">{profile?.data?.lud16}</div>
             </div>
             <div className="card-actions">
               <div className="btn-group">
                 <Button className="btn-sm btn">Follow</Button>
                 <Button
                   className="btn-sm btn"
-                  onClick={() => {
-                    if (savedProfile) {
-                      handleRemove({ ...profileData, pubkey: props.identity });
-                    } else {
-                      handleSave({ ...profileData, pubkey: props.identity });
-                    }
-                  }}
+                  onClick={handleBookmarkProfileClicked}
                 >
-                  {savedProfile ? (
+                  {isBookmarked() ? (
                     <BookmarkSlashIcon className="h-5 w-5" />
                   ) : (
                     <BookmarkIcon className="h-5 w-5" />
@@ -135,7 +156,7 @@ export const IdentityEvents = (props: { identity: string }) => {
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
       {eventsByPubkey.data
-        .map((x) =>
+        ?.map((x) =>
           eventToNoteMapper({
             pubkey: props.identity,
             content: x.content,
@@ -146,7 +167,7 @@ export const IdentityEvents = (props: { identity: string }) => {
             kind: x.kind,
           })
         )
-        .map((note) => {
+        ?.map((note) => {
           return <EventComponent note={note} key={note.event.id} />;
         })}
     </div>

@@ -21,8 +21,14 @@ const config = {
     if (!isServer) {
       config.resolve.fallback = { ...config.resolve.fallback, fs: false };
     }
-    // FS fallback is needed for the sqlite3 package
-    config.resolve.fallback = { ...config.resolve.fallback, fs: false };
+    config.devServer = {
+      publicPath: "auto",
+        hot: true,
+        headers: {
+        "Cross-Origin-Opener-Policy": "same-origin",
+          "Cross-Origin-Embedder-Policy": "require-corp",
+      },
+    };
     return config;
   }
 };

@@ -5,16 +5,29 @@ import "../styles/globals.css";
 import { NostrProvider } from "nostr-react";
 import { Toaster } from "react-hot-toast";
 import { useAppStore } from "../store/appStore";
-import type { Event } from "nostr-tools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { exec } from "../web-sqlite/sqlite";
-import type { EventTable, TagsTable } from "../web-sqlite/schema";
+import { api } from "../web-sqlite/sqlite";
+import { useEffect, useState } from "react";
+import { proxy } from "comlink";
 
 const queryClient = new QueryClient();
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const { nostrRelays } = useAppStore.use.saved();
+  const [isSqliteReady, setIsSqliteReady] = useState(false);
+
+  function callback() {
+    setIsSqliteReady(true);
+  }
+
+  useEffect(() => {
+    api.notifyWhenReady(proxy(callback));
+  }, []);
+
+  if (!isSqliteReady) {
+    return <div>loading...</div>;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

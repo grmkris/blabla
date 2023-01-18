@@ -14,23 +14,66 @@ import {
   insertOrUpdateEvent,
 } from "../web-sqlite/client-functions";
 import { useQueryClient } from "@tanstack/react-query";
+import { api } from "../web-sqlite/sqlite";
+import { useEffect } from "react";
+import type { NostrProfile } from "../web-sqlite/schema";
 
 export const EventComponent = (props: { note: Note }) => {
   const { data: profileData } = useProfile({ pubkey: props.note.event.pubkey });
-  const { bookmarkEvent, isBookmarked } = useEvents({
+  const { bookmarkEvent, isBookmarked, unbookmarkEvent } = useEvents({
     eventId: props.note.event.id,
   });
-  const { profile: bookmarkedData } = useSqlite({
+  const {
+    profile,
+    isBookmarked: isBookmarkedProfile,
+    followProfile,
+    bookmarkProfile,
+    unbookmarkProfile,
+    bookmarkedProfiles,
+  } = useSqlite({
     pubkey: props.note.event.pubkey,
   });
-  const handleBookmarkClicked = () => {
-    if (!!isBookmarked.data) {
-      console.log("unbookmark");
+  const handleBookmarkEventClicked = () => {
+    if (isBookmarked()) {
+      console.log("unbookmark", isBookmarked());
+      unbookmarkEvent.mutate(props.note.event.id);
     } else {
+      console.log("bookmark");
       bookmarkEvent.mutate(props.note.event.id);
     }
   };
-  const profile = bookmarkedData.data || profileData;
+
+  const handleBookmarkProfileClicked = () => {
+    if (isBookmarkedProfile()) {
+      console.log("unbookmark", isBookmarkedProfile());
+      bookmarkProfile.mutate(props.note.event.pubkey);
+    } else {
+      console.log("bookmark");
+      unbookmarkProfile.mutate(props.note.event.pubkey);
+    }
+  };
+
+  const handleNewNostrProfile = async (profile: NostrProfile) => {
+    console.log("handleNewNostrProfile", profile);
+    await api.createOrUpdateNostrProfile({
+      pubkey: props.note.event.pubkey,
+      name: profile?.name,
+      picture: profile?.picture,
+      display_name: profile?.display_name,
+      about: profile?.about,
+      npub: profile?.npub,
+      lud06: profile?.lud06,
+      lud16: profile?.lud16,
+      nip06: profile?.nip06,
+      website: profile?.website,
+    });
+  };
+
+  useEffect(() => {
+    if (!profile.data) {
+      handleNewNostrProfile(profileData);
+    }
+  });
 
   return (
     <div className="card min-w-0 max-w-full overflow-auto bg-base-100 shadow-xl">
@@ -40,15 +83,15 @@ export const EventComponent = (props: { note: Note }) => {
             <div className="avatar">
               <div className="mask mask-squircle w-12">
                 <img
-                  src={profile?.picture ?? "/images/placeholder.png"}
+                  src={profile?.data?.picture ?? "/images/placeholder.png"}
                   alt=""
                 />
               </div>
             </div>
             <div className="truncate text-sm font-medium text-gray-500">
-              {profile?.display_name}
-              {profile?.name}
-              {profile?.npub}
+              {profile?.data?.display_name}
+              {profile?.data?.name}
+              {profile?.data?.npub}
               {props.note.event.pubkey}
             </div>
           </div>
@@ -74,8 +117,11 @@ export const EventComponent = (props: { note: Note }) => {
               })}
             </div>
             <div className="btn-group">
-              <button className="btn-sm btn" onClick={handleBookmarkClicked}>
-                {isBookmarked.data ? (
+              <button
+                className="btn-sm btn"
+                onClick={handleBookmarkEventClicked}
+              >
+                {isBookmarked() ? (
                   <BookmarkSlashIcon className="h-5 w-5" />
                 ) : (
                   <BookmarkIcon className="h-5 w-5" />
