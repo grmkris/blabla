@@ -21,14 +21,6 @@ const config = {
     if (!isServer) {
       config.resolve.fallback = { ...config.resolve.fallback, fs: false };
     }
-    config.devServer = {
-      publicPath: "auto",
-        hot: true,
-        headers: {
-        "Cross-Origin-Opener-Policy": "same-origin",
-          "Cross-Origin-Embedder-Policy": "require-corp",
-      },
-    };
     return config;
   }
 };

@@ -8,10 +8,24 @@ import {
   HomeIcon,
   InboxStackIcon,
 } from "@heroicons/react/20/solid";
+import { api } from "../web-sqlite/sqlite";
+import { proxy } from "comlink";
+import { Button, LoadingSpinner } from "./common/common";
 
 export const Layout = (props: { children: ReactNode }) => {
   const [mode, setMode] = useState("dark");
+  const [isSqliteReady, setIsSqliteReady] = useState(false);
+  const [showClearDBMessage, setShowClearDBMessage] = useState(false);
+
+  function callback() {
+    setIsSqliteReady(true);
+  }
+
   useEffect(() => {
+    // register the sqlite worker callback
+    api.notifyWhenReady(proxy(callback));
+
+    // theme detector
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", (event) => {
@@ -19,7 +33,27 @@ export const Layout = (props: { children: ReactNode }) => {
         console.log(colorScheme); // "dark" or "light"
         setMode(colorScheme);
       });
+
+    // clear db message timeout start
+    setTimeout(() => {
+      setShowClearDBMessage(true);
+    }, 5000);
   }, []);
+
+  const clearDB = () => {
+    const req = indexedDB.deleteDatabase("db.sqlite");
+    req.onsuccess = function () {
+      console.log("Deleted database successfully");
+    };
+    req.onerror = function () {
+      console.log("Couldn't delete database");
+    };
+    req.onblocked = function () {
+      console.log(
+        "Couldn't delete database due to the operation being blocked"
+      );
+    };
+  };
 
   return (
     <>
@@ -33,7 +67,24 @@ export const Layout = (props: { children: ReactNode }) => {
           mode === "dark" ? "text-white" : "text-black"
         }`}
       >
-        <div className={"w-screen md:max-w-prose"}>{props.children}</div>
+        <div className={"w-screen md:max-w-prose"}>
+          {isSqliteReady ? (
+            props.children
+          ) : (
+            <div className={"grid justify-items-center"}>
+              <LoadingSpinner />
+              {showClearDBMessage && (
+                <>
+                  In case this message stays for a long time, your local data
+                  got corrupted, nothing to worry about, the client will
+                  repopulate it. Please clear the database by clicking the
+                  button below.
+                  <Button onClick={clearDB}>Clear database</Button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </main>
       <Navigation />
     </>

@@ -6,7 +6,7 @@ import {
 import type { ComponentPropsWithoutRef } from "react";
 import { useState, Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import Image from "next/image";
+import { BounceLoader } from "react-spinners";
 
 export interface InputProps extends ComponentPropsWithoutRef<"input"> {
   label?: string;
@@ -287,5 +287,17 @@ export const Dropdown = <T,>(props: IDropdown<T>) => {
         </>
       )}
     </Listbox>
+  );
+};
+
+export const LoadingSpinner = () => {
+  return (
+    <BounceLoader
+      color={"#4f46e5"}
+      loading={true}
+      size={150}
+      aria-label="Loading Spinner"
+      data-testid="loader"
+    />
   );
 };

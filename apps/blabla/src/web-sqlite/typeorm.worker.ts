@@ -1,6 +1,6 @@
 import initSqlJs from "@jlongster/sql.js";
-import { SQLiteFS } from "absurd-sql";
-import IndexedDBBackend from "absurd-sql/dist/indexeddb-backend";
+import { SQLiteFS } from "@nikvdp/absurd-sql";
+import IndexedDBBackend from "@nikvdp/absurd-sql/dist/indexeddb-backend";
 import type { Connection, Repository } from "typeorm";
 import { createConnection, MoreThan } from "typeorm";
 import { expose } from "comlink";
