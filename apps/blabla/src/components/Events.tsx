@@ -1,35 +1,79 @@
 import { useNostrEvents, useProfile } from "nostr-react";
 import Link from "next/link";
-import type { Note } from "../store/nostrStore";
-import { useNostrStore } from "../store/nostrStore";
 import {
   BookmarkIcon,
   BookmarkSlashIcon,
   ChatBubbleLeftIcon,
   HeartIcon,
 } from "@heroicons/react/20/solid";
-import type { BlaBlaEvent } from "../store/appStore";
-import { useAppStore } from "../store/appStore";
+import type { Note } from "../types";
+import { useSqlite } from "../hooks/useSqlite";
+import { useEvents } from "../hooks/useEvents";
+import {
+  eventToNoteMapper,
+  insertOrUpdateEvent,
+} from "../web-sqlite/client-functions";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "../web-sqlite/sqlite";
+import { useEffect } from "react";
+import type { NostrProfile } from "../web-sqlite/schema";
 
 export const EventComponent = (props: { note: Note }) => {
   const { data: profileData } = useProfile({ pubkey: props.note.event.pubkey });
-  const addOrUpdateNote = useAppStore.use.addOrUpdateNote();
-  const removeNote = useAppStore.use.removeNote();
-  const bookmarkedNote = useAppStore.use
-    .saved()
-    .notes?.find((x) => x.event.id === props.note.event.id);
-  const localProfileData = useNostrStore.use
-    .data()
-    .profiles?.find((e) => e.pubkey === props.note.event.pubkey);
-  const profile = profileData || localProfileData;
-
-  const handleBookmarkClicked = () => {
-    if (!!bookmarkedNote) {
-      removeNote(bookmarkedNote);
+  const { bookmarkEvent, isBookmarked, unbookmarkEvent } = useEvents({
+    eventId: props.note.event.id,
+  });
+  const {
+    profile,
+    isBookmarked: isBookmarkedProfile,
+    followProfile,
+    bookmarkProfile,
+    unbookmarkProfile,
+    bookmarkedProfiles,
+  } = useSqlite({
+    pubkey: props.note.event.pubkey,
+  });
+  const handleBookmarkEventClicked = () => {
+    if (isBookmarked()) {
+      console.log("unbookmark", isBookmarked());
+      unbookmarkEvent.mutate(props.note.event.id);
     } else {
-      addOrUpdateNote(props.note);
+      console.log("bookmark");
+      bookmarkEvent.mutate(props.note.event.id);
     }
   };
+
+  const handleBookmarkProfileClicked = () => {
+    if (isBookmarkedProfile()) {
+      console.log("unbookmark", isBookmarkedProfile());
+      bookmarkProfile.mutate(props.note.event.pubkey);
+    } else {
+      console.log("bookmark");
+      unbookmarkProfile.mutate(props.note.event.pubkey);
+    }
+  };
+
+  const handleNewNostrProfile = async (profile: NostrProfile) => {
+    console.log("handleNewNostrProfile", profile);
+    await api.createOrUpdateNostrProfile({
+      pubkey: props.note.event.pubkey,
+      name: profile?.name,
+      picture: profile?.picture,
+      display_name: profile?.display_name,
+      about: profile?.about,
+      npub: profile?.npub,
+      lud06: profile?.lud06,
+      lud16: profile?.lud16,
+      nip06: profile?.nip06,
+      website: profile?.website,
+    });
+  };
+
+  useEffect(() => {
+    if (!profile.data) {
+      handleNewNostrProfile(profileData);
+    }
+  });
 
   return (
     <div className="card min-w-0 max-w-full overflow-auto bg-base-100 shadow-xl">
@@ -39,15 +83,15 @@ export const EventComponent = (props: { note: Note }) => {
             <div className="avatar">
               <div className="mask mask-squircle w-12">
                 <img
-                  src={profile?.picture ?? "/images/placeholder.png"}
+                  src={profile?.data?.picture ?? "/images/placeholder.png"}
                   alt=""
                 />
               </div>
             </div>
             <div className="truncate text-sm font-medium text-gray-500">
-              {profile?.display_name}
-              {profile?.name}
-              {profile?.npub}
+              {profile?.data?.display_name}
+              {profile?.data?.name}
+              {profile?.data?.npub}
               {props.note.event.pubkey}
             </div>
           </div>
@@ -62,7 +106,7 @@ export const EventComponent = (props: { note: Note }) => {
             </Link>
           </div>
           <div className="mt-2 overflow-hidden text-ellipsis text-sm text-gray-400">
-            <p>{props.note.event.content}</p>
+            <p className={"prose"}>{props.note.event.content}</p>
           </div>
           <div className="card-actions mt-2 text-sm text-gray-400">
             <div className="avatar-group -space-x-6">
@@ -73,8 +117,11 @@ export const EventComponent = (props: { note: Note }) => {
               })}
             </div>
             <div className="btn-group">
-              <button className="btn-sm btn" onClick={handleBookmarkClicked}>
-                {bookmarkedNote ? (
+              <button
+                className="btn-sm btn"
+                onClick={handleBookmarkEventClicked}
+              >
+                {isBookmarked() ? (
                   <BookmarkSlashIcon className="h-5 w-5" />
                 ) : (
                   <BookmarkIcon className="h-5 w-5" />
@@ -125,25 +172,35 @@ const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
 };
 
 const EventReferencedEventComponent = (props: { eventId: string }) => {
-  const localEvent = useNostrStore.use
-    .data()
-    .notes.find((x) => x.event.id === props.eventId);
-  const { events, onEvent } = useNostrEvents({
+  const queryClient = useQueryClient();
+  const { event } = useEvents({ eventId: props.eventId });
+  const { onEvent } = useNostrEvents({
     filter: {
       ids: [props.eventId],
     },
-    enabled: !localEvent,
-  });
-  const newEvent = useNostrStore.use.newEvent();
-
-  onEvent((event) => {
-    if (!!newEvent) {
-      newEvent(event);
-    }
+    enabled: !props.eventId,
   });
 
-  if (!events[0]) {
+  onEvent(async (event) => {
+    await insertOrUpdateEvent(event);
+    await queryClient.invalidateQueries();
+  });
+
+  if (!event.data) {
     return null;
   }
-  return <EventComponent note={localEvent} key={props.eventId} />;
+  return (
+    <EventComponent
+      note={eventToNoteMapper({
+        pubkey: event.data.pubkey,
+        sig: event.data.sig,
+        id: event.data.id,
+        tags: JSON.parse(event.data.tags_full),
+        created_at: event.data.created_at,
+        content: event.data.content,
+        kind: event.data.kind,
+      })}
+      key={props.eventId}
+    />
+  );
 };

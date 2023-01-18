@@ -1,10 +1,11 @@
 import { Layout } from "../components/Layout";
 import NoSSR from "../components/NoSSR";
 import { useState } from "react";
-import { useAppStore } from "../store/appStore";
 import { IdentityInformationCard } from "./identity/[identity]";
-import { eventToNoteMapper } from "../store/nostrStore";
 import { EventComponent } from "../components/Events";
+import { useSqlite } from "../hooks/useSqlite";
+import { useEvents } from "../hooks/useEvents";
+import { eventToNoteMapper } from "../web-sqlite/client-functions";
 
 export default function Saved() {
   const [selectedTab, setSelectedTab] = useState<"profiles" | "events">(
@@ -41,12 +42,11 @@ export default function Saved() {
 }
 
 function SavedProfiles() {
-  const following = useAppStore.use.saved().profiles;
-  console.log("following", following);
+  const { bookmarkedProfiles } = useSqlite({});
   return (
     <div className="flex flex-col space-y-4">
       <h1>Saved profiles</h1>
-      {following.map(
+      {bookmarkedProfiles.data?.map(
         (person, index) =>
           person?.pubkey && (
             <IdentityInformationCard identity={person?.pubkey} key={index} />
@@ -57,14 +57,26 @@ function SavedProfiles() {
 }
 
 function SavedEvents() {
-  const notes = useAppStore.use.saved().notes;
+  const { bookmarkedEvents } = useEvents({});
   return (
     <div className="flex flex-col space-y-4">
       <h1>Saved profiles</h1>
-      {notes.map(
-        (note, index) =>
-          note?.event && <EventComponent note={note} key={note.event.id} />
-      )}
+      {bookmarkedEvents.data
+        ?.map((event) =>
+          eventToNoteMapper({
+            pubkey: event?.pubkey,
+            kind: event?.kind,
+            created_at: event?.created_at,
+            content: event?.content,
+            sig: event?.sig,
+            id: event?.id,
+            tags: JSON.parse(event?.tags_full),
+          })
+        )
+        ?.map(
+          (note, index) =>
+            note?.event && <EventComponent note={note} key={note.event.id} />
+        )}
     </div>
   );
 }

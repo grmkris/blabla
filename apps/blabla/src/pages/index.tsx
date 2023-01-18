@@ -6,10 +6,9 @@ import { NewPost } from "../components/NewPost";
 import { useRef } from "react";
 import { dateToUnix, useNostrEvents } from "nostr-react";
 import { EventKinds } from "../types";
-import { insertOrUpdateEvent } from "./_app";
 import { useGlobalFeed } from "../hooks/useGlobalFeed";
 import { Button } from "../components/common/common";
-
+import { insertOrUpdateEvent } from "../web-sqlite/client-functions";
 export const GloboalFeed = () => {
   const now = useRef(new Date()); // Make sure current time isn't re-rendered
   const { globalFeed, numberOfNewItems, refresh } = useGlobalFeed();
