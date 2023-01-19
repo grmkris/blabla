@@ -20,6 +20,8 @@ import { NewPost } from "./NewPost";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkImages from "remark-images";
+import { visit } from "unist-util-visit";
+import { is } from "unist-util-is";
 
 export const EventComponent = (props: { note: Note }) => {
   const [showInputCommentArea, setShowInputCommentArea] = useState(false);
@@ -92,7 +94,27 @@ export const EventComponent = (props: { note: Note }) => {
             </Link>
           </div>
           <div className="prose mt-2 overflow-hidden text-ellipsis text-sm text-gray-400">
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkImages]}>
+            <ReactMarkdown
+              remarkPlugins={[
+                remarkGfm,
+                remarkImages,
+                hashTagAttacher,
+                () => tagAttacher(props.note),
+              ]}
+              components={{
+                a: ({ node, ...props }) => {
+                  return (
+                    <a
+                      className={"text-blue-500"}
+                      {...props}
+                      href={props.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  );
+                },
+              }}
+            >
               {props.note.event.content}
             </ReactMarkdown>
           </div>
@@ -195,3 +217,212 @@ const EventReferencedEventComponent = (props: { eventId: string }) => {
     />
   );
 };
+
+function matchAll(regExp, text) {
+  const matches = [];
+
+  let match;
+  // eslint-disable-next-line no-cond-assign
+  while ((match = regExp.exec(text))) {
+    matches.push(match);
+  }
+
+  return matches;
+}
+
+function attacher() {
+  return (tree) => visit(tree, "paragraph", visitor);
+
+  function visitor(node) {
+    const { children } = node;
+    node.children = [];
+
+    children.forEach(function (child) {
+      if (!is(child, "text")) {
+        node.children.push(child);
+        return;
+      }
+
+      const matches = matchAll(/(@[A-Z0-9]+)/gi, child.value);
+
+      if (matches.length === 0) {
+        node.children.push(child);
+        return true;
+      }
+
+      if (matches[0].index > 0) {
+        node.children.push({
+          type: "text",
+          value: child.value.substr(0, matches[0].index),
+        });
+      }
+
+      matches.forEach((match, index) => {
+        node.children.push({
+          type: "strong",
+          children: [{ type: "text", value: match[0] }],
+        });
+
+        if (matches.length > index + 1) {
+          const startAt = match.index + match[0].length;
+          node.children.push({
+            type: "text",
+            value: child.value.substr(
+              startAt,
+              matches[index + 1].index - startAt
+            ),
+          });
+        }
+      });
+
+      const lastMatch = matches[matches.length - 1];
+
+      if (lastMatch.index + lastMatch[0].length < child.value.length) {
+        node.children.push({
+          type: "text",
+          value: child.value.substr(lastMatch.index + lastMatch[0].length),
+        });
+      }
+    });
+  }
+}
+
+/**
+ * Attacher function that detects #[tag] and converts it to a link
+ * It accepts an array of tags to link to
+ */
+function tagAttacher(note: Note) {
+  return (tree) => visit(tree, "paragraph", visitor);
+
+  function visitor(node) {
+    const { children } = node;
+    node.children = [];
+
+    children.forEach(function (child) {
+      if (!is(child, "text")) {
+        node.children.push(child);
+        return;
+      }
+
+      const matches = matchAll(/#\[[0-9]+\]/g, child.value);
+
+      if (matches.length === 0) {
+        node.children.push(child);
+        return true;
+      }
+
+      if (matches[0].index > 0) {
+        node.children.push({
+          type: "text",
+          value: child.value.substr(0, matches[0].index),
+        });
+      }
+
+      matches.forEach((match, index) => {
+        const tagIndex = match[0].replace("#[", "").replace("]", "");
+        console.log("matchesTags", note, tagIndex);
+        const text = note.event.tags[tagIndex]?.[1];
+        const tagType = note.event.tags[tagIndex]?.[0];
+        if (tagType === "p") {
+          const userData = api.getNostrProfile(text);
+          node.children.push({
+            type: "link",
+            url: "/search/" + text,
+            children: [{ type: "text", value: text ?? match[0] }],
+          });
+        } else if (tagType === "e") {
+          const event = api.getEvent(text);
+          node.children.push({
+            type: "link",
+            url: "/search/" + text,
+            children: [{ type: "text", value: text ?? match[0] }],
+          });
+        } else {
+          node.children.push({
+            type: "link",
+            url: "/search/" + text,
+            children: [{ type: "text", value: text ?? match[0] }],
+          });
+        }
+
+        if (matches.length > index + 1) {
+          const startAt = match.index + match[0].length;
+          node.children.push({
+            type: "text",
+            value: child.value.substr(
+              startAt,
+              matches[index + 1].index - startAt
+            ),
+          });
+        }
+      });
+
+      const lastMatch = matches[matches.length - 1];
+
+      if (lastMatch.index + lastMatch[0].length < child.value.length) {
+        node.children.push({
+          type: "text",
+          value: child.value.substr(lastMatch.index + lastMatch[0].length),
+        });
+      }
+    });
+  }
+}
+
+function hashTagAttacher() {
+  return (tree) => visit(tree, "paragraph", visitor);
+
+  function visitor(node) {
+    const { children } = node;
+    node.children = [];
+
+    children.forEach(function (child) {
+      if (!is(child, "text")) {
+        node.children.push(child);
+        return;
+      }
+
+      const matches = matchAll(/(#\w+)/gi, child.value);
+
+      if (matches.length === 0) {
+        node.children.push(child);
+        return true;
+      }
+
+      if (matches[0].index > 0) {
+        node.children.push({
+          type: "text",
+          value: child.value.substr(0, matches[0].index),
+        });
+      }
+
+      matches.forEach((match, index) => {
+        node.children.push({
+          type: "link",
+          url: "/search/" + match[0].substr(1),
+          children: [{ type: "text", value: match[0] }],
+        });
+
+        if (matches.length > index + 1) {
+          const startAt = match.index + match[0].length;
+          node.children.push({
+            type: "search",
+            value: child.value.substr(
+              startAt,
+              matches[index + 1].index - startAt
+            ),
+          });
+        }
+      });
+
+      const lastMatch = matches[matches.length - 1];
+
+      if (lastMatch.index + lastMatch[0].length < child.value.length) {
+        node.children.push({
+          type: "text",
+          value: child.value.substr(lastMatch.index + lastMatch[0].length),
+        });
+      }
+    });
+  }
+}
