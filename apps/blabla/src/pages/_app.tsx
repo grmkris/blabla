@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { useAppStore } from "../store/appStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <Toaster />
       </NostrProvider>
       <ReactQueryDevtools initialIsOpen={false} />
+      <Analytics />
     </QueryClientProvider>
   );
 };

@@ -56,6 +56,7 @@ importers:
       '@types/sql.js': ^1.4.4
       '@typescript-eslint/eslint-plugin': ^5.48.1
       '@typescript-eslint/parser': ^5.48.1
+      '@vercel/analytics': ^0.1.8
       assert: ^2.0.0
       autoprefixer: ^10.4.13
       babel-loader: ^9.1.2
@@ -110,6 +111,7 @@ importers:
       '@trpc/react-query': 10.5.0_ajndtrdjd7xjqi5pswakb3suti
       '@trpc/server': 10.5.0
       '@ts-react/form': 1.0.10_bfpnyh5om24rz447mtd4p4zo4m
+      '@vercel/analytics': 0.1.8_react@18.2.0
       assert: 2.0.0
       babel-loader: 9.1.2_npabyccmuonwo2rku4k53xo3hi
       comlink: 4.3.1
@@ -4041,6 +4043,14 @@ packages:
 
   /@vercel/analytics/0.1.6_react@18.2.0:
     resolution: {integrity: sha512-zNd5pj3iDvq8IMBQHa1YRcIteiw6ZiPB8AsONHd8ieFXlNpLqhXfIYnf4WvTfZ7S1NSJ++mIM14aJnNac/VMXQ==}
+    peerDependencies:
+      react: ^16.8||^17||^18
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /@vercel/analytics/0.1.8_react@18.2.0:
+    resolution: {integrity: sha512-PQrOI8BJ9qUiVJuQfnKiJd15eDjDJH9TBKsNeMrtelT4NAk7d9mBVz1CoZkvoFnHQ0OW7Xnqmr1F2nScfAnznQ==}
     peerDependencies:
       react: ^16.8||^17||^18
     dependencies:
