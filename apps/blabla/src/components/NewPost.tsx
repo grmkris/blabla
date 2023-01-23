@@ -1,18 +1,8 @@
-import { dateToUnix, useNostr } from "nostr-react";
-import {
-  type Event as NostrEvent,
-  getEventHash,
-  Kind,
-  signEvent,
-} from "nostr-tools";
 import { Button } from "./common/common";
 import { createTsForm } from "@ts-react/form";
 import { z } from "zod";
 import { TextArea } from "./common/TextArea";
 import toast from "react-hot-toast";
-import { useAppStore } from "../store/appStore";
-import { useQueryClient } from "@tanstack/react-query";
-import { useGlobalFeed } from "../hooks/useGlobalFeed";
 import { useNewEvent } from "../hooks/useNewEvent";
 
 // create the mapping

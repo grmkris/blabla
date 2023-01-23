@@ -1,46 +1,54 @@
-import type { Event } from "nostr-tools";
 import { api } from "./sqlite";
 import type { Note } from "../types";
+import type { EventTable } from "./schema";
+import { Tags } from "./schema";
+import type { Event } from "nostr-tools";
 
-export const insertOrUpdateEvent = async (event: Event) => {
-  const { id, pubkey, kind, created_at, content, sig, tags } = event;
-  await api.createOrUpdateEvent({
-    id,
-    pubkey,
-    kind,
-    created_at,
-    content,
-    sig,
-    tags_full: JSON.stringify(tags),
-  });
-  for (const tag of tags) {
-    await api.createOrUpdateTag({
-      tag: tag[0],
-      event_id: id,
-      value: tag[1],
-    });
-  }
+export const insertOrUpdateEvents = async (events: Event[]) => {
+  const tags: Tags[] = [];
+  await api.createOrUpdateEvents(
+    events.map((event) => {
+      return {
+        sig: "",
+        tags: event.tags.map((tag) => {
+          const tagDb = new Tags();
+          tagDb.tag = tag[0];
+          tagDb.value = tag[1];
+          tagDb.id = event.id ?? "" + tag[0] ?? "" + tag[1];
+          tagDb.event_id = event.id;
+          tags.push(tagDb);
+          return tagDb;
+        }),
+        created_at: event.created_at,
+        content: event.content,
+        kind: event.kind,
+        id: event.id,
+        pubkey: event.pubkey,
+      };
+    })
+  );
+  await api.createOrUpdateTags(tags);
 };
-export const eventToNoteMapper = (event: Event): Note => {
+export const eventToNoteMapper = (event: EventTable): Note => {
   const referencedNotes: string[] = [];
   const referencedProfiles: string[] = [];
   const referencedTags: string[] = [];
   console.debug("eventToNoteMapper", event);
-  event.tags.map((tag) => {
+  event.tags?.map((tag) => {
     // referencing profiles
-    if (tag[0] === "p" && tag[1]) {
+    if (tag.tag === "p") {
       console.debug("referencing profile", tag);
-      referencedProfiles.push(tag[1]);
+      referencedProfiles.push(tag.value ?? "");
     }
     // referencing events
-    if (tag[0] === "e" && tag[1]) {
+    if (tag.tag === "e") {
       console.debug("referencing event", tag);
-      referencedNotes.push(tag[1]);
+      referencedNotes.push(tag.value ?? "");
     }
     // referencing hashtags
-    if (tag[0] === "t" && tag[1]) {
+    if (tag.tag === "t") {
       console.debug("referencing tag", tag);
-      referencedTags.push(tag[1]);
+      referencedTags.push(tag.value ?? "");
     }
   });
   const note: Note = {

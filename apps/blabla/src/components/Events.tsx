@@ -1,4 +1,3 @@
-import { useNostrEvents, useProfile } from "nostr-react";
 import Link from "next/link";
 import {
   BookmarkIcon,
@@ -9,23 +8,20 @@ import {
 import type { Note } from "../types";
 import { useSqlite } from "../hooks/useSqlite";
 import { useEvents } from "../hooks/useEvents";
-import {
-  eventToNoteMapper,
-  insertOrUpdateEvent,
-} from "../web-sqlite/client-functions";
+import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import { api } from "../web-sqlite/sqlite";
 import { useEffect, useState } from "react";
-import type { NostrProfile } from "../web-sqlite/schema";
 import { NewPost } from "./NewPost";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkImages from "remark-images";
 import { visit } from "unist-util-visit";
 import { is } from "unist-util-is";
+import { useEvent } from "../hooks/useEvent";
+import { z } from "zod";
 
 export const EventComponent = (props: { note: Note }) => {
   const [showInputCommentArea, setShowInputCommentArea] = useState(false);
-  const { data: profileData } = useProfile({ pubkey: props.note.event.pubkey });
   const { bookmarkEvent, isBookmarked, unbookmarkEvent } = useEvents({
     eventId: props.note.event.id,
   });
@@ -37,31 +33,11 @@ export const EventComponent = (props: { note: Note }) => {
     setShowInputCommentArea(!showInputCommentArea);
   };
   const handleBookmarkEventClicked = () => {
+    if (!props.note.event.id) return;
     isBookmarked()
       ? unbookmarkEvent.mutate(props.note.event.id)
       : bookmarkEvent.mutate(props.note.event.id);
   };
-
-  const handleNewNostrProfile = async (profile: NostrProfile) => {
-    await api.createOrUpdateNostrProfile({
-      pubkey: props.note.event.pubkey,
-      name: profile?.name,
-      picture: profile?.picture,
-      display_name: profile?.display_name,
-      about: profile?.about,
-      npub: profile?.npub,
-      lud06: profile?.lud06,
-      lud16: profile?.lud16,
-      nip06: profile?.nip06,
-      website: profile?.website,
-    });
-  };
-
-  useEffect(() => {
-    if (!profile.data) {
-      handleNewNostrProfile(profileData);
-    }
-  });
 
   return (
     <div className="card min-w-0 max-w-full overflow-auto bg-base-100 shadow-xl">
@@ -89,7 +65,9 @@ export const EventComponent = (props: { note: Note }) => {
             <Link href={`/event/${props.note.event.id}`} shallow>
               <p className="cursc mt-0.5 text-sm text-gray-600 hover:bg-base-200">
                 Commented{" "}
-                {new Date(props.note.event.created_at * 1000).toLocaleString()}
+                {new Date(
+                  (props.note.event.created_at ?? 0) * 1000
+                ).toLocaleString()}
               </p>
             </Link>
           </div>
@@ -115,7 +93,7 @@ export const EventComponent = (props: { note: Note }) => {
                 },
               }}
             >
-              {props.note.event.content}
+              {props.note.event.content ?? ""}
             </ReactMarkdown>
           </div>
           <div className="card-actions mt-2 text-sm text-gray-400">
@@ -164,22 +142,16 @@ export const EventComponent = (props: { note: Note }) => {
 };
 
 const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
-  const { data: profileData } = useProfile({ pubkey: props.pubkey });
+  const { profile } = useSqlite({ pubkey: props.pubkey });
 
-  if (!profileData) {
+  if (!profile) {
     return null;
   }
   return (
     <Link href={"/identity/" + props.pubkey} shallow>
       <div className="avatar">
         <div className="w-8">
-          <img
-            src={
-              profileData?.picture
-                ? profileData?.picture
-                : "/images/placeholder.png"
-            }
-          />
+          <img src={profile?.data?.picture ?? "/images/placeholder.png"} />
         </div>
       </div>
     </Link>
@@ -187,38 +159,17 @@ const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
 };
 
 const EventReferencedEventComponent = (props: { eventId: string }) => {
-  const { event } = useEvents({ eventId: props.eventId });
-  const { onEvent } = useNostrEvents({
-    filter: {
-      ids: [props.eventId],
-    },
-    enabled: !props.eventId,
-  });
-
-  onEvent(async (event) => {
-    await insertOrUpdateEvent(event);
-  });
+  const { event } = useEvent({ eventId: props.eventId });
 
   if (!event.data) {
     return null;
   }
   return (
-    <EventComponent
-      note={eventToNoteMapper({
-        pubkey: event.data.pubkey,
-        sig: event.data.sig,
-        id: event.data.id,
-        tags: JSON.parse(event.data.tags_full),
-        created_at: event.data.created_at,
-        content: event.data.content,
-        kind: event.data.kind,
-      })}
-      key={props.eventId}
-    />
+    <EventComponent note={eventToNoteMapper(event.data)} key={props.eventId} />
   );
 };
 
-function matchAll(regExp, text) {
+function matchAll(regExp: RegExp, text: string) {
   const matches = [];
 
   let match;
@@ -230,80 +181,25 @@ function matchAll(regExp, text) {
   return matches;
 }
 
-function attacher() {
-  return (tree) => visit(tree, "paragraph", visitor);
-
-  function visitor(node) {
-    const { children } = node;
-    node.children = [];
-
-    children.forEach(function (child) {
-      if (!is(child, "text")) {
-        node.children.push(child);
-        return;
-      }
-
-      const matches = matchAll(/(@[A-Z0-9]+)/gi, child.value);
-
-      if (matches.length === 0) {
-        node.children.push(child);
-        return true;
-      }
-
-      if (matches[0].index > 0) {
-        node.children.push({
-          type: "text",
-          value: child.value.substr(0, matches[0].index),
-        });
-      }
-
-      matches.forEach((match, index) => {
-        node.children.push({
-          type: "strong",
-          children: [{ type: "text", value: match[0] }],
-        });
-
-        if (matches.length > index + 1) {
-          const startAt = match.index + match[0].length;
-          node.children.push({
-            type: "text",
-            value: child.value.substr(
-              startAt,
-              matches[index + 1].index - startAt
-            ),
-          });
-        }
-      });
-
-      const lastMatch = matches[matches.length - 1];
-
-      if (lastMatch.index + lastMatch[0].length < child.value.length) {
-        node.children.push({
-          type: "text",
-          value: child.value.substr(lastMatch.index + lastMatch[0].length),
-        });
-      }
-    });
-  }
-}
-
 /**
  * Attacher function that detects #[tag] and converts it to a link
  * It accepts an array of tags to link to
  */
 function tagAttacher(note: Note) {
-  return (tree) => visit(tree, "paragraph", visitor);
+  return (tree: any) => visit(tree, "paragraph", visitor);
 
-  function visitor(node) {
+  function visitor(node: { children: any }) {
     const { children } = node;
     node.children = [];
 
-    children.forEach(function (child) {
+    children.forEach(function (child: unknown) {
       if (!is(child, "text")) {
         node.children.push(child);
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const matches = matchAll(/#\[[0-9]+\]/g, child.value);
 
       if (matches.length === 0) {
@@ -311,30 +207,37 @@ function tagAttacher(note: Note) {
         return true;
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (matches[0].index > 0) {
         node.children.push({
           type: "text",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           value: child.value.substr(0, matches[0].index),
         });
       }
 
       matches.forEach((match, index) => {
-        const tagIndex = match[0].replace("#[", "").replace("]", "");
+        const tagIndex = z
+          .number()
+          .safeParse(match[0].replace("#[", "").replace("]", ""));
         console.log("matchesTags", note, tagIndex);
-        const text = note.event.tags[tagIndex]?.[1];
-        const tagType = note.event.tags[tagIndex]?.[0];
+        if (!tagIndex.success) return;
+        const text = note.event?.tags?.[tagIndex.data]?.value ?? "";
+        const tagType = note.event?.tags?.[tagIndex.data]?.tag;
         if (tagType === "p") {
           const userData = api.getNostrProfile(text);
           node.children.push({
             type: "link",
-            url: "/search/" + text,
+            url: "/identity/" + text,
             children: [{ type: "text", value: text ?? match[0] }],
           });
         } else if (tagType === "e") {
           const event = api.getEvent(text);
           node.children.push({
             type: "link",
-            url: "/search/" + text,
+            url: "/event/" + text,
             children: [{ type: "text", value: text ?? match[0] }],
           });
         } else {
@@ -349,8 +252,12 @@ function tagAttacher(note: Note) {
           const startAt = match.index + match[0].length;
           node.children.push({
             type: "text",
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             value: child.value.substr(
               startAt,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               matches[index + 1].index - startAt
             ),
           });
@@ -359,9 +266,13 @@ function tagAttacher(note: Note) {
 
       const lastMatch = matches[matches.length - 1];
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (lastMatch.index + lastMatch[0].length < child.value.length) {
         node.children.push({
           type: "text",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           value: child.value.substr(lastMatch.index + lastMatch[0].length),
         });
       }
@@ -370,28 +281,33 @@ function tagAttacher(note: Note) {
 }
 
 function hashTagAttacher() {
-  return (tree) => visit(tree, "paragraph", visitor);
+  return (tree: any) => visit(tree, "paragraph", visitor);
 
-  function visitor(node) {
+  function visitor(node: { children: any }) {
     const { children } = node;
     node.children = [];
 
-    children.forEach(function (child) {
+    children.forEach(function (child: unknown) {
       if (!is(child, "text")) {
         node.children.push(child);
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const matches = matchAll(/(#\w+)/gi, child.value);
 
       if (matches.length === 0) {
         node.children.push(child);
         return true;
       }
-
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (matches[0].index > 0) {
         node.children.push({
           type: "text",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           value: child.value.substr(0, matches[0].index),
         });
       }
@@ -407,8 +323,12 @@ function hashTagAttacher() {
           const startAt = match.index + match[0].length;
           node.children.push({
             type: "search",
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             value: child.value.substr(
               startAt,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               matches[index + 1].index - startAt
             ),
           });
@@ -416,10 +336,13 @@ function hashTagAttacher() {
       });
 
       const lastMatch = matches[matches.length - 1];
-
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (lastMatch.index + lastMatch[0].length < child.value.length) {
         node.children.push({
           type: "text",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           value: child.value.substr(lastMatch.index + lastMatch[0].length),
         });
       }

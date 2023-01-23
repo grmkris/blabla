@@ -1,4 +1,4 @@
-import { Identity } from "./Identity";
+import { IdentityComponent } from "./IdentityComponent";
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
 import { Button } from "./common/common";
 import { useAppStore } from "../store/appStore";
@@ -10,7 +10,7 @@ export const UserIdentities = () => {
     <div className="m-4 mb-20 flex flex-col space-y-4">
       <h1 className="max-w-screen-sm text-xl font-bold">Identities</h1>
       {localProfiles.map((identity) => (
-        <Identity identity={identity} key={identity.publicKey} />
+        <IdentityComponent identity={identity} key={identity.publicKey} />
       ))}
       <Button
         onClick={() => {

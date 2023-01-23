@@ -3,18 +3,13 @@ import NoSSR from "../components/NoSSR";
 import { EventComponent } from "../components/Events";
 import { Layout } from "../components/Layout";
 import { NewPost } from "../components/NewPost";
-import { useNostrEvents } from "nostr-react";
-import { EventKinds } from "../types";
 import { useBookmarksFeed, useGlobalFeed } from "../hooks/useGlobalFeed";
 import { Button } from "../components/common/common";
-import { insertOrUpdateEvent } from "../web-sqlite/client-functions";
 import { useState } from "react";
-import { useSqlite } from "../hooks/useSqlite";
 export const Home = () => {
   const [selectedTab, setSelectedTab] = useState<
     "Global" | "Followed" | "Bookmarked" | "Lists"
   >("Global");
-
   return (
     <div className={"m-4 mb-20"}>
       <NewPost />
@@ -71,17 +66,17 @@ export default HomePage;
 
 export const GlobalFeed = () => {
   const { globalFeed, numberOfNewItems, refresh, now } = useGlobalFeed();
-  const { onEvent } = useNostrEvents({
-    filter: {
-      since: now.current - 1000, // all new events from now
-      kinds: [EventKinds.TEXT_NOTE],
-    },
-  });
-  onEvent(insertOrUpdateEvent);
   return (
     <div className="flex max-w-full flex-col flex-col items-start space-y-2">
-      {numberOfNewItems.data > 0 && (
-        <Button onClick={refresh}>{numberOfNewItems.data} new items</Button>
+      {numberOfNewItems?.data && numberOfNewItems.data > 0 && (
+        <Button
+          onClick={() => {
+            refresh.mutate();
+          }}
+          loading={refresh.isLoading}
+        >
+          {numberOfNewItems.data} new items
+        </Button>
       )}
       {globalFeed.data?.pages?.map((notes) =>
         notes.map((note) => <EventComponent note={note} key={note.event.id} />)
@@ -92,20 +87,11 @@ export const GlobalFeed = () => {
 };
 
 export const BookmarkedFeed = () => {
-  const { bookmarksFeed, numberOfNewItems, refresh, now } = useBookmarksFeed();
-  const { bookmarkedProfiles } = useSqlite({});
-  const { onEvent } = useNostrEvents({
-    filter: {
-      since: now.current - 60 * 60 * 24, // all new events from now
-      kinds: [EventKinds.TEXT_NOTE],
-      authors: bookmarkedProfiles.data?.map((profile) => profile.pubkey),
-      "#p": bookmarkedProfiles.data?.map((profile) => profile.pubkey),
-    },
-  });
-  onEvent(insertOrUpdateEvent);
+  const { bookmarksFeed, numberOfNewItems, refresh } = useBookmarksFeed();
+
   return (
     <div className="flex max-w-full flex-col flex-col items-start space-y-2">
-      {numberOfNewItems.data > 0 && (
+      {numberOfNewItems?.data && numberOfNewItems.data > 0 && (
         <Button onClick={refresh}>{numberOfNewItems.data} new items</Button>
       )}
       {bookmarksFeed.data?.pages?.map((notes) =>

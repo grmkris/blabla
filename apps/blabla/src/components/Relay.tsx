@@ -21,7 +21,9 @@ export const Relay = (props: { relay: NostrRelay; index: number }) => {
       <h1>Nostr Relay</h1>
       <p>Relay: {props.relay.url}</p>
       <p className={relayStatusTextColor}>Status: {props.relay.status}</p>
-      <Button onClick={() => removeRelay(props.relay.url)}>Remove Relay</Button>
+      <Button onClick={() => removeRelay({ url: props.relay.url })}>
+        Remove Relay
+      </Button>
     </div>
   );
 };

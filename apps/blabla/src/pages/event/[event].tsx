@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { Layout } from "../../components/Layout";
-import { useNostrEvents } from "nostr-react";
 import { EventComponent } from "../../components/Events";
 import NoSSR from "../../components/NoSSR";
-import { eventToNoteMapper } from "../../web-sqlite/client-functions";
+import { useNostrRelayPool } from "../../hooks/useNostrRelayPool";
+import { useEffect } from "react";
+import { useEvent } from "../../hooks/useEvent";
 
 export const EventPage = () => {
   // get identity id from url
@@ -25,22 +26,24 @@ export const EventPage = () => {
 export default EventPage;
 
 const EventView = (props: { event: string }) => {
-  const { events } = useNostrEvents({
-    filter: { ids: [props.event] },
-  });
-  const { events: referencedByEvents } = useNostrEvents({
-    filter: { "#e": [props.event] },
-  });
+  const { getNostrData } = useNostrRelayPool();
+  const { comments } = useEvent({ eventId: props.event });
+
+  useEffect(() => {
+    console.log("comments", comments);
+    getNostrData.mutate({ filter: [{ "#e": [props.event] }] });
+  }, []);
+
   return (
     <NoSSR>
       <div className={"m-4 space-y-1"}>
-        {events.map(eventToNoteMapper).map((note) => (
+        {/*{referencedByEvents.map(eventToNoteMapper).map((note) => (
           <EventComponent note={note} key={note.event.id} />
-        ))}
+        ))}*/}
         Comments:
-        {referencedByEvents.map(eventToNoteMapper).map((note) => (
-          <EventComponent note={note} key={note.event.id} />
-        ))}
+        {comments.data?.pages.map((page, i) =>
+          page.map((note) => <EventComponent note={note} key={note.event.id} />)
+        )}
       </div>
     </NoSSR>
   );
