@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { useNostrEvents, useProfile } from "nostr-react";
 import { Layout } from "../../components/Layout";
 import { EventComponent } from "../../components/Events";
 import { Button } from "../../components/common/common";
@@ -8,16 +7,9 @@ import NoSSR from "../../components/NoSSR";
 import { z } from "zod";
 import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
 import { useSqlite } from "../../hooks/useSqlite";
-import {
-  eventToNoteMapper,
-  insertOrUpdateEvent,
-} from "../../web-sqlite/client-functions";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEvents } from "../../hooks/useEvents";
-import type { NostrProfile } from "../../web-sqlite/schema";
-import { api } from "../../web-sqlite/sqlite";
-import { useEffect, useRef } from "react";
-import { EventKinds } from "../../types";
+import { useEffect } from "react";
+import { useNostrRelayPool } from "../../hooks/useNostrRelayPool";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -25,9 +17,8 @@ export const IdentityPage = () => {
   const { identity } = router.query;
   const parsed = z.string().safeParse(identity);
   return (
-    <Layout>
+    <Layout title={"Events"}>
       <div className="flex flex-col space-y-4">
-        <h1>Events</h1>
         {parsed.success && <IdentityView identity={parsed.data} />}
         {!parsed.success && <div>Invalid identity</div>}
       </div>
@@ -53,9 +44,6 @@ export const IdentityInformationCard = (props: { identity: string }) => {
     useSqlite({
       pubkey: props.identity,
     });
-  const { data: profileData } = useProfile({
-    pubkey: props.identity,
-  });
   const handleBookmarkProfileClicked = () => {
     const bookmarked = isBookmarked();
     if (bookmarked) {
@@ -66,28 +54,6 @@ export const IdentityInformationCard = (props: { identity: string }) => {
       bookmarkProfile.mutate(props.identity);
     }
   };
-
-  const handleNewNostrProfile = async (profile: NostrProfile) => {
-    console.log("handleNewNostrProfile", profile);
-    await api.createOrUpdateNostrProfile(profile);
-  };
-
-  useEffect(() => {
-    if (!profile.data) {
-      handleNewNostrProfile({
-        pubkey: props.identity,
-        name: profileData?.name,
-        picture: profileData?.picture,
-        display_name: profileData?.display_name,
-        about: profileData?.about,
-        npub: profileData?.npub,
-        lud06: profileData?.lud06,
-        lud16: profileData?.lud16,
-        nip06: profileData?.nip06,
-        website: profileData?.website,
-      });
-    }
-  });
 
   return (
     <NoSSR>
@@ -111,13 +77,13 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             <h3 className="card-title">{profile?.data?.name}</h3>
             <p>{profile?.data?.about}</p>
             <div className={"flex flex-col md:flex-row"}>
-              <div className="badge-outline badge w-56 truncate">
+              <div className="badge badge-outline w-56 truncate">
                 {profile?.data?.npub}
               </div>
-              <div className="badge-outline badge">
+              <div className="badge badge-outline">
                 {profile?.data?.website}
               </div>
-              <div className="badge-outline badge">{profile?.data?.lud16}</div>
+              <div className="badge badge-outline">{profile?.data?.lud16}</div>
             </div>
             <div className="card-actions">
               <div className="btn-group">
@@ -146,12 +112,10 @@ export const IdentityEvents = (props: { identity: string }) => {
   if (eventsByPubkey.isLoading) {
     return <div>Loading...</div>;
   }
-
-  console.log("eventsByPubkey", eventsByPubkey.data);
   return (
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
-      {eventsByPubkey.data.pages.map((page) =>
+      {eventsByPubkey?.data?.pages.map((page) =>
         page.map((note) => <EventComponent note={note} key={note.event.id} />)
       )}
       <Button onClick={() => eventsByPubkey.fetchNextPage()}>Load more</Button>

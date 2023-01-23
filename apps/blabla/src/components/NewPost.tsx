@@ -1,19 +1,10 @@
-import { dateToUnix, useNostr } from "nostr-react";
-import {
-  type Event as NostrEvent,
-  getEventHash,
-  Kind,
-  signEvent,
-} from "nostr-tools";
 import { Button } from "./common/common";
 import { createTsForm } from "@ts-react/form";
 import { z } from "zod";
 import { TextArea } from "./common/TextArea";
 import toast from "react-hot-toast";
-import { useAppStore } from "../store/appStore";
-import { useQueryClient } from "@tanstack/react-query";
-import { useGlobalFeed } from "../hooks/useGlobalFeed";
 import { useNewEvent } from "../hooks/useNewEvent";
+import { useRouter } from "next/router";
 
 // create the mapping
 const mapping = [[z.string(), TextArea]] as const; // 👈 `as const` is necessary
@@ -25,9 +16,11 @@ export const NewPostSchema = z.object({
   text: z.string().min(1).max(1000),
 });
 export const NewPost = (props: { eventId?: string }) => {
+  const router = useRouter();
   const { newNote } = useNewEvent();
   async function onSubmit(data: z.infer<typeof NewPostSchema>) {
     await newNote.mutateAsync({ data, eventId: props.eventId });
+    router.push("/");
   }
 
   return (

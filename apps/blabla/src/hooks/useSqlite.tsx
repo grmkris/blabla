@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNostr } from "nostr-react";
 import { api } from "../web-sqlite/sqlite";
 import { useCallback } from "react";
+import { useNostrRelayPool } from "./useNostrRelayPool";
 
 export const useSqlite = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
+  const { author } = useNostrRelayPool();
+
   const bookmarkProfile = useMutation(async (pubkey: string) => {
     await api.bookmarkProfile(pubkey);
     await queryClient.invalidateQueries();
@@ -29,12 +31,17 @@ export const useSqlite = (props: { pubkey?: string }) => {
   const profile = useQuery({
     queryKey: ["nostrProfile", props?.pubkey],
     queryFn: async () => {
+      if (!props?.pubkey) return;
       const profile = await api.getNostrProfile(props.pubkey);
-      console.log("nostrProfile", profile);
-      if (!profile) throw new Error("No profile found");
+      console.log("nostrProfile", profile, props.pubkey);
+      if (!profile) {
+        console.warn("No profile found for pubkey", props.pubkey);
+        author.mutate({ author: props.pubkey });
+      }
       return profile;
     },
     enabled: !!props?.pubkey,
+    refetchInterval: false,
   });
 
   const isBookmarked = useCallback(() => {

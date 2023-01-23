@@ -14,20 +14,22 @@ export const SearchPage = () => {
   });
 
   return (
-    <Layout>
-      <h1>Search for {search}</h1>
+    <Layout title={`Search for ${search}`}>
       <h2>Profiles</h2>
       {profiles.isLoading && <LoadingSpinner />}
-      {profiles.data?.map((x) => (
-        <IdentityInformationCard identity={x.pubkey} key={x.pubkey} />
-      ))}
+      {profiles.data?.map(
+        (x) =>
+          x.pubkey && (
+            <IdentityInformationCard identity={x.pubkey} key={x.pubkey} />
+          )
+      )}
       <h2>Events</h2>
       {profiles.isLoading && <LoadingSpinner />}
       {events.data
         ?.map((event) =>
           eventToNoteMapper({
             pubkey: event.pubkey,
-            tags: JSON.parse(event.tags_full),
+            tags: event.tags,
             sig: event.sig,
             content: event.content,
             created_at: event.created_at,

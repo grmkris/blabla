@@ -19,10 +19,9 @@ export default function Saved() {
     }
   };
   return (
-    <Layout>
+    <Layout title={"Saved"}>
       <NoSSR>
         <div className={"m-4 mb-20 flex flex-col"}>
-          <h1 className="text-2xl font-bold">Saved</h1>
           <div className="tabs tabs-boxed mb-2 w-fit" onClick={handleTabClick}>
             <a className={`tab ${selectedTab === "profiles" && "tab-active"}`}>
               People
@@ -68,7 +67,7 @@ function SavedEvents() {
             content: event?.content,
             sig: event?.sig,
             id: event?.id,
-            tags: JSON.parse(event?.tags_full),
+            tags: event?.tags,
           })
         )
         ?.map(

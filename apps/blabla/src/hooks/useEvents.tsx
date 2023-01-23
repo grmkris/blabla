@@ -7,12 +7,9 @@ import {
 import { api } from "../web-sqlite/sqlite";
 import { useCallback } from "react";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
-import { useEventFetcher } from "./useEventFetcher";
-import { Warning } from "postcss";
 
 export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
   const queryClient = useQueryClient();
-  const { fetch } = useEventFetcher({ eventId: props.eventId });
   const bookmarkEvent = useMutation(async (eventId: string) => {
     await api.bookmarkEvent(eventId);
     await queryClient.invalidateQueries();
@@ -29,21 +26,6 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
       return await api.getBookmarkedEvents();
     },
     refetchInterval: false,
-  });
-
-  const event = useQuery({
-    queryKey: ["event", props.eventId],
-    queryFn: async () => {
-      const event = await api.getEvent(props.eventId);
-      if (!event) {
-        fetch();
-        throw new Warning(
-          "Event not found, fetching... EventID: " + props.eventId
-        );
-      }
-      return event;
-    },
-    enabled: !!props.eventId,
   });
 
   const isBookmarked = useCallback(() => {
@@ -64,17 +46,7 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
         offset: pageParam,
         order_by: "created_at",
       });
-      return events.map((x) =>
-        eventToNoteMapper({
-          pubkey: x.pubkey,
-          tags: JSON.parse(x.tags_full),
-          sig: x.sig,
-          content: x.content,
-          created_at: x.created_at,
-          kind: x.kind,
-          id: x.id,
-        })
-      );
+      return events.map((x) => eventToNoteMapper(x));
     },
     getNextPageParam: (lastPage) => {
       return lastPage.length === PAGE_SIZE ? PAGE_SIZE : undefined;
