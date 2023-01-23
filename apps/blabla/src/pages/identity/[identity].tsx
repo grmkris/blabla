@@ -17,9 +17,8 @@ export const IdentityPage = () => {
   const { identity } = router.query;
   const parsed = z.string().safeParse(identity);
   return (
-    <Layout>
+    <Layout title={"Events"}>
       <div className="flex flex-col space-y-4">
-        <h1>Events</h1>
         {parsed.success && <IdentityView identity={parsed.data} />}
         {!parsed.success && <div>Invalid identity</div>}
       </div>
@@ -78,13 +77,13 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             <h3 className="card-title">{profile?.data?.name}</h3>
             <p>{profile?.data?.about}</p>
             <div className={"flex flex-col md:flex-row"}>
-              <div className="badge-outline badge w-56 truncate">
+              <div className="badge badge-outline w-56 truncate">
                 {profile?.data?.npub}
               </div>
-              <div className="badge-outline badge">
+              <div className="badge badge-outline">
                 {profile?.data?.website}
               </div>
-              <div className="badge-outline badge">{profile?.data?.lud16}</div>
+              <div className="badge badge-outline">{profile?.data?.lud16}</div>
             </div>
             <div className="card-actions">
               <div className="btn-group">

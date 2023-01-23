@@ -70,7 +70,7 @@ importers:
       idb-keyval: ^6.2.0
       localforage: ^1.10.0
       next: 13.1.1
-      nostr-relaypool: 0.3.18
+      nostr-relaypool: ^0.3.24
       nostr-tools: 1.1.0
       postcss: ^8.4.21
       prettier: ^2.8.2
@@ -82,6 +82,7 @@ importers:
       react-markdown: ^8.0.5
       react-native-sqlite-storage: file:./shim/react-native-sqlite-storage
       react-spinners: ^0.13.7
+      reflect-metadata: ^0.1.13
       remark-directive: ^2.0.1
       remark-gfm: ^3.0.1
       remark-images: ^3.1.0
@@ -122,7 +123,7 @@ importers:
       idb-keyval: 6.2.0
       localforage: 1.10.0
       next: 13.1.1_pjwopsidmaokadturxaafygjp4
-      nostr-relaypool: 0.3.18_ws@8.12.0
+      nostr-relaypool: 0.3.24_ws@8.12.0
       nostr-tools: 1.1.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -130,6 +131,7 @@ importers:
       react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
       react-markdown: 8.0.5_3stiutgnnbnfnf3uowm5cip22i
       react-spinners: 0.13.8_biqbaboplfbrettd7655fr4n2y
+      reflect-metadata: 0.1.13
       remark-directive: 2.0.1
       remark-gfm: 3.0.1
       remark-images: 3.1.0
@@ -3651,13 +3653,13 @@ packages:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
       '@types/eslint': 8.4.10
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
     dev: false
 
   /@types/eslint/8.4.10:
     resolution: {integrity: sha512-Sl/HOqN8NKPmhWo2VBEPm0nvHnu2LL3v9vKo8MEq0EtbJ4eVzGPl41VNPvn5E1i5poMk4/XD8UriLHpJvEP/Nw==}
     dependencies:
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
       '@types/json-schema': 7.0.11
     dev: false
 
@@ -3671,7 +3673,6 @@ packages:
 
   /@types/estree/1.0.0:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
-    dev: true
 
   /@types/hast/2.3.4:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
@@ -7703,8 +7704,8 @@ packages:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
     engines: {node: '>=0.10.0'}
 
-  /nostr-relaypool/0.3.18_ws@8.12.0:
-    resolution: {integrity: sha512-DTw/NQ4I3eCmpw6yBHR8Wqeydg1Vj/BaiflTZSyJ121swSbgtTzTls+ZxSypQ3BRivvJeutJCvJCCVIePfDAvw==}
+  /nostr-relaypool/0.3.24_ws@8.12.0:
+    resolution: {integrity: sha512-qScdrzjkeaVGGiobGioucvEUh29JGGSwrN0G8keZQygYXt6C8ve6284Yv7qtsKA7qlgWwrco2JhVs1/vkvnmOw==}
     dependencies:
       isomorphic-ws: 5.0.0_ws@8.12.0
       nostr-tools: 1.1.0

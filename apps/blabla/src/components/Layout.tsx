@@ -64,7 +64,6 @@ export const Layout = (props: { children: ReactNode; title: string }) => {
               <h3 className="mt-28 mb-4 text-4xl font-medium leading-6">
                 {props.title}
               </h3>
-
               {props.children}
             </main>
           ) : (

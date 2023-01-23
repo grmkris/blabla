@@ -9,7 +9,7 @@ export default function Relays() {
   // relays is Map<string, Relay>
   // iterate over elements and render Relay component
   return (
-    <Layout>
+    <Layout title={"Relays"}>
       <NoSSR>
         <div className={"flex flex-wrap"}>
           <AddRelay />

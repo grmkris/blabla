@@ -1,15 +1,11 @@
 import { type NextPage } from "next";
 import NoSSR from "../components/NoSSR";
-import { EventComponent } from "../components/Events";
 import { Layout } from "../components/Layout";
-import { useNostrEvents } from "nostr-react";
-import { EventKinds } from "../types";
-import { NewPost } from "../components/NewPost";
 import { useBookmarksFeed, useGlobalFeed } from "../hooks/useGlobalFeed";
 import { Button } from "../components/common/common";
 import { useState } from "react";
-import { useSqlite } from "../hooks/useSqlite";
 import React from "react";
+import { EventComponent } from "../components/Events";
 
 const tabs = [
   { name: "Global", href: "global" },
@@ -119,13 +115,10 @@ const HomePage: NextPage = () => {
 export default HomePage;
 
 export const GlobalFeed = () => {
-  const { globalFeed, numberOfNewItems, refresh, now } = useGlobalFeed();
+  const { globalFeed, numberOfNewItems, refresh } = useGlobalFeed();
   return (
     <div className="flex max-w-full flex-col items-start space-y-2">
-      {numberOfNewItems.data > 0 && (
-        <Button onClick={refresh}>{numberOfNewItems.data} new items</Button>
-    <div className="flex max-w-full flex-col flex-col items-start space-y-2">
-      {numberOfNewItems?.data && numberOfNewItems.data > 0 && (
+      {numberOfNewItems?.data && (
         <Button
           onClick={() => {
             refresh.mutate();

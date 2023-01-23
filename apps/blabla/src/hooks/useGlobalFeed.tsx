@@ -14,7 +14,7 @@ const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
   const now = useRef(dateToUnix(new Date())); // Make sure current time isn't re-rendered
   const globalFeed = useInfiniteQuery({
-    queryKey: ["globalFeed"],
+    queryKey: ["globalFeed", now.current],
     queryFn: async ({ pageParam = now.current }) => {
       const tags = await api.getTags();
       console.log("useGlobalFeed- tags", tags);
@@ -43,7 +43,7 @@ export const useGlobalFeed = () => {
   });
 
   const numberOfNewItems = useQuery({
-    queryKey: ["numberOfNewItems", now.current],
+    queryKey: ["globalFeed", "numberOfNewItems", now.current],
     queryFn: async () => {
       return await api.getNewPostsCount({ created_at: now.current });
     },
@@ -68,7 +68,7 @@ export const useBookmarksFeed = () => {
   const { bookmarkedProfiles } = useSqlite({});
   const queryCLient = useQueryClient();
   const bookmarksFeed = useInfiniteQuery({
-    queryKey: ["bookmarksFeed"],
+    queryKey: ["bookmarksFeed", now.current],
     queryFn: async ({ pageParam = now.current }) => {
       const events = await api.getEventsByPubkeys({
         pageParam,
@@ -91,7 +91,7 @@ export const useBookmarksFeed = () => {
   });
 
   const numberOfNewItems = useQuery({
-    queryKey: ["numberOfNewItems", now.current],
+    queryKey: ["bookmarksFeed", "numberOfNewItems", now.current],
     queryFn: async () => {
       return await api.getNewPostsCount({ created_at: now.current });
     },

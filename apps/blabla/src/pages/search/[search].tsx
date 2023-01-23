@@ -14,8 +14,7 @@ export const SearchPage = () => {
   });
 
   return (
-    <Layout>
-      <h1>Search for {search}</h1>
+    <Layout title={`Search for ${search}`}>
       <h2>Profiles</h2>
       {profiles.isLoading && <LoadingSpinner />}
       {profiles.data?.map(

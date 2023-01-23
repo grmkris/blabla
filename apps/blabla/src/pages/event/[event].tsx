@@ -13,9 +13,8 @@ export const EventPage = () => {
   const { event } = router.query;
   const parsed = z.string().safeParse(event);
   return (
-    <Layout>
+    <Layout title={"Post"}>
       <div className="flex flex-col">
-        <h1>Post</h1>
         {parsed.success && <EventView event={parsed.data} />}
         {!parsed.success && <div>Invalid identity</div>}
       </div>

@@ -36,7 +36,7 @@
     "idb-keyval": "^6.2.0",
     "localforage": "^1.10.0",
     "next": "13.1.1",
-    "nostr-relaypool": "0.3.18",
+    "nostr-relaypool": "^0.3.24",
     "nostr-tools": "1.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -54,9 +54,7 @@
     "unist-util-visit": "^4.1.1",
     "use-immer": "^0.8.1",
     "zod": "^3.20.2",
-    "zustand": "^4.3.2",
-    "@vercel/analytics": "^0.1.8",
-    "tsconfig": "*"
+    "zustand": "^4.3.2"
   },
   "devDependencies": {
     "@preconstruct/next": "^4.0.0",
