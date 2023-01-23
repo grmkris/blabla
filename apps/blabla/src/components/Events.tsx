@@ -40,10 +40,14 @@ export const EventComponent = (props: { note: Note }) => {
   };
 
   return (
-    <div className="card min-w-0 max-w-full overflow-auto bg-base-100 shadow-xl">
+    <div className="card min-w-0 max-w-full overflow-auto bg-slate-900/70 shadow-xl">
       <div className="card-body">
-        <Link href={`/identity/${props.note.event.pubkey}`} shallow>
-          <div className="card-title hover:bg-base-200">
+        <Link
+          href={`/identity/${props.note.event.pubkey}`}
+          shallow
+          className="text-gray-500 decoration-blue-700 underline-offset-4 hover:text-blue-700 hover:underline"
+        >
+          <div className="card-title ">
             <div className="avatar">
               <div className="mask mask-squircle w-12">
                 <img
@@ -52,7 +56,7 @@ export const EventComponent = (props: { note: Note }) => {
                 />
               </div>
             </div>
-            <div className="truncate text-sm font-medium text-gray-500">
+            <div className="truncate text-sm font-medium ">
               {profile?.data?.display_name}
               {profile?.data?.name}
               {profile?.data?.npub}
@@ -63,7 +67,7 @@ export const EventComponent = (props: { note: Note }) => {
         <div className="min-w-0 flex-1">
           <div>
             <Link href={`/event/${props.note.event.id}`} shallow>
-              <p className="cursc mt-0.5 text-sm text-gray-600 hover:bg-base-200">
+              <p className="cursc mt-0.5 text-sm text-gray-600 text-gray-500 decoration-blue-700 underline-offset-4 hover:text-blue-700 hover:underline">
                 Commented{" "}
                 {new Date(
                   (props.note.event.created_at ?? 0) * 1000

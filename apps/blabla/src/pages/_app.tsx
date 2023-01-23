@@ -1,5 +1,4 @@
 import { type AppType } from "next/app";
-
 import { trpc } from "../utils/trpc";
 import "../styles/globals.css";
 import { Toaster } from "react-hot-toast";

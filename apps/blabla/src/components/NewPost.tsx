@@ -4,6 +4,7 @@ import { z } from "zod";
 import { TextArea } from "./common/TextArea";
 import toast from "react-hot-toast";
 import { useNewEvent } from "../hooks/useNewEvent";
+import { useRouter } from "next/router";
 
 // create the mapping
 const mapping = [[z.string(), TextArea]] as const; // 👈 `as const` is necessary
@@ -15,9 +16,11 @@ export const NewPostSchema = z.object({
   text: z.string().min(1).max(1000),
 });
 export const NewPost = (props: { eventId?: string }) => {
+  const router = useRouter();
   const { newNote } = useNewEvent();
   async function onSubmit(data: z.infer<typeof NewPostSchema>) {
     await newNote.mutateAsync({ data, eventId: props.eventId });
+    router.push("/");
   }
 
   return (
