@@ -1,6 +1,6 @@
-import { UserIdentities } from "../components/UserIdentities";
 import { Layout } from "../components/Layout";
-import NoSSR from "../components/NoSSR";
+import NoSSR from "../components/common/NoSSR";
+import { UserIdentities } from "../components/settings/UserIdentities";
 
 export default function Profile() {
   return (

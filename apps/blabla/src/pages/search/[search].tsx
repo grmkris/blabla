@@ -2,10 +2,10 @@ import { useRouter } from "next/router";
 import { api } from "../../web-sqlite/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "../../components/Layout";
-import { EventComponent } from "../../components/Events";
 import { eventToNoteMapper } from "../../web-sqlite/client-functions";
 import { IdentityInformationCard } from "../identity/[identity]";
-import { LoadingSpinner } from "../../components/common/common";
+import { LoadingSpinner } from "../../components/common/LoadingSpinner";
+import { EventComponent } from "../../components/event-view/EventComponent";
 
 export const SearchPage = () => {
   const { search } = useRouter().query;

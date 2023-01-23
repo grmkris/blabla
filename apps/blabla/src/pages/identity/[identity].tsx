@@ -1,15 +1,13 @@
 import { useRouter } from "next/router";
 import { Layout } from "../../components/Layout";
-import { EventComponent } from "../../components/Events";
-import { Button } from "../../components/common/common";
 import Link from "next/link";
-import NoSSR from "../../components/NoSSR";
 import { z } from "zod";
 import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
 import { useSqlite } from "../../hooks/useSqlite";
 import { useEvents } from "../../hooks/useEvents";
-import { useEffect } from "react";
-import { useNostrRelayPool } from "../../hooks/useNostrRelayPool";
+import NoSSR from "../../components/common/NoSSR";
+import { Button } from "../../components/common/Button";
+import { EventComponent } from "../../components/event-view/EventComponent";
 
 export const IdentityPage = () => {
   // get identity id from url

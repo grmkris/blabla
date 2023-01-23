@@ -10,9 +10,9 @@ import {
 } from "@heroicons/react/20/solid";
 import { api } from "../web-sqlite/sqlite";
 import { proxy } from "comlink";
-import { Button, LoadingSpinner } from "./common/common";
+import { Button } from "./common/Button";
+import { LoadingSpinner } from "./common/LoadingSpinner";
 import { useRouter } from "next/router";
-import DemoPage from "./DemoPage";
 import { Popover } from "@headlessui/react";
 
 export const Layout = (props: { children: ReactNode; title: string }) => {

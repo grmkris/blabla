@@ -1,7 +1,8 @@
 import { WifiIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
-import { Button, Common } from "./common/common";
-import { useAppStore } from "../store/appStore";
+import { useAppStore } from "../../store/appStore";
+import { Button } from "../common/Button";
+import { Input } from "../common/Input";
 
 export const AddRelay = () => {
   const addOrUpdateRelay = useAppStore.use.addOrUpdateNostrRelay();
@@ -16,7 +17,7 @@ export const AddRelay = () => {
           Relayer Url
         </label>
         <div className="mt-1">
-          <Common
+          <Input
             type="text"
             name="relayUrl"
             id="relayUrl"

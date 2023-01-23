@@ -1,10 +1,10 @@
-import { Button } from "./common/common";
 import { createTsForm } from "@ts-react/form";
 import { z } from "zod";
 import { TextArea } from "./common/TextArea";
 import toast from "react-hot-toast";
 import { useNewEvent } from "../hooks/useNewEvent";
 import { useRouter } from "next/router";
+import { Button } from "./common/Button";
 
 // create the mapping
 const mapping = [[z.string(), TextArea]] as const; // 👈 `as const` is necessary

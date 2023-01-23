@@ -1,11 +1,11 @@
 import { Layout } from "../components/Layout";
-import NoSSR from "../components/NoSSR";
 import { useState } from "react";
 import { IdentityInformationCard } from "./identity/[identity]";
-import { EventComponent } from "../components/Events";
 import { useSqlite } from "../hooks/useSqlite";
 import { useEvents } from "../hooks/useEvents";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
+import NoSSR from "../components/common/NoSSR";
+import { EventComponent } from "../components/event-view/EventComponent";
 
 export default function Saved() {
   const [selectedTab, setSelectedTab] = useState<"profiles" | "events">(

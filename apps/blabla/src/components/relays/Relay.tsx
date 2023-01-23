@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { Button } from "./common/common";
-import type { NostrRelay } from "../store/appStore";
-import { useAppStore } from "../store/appStore";
-
+import type { NostrRelay } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore";
+import { Button } from "../common/Button";
 export const Relay = (props: { relay: NostrRelay; index: number }) => {
   const removeRelay = useAppStore.use.removeNostrRelay();
   const relayStatusTextColor = useMemo(() => {

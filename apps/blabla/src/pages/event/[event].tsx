@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { Layout } from "../../components/Layout";
-import { EventComponent } from "../../components/Events";
-import NoSSR from "../../components/NoSSR";
 import { useNostrRelayPool } from "../../hooks/useNostrRelayPool";
 import { useEffect } from "react";
 import { useEvent } from "../../hooks/useEvent";
+import NoSSR from "../../components/common/NoSSR";
+import { EventComponent } from "../../components/event-view/EventComponent";
 
 export const EventPage = () => {
   // get identity id from url
