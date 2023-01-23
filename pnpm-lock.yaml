@@ -82,7 +82,6 @@ importers:
       react-markdown: ^8.0.5
       react-native-sqlite-storage: file:./shim/react-native-sqlite-storage
       react-spinners: ^0.13.7
-      reflect-metadata: ^0.1.13
       remark-directive: ^2.0.1
       remark-gfm: ^3.0.1
       remark-images: ^3.1.0
@@ -131,7 +130,6 @@ importers:
       react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
       react-markdown: 8.0.5_3stiutgnnbnfnf3uowm5cip22i
       react-spinners: 0.13.8_biqbaboplfbrettd7655fr4n2y
-      reflect-metadata: 0.1.13
       remark-directive: 2.0.1
       remark-gfm: 3.0.1
       remark-images: 3.1.0
