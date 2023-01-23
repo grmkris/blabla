@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/subgraph-client.cjs.js",
   "scripts": {
-    "postinstall": "preconstruct dev",
     "codegen": "graphql-codegen --config src/graphql/codegen.ts",
     "build": "preconstruct build",
     "copy-package-json-to-dist": "copyfiles package.json dist/",
