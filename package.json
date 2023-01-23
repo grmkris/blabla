@@ -30,7 +30,6 @@
     "node": ">=14.0.0"
   },
   "dependencies": {},
-  "packageManager": "pnpm@7.25.1",
   "preconstruct": {
     "packages": [
       "packages/subgraph-client"
