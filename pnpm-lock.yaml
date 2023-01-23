@@ -71,7 +71,7 @@ importers:
       localforage: ^1.10.0
       next: 13.1.1
       nostr-relaypool: ^0.3.24
-      nostr-tools: 1.1.0
+      nostr-tools: ^1.2.0
       postcss: ^8.4.21
       prettier: ^2.8.2
       prettier-plugin-tailwindcss: ^0.2.1
@@ -123,7 +123,7 @@ importers:
       localforage: 1.10.0
       next: 13.1.1_pjwopsidmaokadturxaafygjp4
       nostr-relaypool: 0.3.24_ws@8.12.0
-      nostr-tools: 1.1.0
+      nostr-tools: 1.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.42.1_react@18.2.0
@@ -7706,14 +7706,14 @@ packages:
     resolution: {integrity: sha512-qScdrzjkeaVGGiobGioucvEUh29JGGSwrN0G8keZQygYXt6C8ve6284Yv7qtsKA7qlgWwrco2JhVs1/vkvnmOw==}
     dependencies:
       isomorphic-ws: 5.0.0_ws@8.12.0
-      nostr-tools: 1.1.0
+      nostr-tools: 1.2.0
       safe-stable-stringify: 2.4.2
     transitivePeerDependencies:
       - ws
     dev: false
 
-  /nostr-tools/1.1.0:
-    resolution: {integrity: sha512-T+Fj29ff6dn1YMMDrG03OctxrWVKeei/DZatVjgoad0tYUCiBBERk37qkpCqFAoKYVreIPl/Mxrh2DVfMzLA7g==}
+  /nostr-tools/1.2.0:
+    resolution: {integrity: sha512-5bISmkAsFP2ZgSWlWo7Ra0PHpkDRDKylOxQQAfWs3I8OpuQBUmOKuQAAO2jYSFa3FGRvcCFmF+tO7+m533dtLw==}
     dependencies:
       '@noble/hashes': 0.5.9
       '@noble/secp256k1': 1.7.1
