@@ -4,7 +4,6 @@ import { immer } from "zustand/middleware/immer";
 import { createSelectors, LocalStateStorage } from "../utils/utils";
 
 const relays: NostrRelay[] = [
-  "wss://nostream-production-6f68.up.railway.app",
   "wss://nostr-pub.wellorder.net",
   "wss://relay.nostr.ch",
 ].map((r) => ({ url: r, status: "idle" }));
@@ -52,13 +51,6 @@ export const useAppStore = createSelectors(
                 } else {
                   state.saved.nostrRelays.push(relay);
                 }
-              });
-            },
-            removeLocalProfile: (identity) => {
-              set((state) => {
-                state.localProfiles = state.localProfiles.filter(
-                  (i) => i.publicKey !== identity.publicKey
-                );
               });
             },
             removeNostrRelay: (relay) => {

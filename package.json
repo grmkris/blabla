@@ -35,5 +35,10 @@
     "packages": [
       "packages/subgraph-client"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "@graphiql/toolkit": "0.8.0"
+    }
   }
 }

@@ -1,22 +1,30 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import initSqlJs from "@jlongster/sql.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { SQLiteFS } from "@nikvdp/absurd-sql";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import IndexedDBBackend from "@nikvdp/absurd-sql/dist/indexeddb-backend";
 import type { Connection, Repository } from "typeorm";
-import { createConnection, MoreThan } from "typeorm";
+import { createConnection, MoreThan, LessThan } from "typeorm";
 import { expose } from "comlink";
+import type { NostrProfileTable } from "./schema";
 import {
   BookmarkedEvents,
   BookmarkedProfiles,
-  Events,
+  EventTable,
   NostrProfile,
   Seen,
   Tags,
+  Follows,
 } from "./schema";
 
 let isReady = false;
 async function setupTypeormEnvWithSqljs(dbPath: string) {
   const SQL = await initSqlJs({
-    locateFile: (file) => {
+    locateFile: () => {
       const path = `/sql-wasm.wasm`;
       return path;
     },
@@ -71,12 +79,13 @@ async function setupTypeormEnvWithSqljs(dbPath: string) {
 }
 
 let conn: Connection;
-let eventsRepository: Repository<Events>;
+let eventsRepository: Repository<EventTable>;
 let tagsRepository: Repository<Tags>;
 let seenRepository: Repository<Seen>;
 let nostrProfileRepository: Repository<NostrProfile>;
 let bookmarkedEventsRepository: Repository<BookmarkedEvents>;
 let bookmarkedProfilesRepository: Repository<BookmarkedProfiles>;
+let followsRepository: Repository<Follows>;
 async function setup() {
   console.log("Setting up typeorm");
   // with /sql/ namespace
@@ -88,26 +97,29 @@ async function setup() {
     autoSave: false, // commit by absurd-sql
     synchronize: true,
     entities: [
-      Events,
+      EventTable,
       Tags,
       Seen,
       NostrProfile,
       BookmarkedEvents,
       BookmarkedProfiles,
+      Follows,
     ],
     logging: ["query", "schema"],
   });
-  eventsRepository = conn.getRepository(Events);
+  eventsRepository = conn.getRepository(EventTable);
   tagsRepository = conn.getRepository(Tags);
   seenRepository = conn.getRepository(Seen);
   nostrProfileRepository = conn.getRepository(NostrProfile);
   bookmarkedEventsRepository = conn.getRepository(BookmarkedEvents);
   bookmarkedProfilesRepository = conn.getRepository(BookmarkedProfiles);
+  followsRepository = conn.getRepository(Follows);
   console.log("typeorm setup done");
   isReady = true;
 }
-async function createOrUpdateEvent(event: Events) {
-  await eventsRepository.save(event);
+async function createOrUpdateEvents(events: EventTable[]) {
+  console.log("createOrUpdateEvents", events);
+  await eventsRepository.upsert(events, { conflictPaths: ["id"] });
   return true;
 }
 async function bookmarkEvent(event_id: string) {
@@ -127,6 +139,27 @@ async function getBookmarkedEvents() {
   const bookmarkedEvents = await bookmarkedEventsRepository.find();
   const eventIds = bookmarkedEvents.map((e) => e.event_id);
   const events = await eventsRepository.findByIds(eventIds);
+  return events;
+}
+
+/**
+ * Get events that are referencing provided event_id in the tags (tags.value)
+ * @param props
+ */
+async function getPostComments(props: {
+  event_id: string;
+  pageParam: number;
+  pageSize: number;
+}) {
+  const { event_id, pageParam, pageSize } = props;
+  const events = await eventsRepository
+    .createQueryBuilder("event")
+    .leftJoinAndSelect("event.tags", "tags")
+    .where("tags.value = :event_id", { event_id })
+    .orderBy("event.created_at", "DESC")
+    .skip(pageParam)
+    .take(pageSize)
+    .getMany();
   return events;
 }
 
@@ -174,14 +207,17 @@ async function getEvents({
 
 /**
  * const select = `select * from events where created_at < ${pageParam} order by created_at desc limit ${PAGE_SIZE}`;
+ * get also tags related to the event if event has no tags, it will return empty array
  */
 async function getGlobalFeed(props: { pageParam: number; pageSize: number }) {
-  const events = await eventsRepository
-    .createQueryBuilder("events")
-    .where("created_at < :pageParam", { pageParam: props.pageParam })
-    .orderBy("created_at", "DESC")
-    .limit(props.pageSize)
-    .getMany();
+  const events = eventsRepository.find({
+    relations: ["tags"],
+    where: {
+      created_at: LessThan(props.pageParam),
+    },
+    order: { created_at: "DESC" },
+    take: props.pageSize,
+  });
   return events;
 }
 
@@ -190,8 +226,10 @@ async function getEvent(event_id: string) {
   return event;
 }
 
-async function createOrUpdateTag(tag: Tags) {
-  await tagsRepository.save(tag);
+async function createOrUpdateTags(tags: Tags[]) {
+  await tagsRepository.upsert(tags, {
+    conflictPaths: ["id"],
+  });
   return true;
 }
 
@@ -234,8 +272,10 @@ async function unbookmarkProfile(profile_id: string) {
   return true;
 }
 
-async function createOrUpdateNostrProfile(profile: NostrProfile) {
-  await nostrProfileRepository.save(profile);
+async function createOrUpdateNostrProfile(profiles: NostrProfileTable[]) {
+  await nostrProfileRepository.upsert(profiles, {
+    conflictPaths: ["pubkey"],
+  });
   return true;
 }
 
@@ -309,11 +349,23 @@ async function getEventsByPubkeys(props: {
     .getMany();
 }
 
+async function getFollowers(pubkey: string) {
+  const followers = await followsRepository.find({
+    where: { pubkey },
+  });
+  return followers;
+}
+
+async function insertFollowers(followers: Follows[]) {
+  await followsRepository.save(followers);
+  return true;
+}
+
 const api = {
-  createOrUpdateEvent,
+  createOrUpdateEvents,
   getEvents,
   getEvent,
-  createOrUpdateTag,
+  createOrUpdateTags,
   getTags,
   bookmarkEvent,
   unbookmarkEvent,
@@ -331,6 +383,9 @@ const api = {
   fullTextSearchEvents,
   fullTextSearchProfiles,
   getEventsByPubkeys,
+  getPostComments,
+  insertFollowers,
+  getFollowers,
 };
 export type Api = typeof api;
 
@@ -338,7 +393,7 @@ expose(api);
 
 setup();
 
-async function notifyWhenReady(cb) {
+async function notifyWhenReady(cb: () => void) {
   while (!isReady) {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }

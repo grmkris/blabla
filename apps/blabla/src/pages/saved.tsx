@@ -68,7 +68,7 @@ function SavedEvents() {
             content: event?.content,
             sig: event?.sig,
             id: event?.id,
-            tags: JSON.parse(event?.tags_full),
+            tags: event?.tags,
           })
         )
         ?.map(

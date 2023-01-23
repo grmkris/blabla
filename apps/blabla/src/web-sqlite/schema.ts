@@ -1,19 +1,5 @@
 import { z } from "zod";
-import { Column, Entity, PrimaryColumn } from "typeorm";
-
-/**
- * TABLE SCHEMAS
- */
-export const EventTableSchema = z.object({
-  id: z.string(),
-  pubkey: z.string(),
-  kind: z.number(),
-  created_at: z.number(),
-  content: z.string(),
-  tags_full: z.string(),
-  sig: z.string(),
-});
-export type EventTable = z.infer<typeof EventTableSchema>;
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 
 export const TagsTableSchema = z.object({
   event_id: z.string(),
@@ -30,7 +16,7 @@ export type SeenTable = z.infer<typeof SeenTableSchema>;
 
 export const NostrProfileTableSchema = z.object({
   pubkey: z.string(),
-  npub: z.string(),
+  npub: z.string().optional(),
   name: z.string().optional(),
   display_name: z.string().optional(),
   picture: z.string().optional(),
@@ -53,91 +39,109 @@ export type BookmarkedProfilesTable = z.infer<
 >;
 
 @Entity()
-export class Events {
-  @PrimaryColumn()
-  id: string;
+export class EventTable {
+  @PrimaryColumn({ nullable: false })
+  id?: string;
 
-  @Column()
-  pubkey: string;
+  @Column({ nullable: true })
+  pubkey?: string;
 
-  @Column()
-  kind: number;
+  @Column({ nullable: true })
+  kind?: number;
 
-  @Column()
-  created_at: number;
+  @Column({ nullable: true })
+  created_at?: number;
 
-  @Column()
-  content: string;
+  @Column({ nullable: true })
+  content?: string;
 
-  @Column()
-  tags_full: string;
+  @Column({ nullable: true })
+  sig?: string;
 
-  @Column()
-  sig: string;
+  @OneToMany(() => Tags, (tag) => tag.event_id)
+  tags?: Tags[];
 }
 
 @Entity()
 export class Tags {
   @PrimaryColumn()
-  event_id: string;
+  id?: string;
+  @Column({ nullable: true, unique: false })
+  tag?: string;
 
-  @Column({ nullable: true })
-  tag: string;
+  @Column({ nullable: true, unique: false })
+  value?: string;
 
-  @Column({ nullable: true })
-  value: string;
+  @ManyToOne(() => EventTable, (event) => event.tags)
+  @Column({ nullable: true, unique: false })
+  event_id?: string;
 }
 
 @Entity()
 export class Seen {
   @PrimaryColumn()
-  event_id: string;
+  event_id?: string;
 
   @Column()
-  relay: string;
+  relay?: string;
 }
 
 @Entity()
 export class NostrProfile {
   @PrimaryColumn()
-  pubkey: string;
+  pubkey?: string;
 
   @Column({ nullable: true })
-  npub: string;
+  npub?: string;
 
   @Column({ nullable: true })
-  name: string;
+  name?: string;
 
   @Column({ nullable: true })
-  display_name: string;
+  display_name?: string;
 
   @Column({ nullable: true })
-  picture: string;
+  picture?: string;
 
   @Column({ nullable: true })
-  about: string;
+  about?: string;
 
   @Column({ nullable: true })
-  website: string;
+  website?: string;
 
   @Column({ nullable: true })
-  lud06: string;
+  lud06?: string;
 
   @Column({ nullable: true })
-  lud16: string;
+  lud16?: string;
 
   @Column({ nullable: true })
-  nip06: string;
+  nip06?: string;
+
+  @OneToMany(() => Follows, (follows) => follows.pubkey)
+  followers?: Follows[];
+
+  @OneToMany(() => Follows, (follows) => follows.followedPubkey)
+  follows?: Follows[];
 }
 
 @Entity()
 export class BookmarkedEvents {
   @PrimaryColumn()
-  event_id: string;
+  event_id?: string;
 }
 
 @Entity()
 export class BookmarkedProfiles {
   @PrimaryColumn()
-  pubkey: string;
+  pubkey?: string;
+}
+
+@Entity()
+export class Follows {
+  @PrimaryColumn()
+  pubkey?: string;
+
+  @PrimaryColumn()
+  followedPubkey?: string;
 }

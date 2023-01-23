@@ -1,6 +1,5 @@
 import type { Event as NostrEvent } from "nostr-tools/event";
 import { getEventHash, Kind, signEvent } from "nostr-tools";
-import { dateToUnix, useNostr } from "nostr-react";
 import { useMutation } from "@tanstack/react-query";
 import type { z } from "zod";
 import type { NewPostSchema } from "../components/NewPost";
@@ -9,9 +8,10 @@ import { api } from "../web-sqlite/sqlite";
 import toast from "react-hot-toast";
 import { useGlobalFeed } from "./useGlobalFeed";
 import { NoIdentitiesToast } from "../components/NewPost";
+import { dateToUnix, useNostrRelayPool } from "./useNostrRelayPool";
 
 export const useNewEvent = () => {
-  const { publish } = useNostr();
+  const { publish } = useNostrRelayPool();
   const { refresh } = useGlobalFeed();
   const identities = useAppStore.use.localProfiles();
 
@@ -20,7 +20,7 @@ export const useNewEvent = () => {
       data: z.infer<typeof NewPostSchema>;
       eventId?: string;
     }) => {
-      if (identities.length === 0) {
+      if (!identities[0]?.publicKey) {
         NoIdentitiesToast();
         return;
       }
@@ -39,7 +39,7 @@ export const useNewEvent = () => {
 
       event.id = getEventHash(event);
       event.sig = signEvent(event, identities[0].privateKey);
-      publish(event);
+      publish.mutate({ event });
       // wait untill the event appears in the database
       console.log("eventFromDb waiting for event to appear in db");
       let eventFromDb = await api.getEvent(event.id);
