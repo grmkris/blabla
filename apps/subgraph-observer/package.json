@@ -41,7 +41,8 @@
     "superjson": "1.9.1",
     "use-immer": "^0.7.0",
     "zod": "^3.18.0",
-    "zustand": "^4.1.1"
+    "zustand": "^4.1.1",
+    "tsconfig": "*"
   },
   "devDependencies": {
     "@preconstruct/next": "^4.0.0",
