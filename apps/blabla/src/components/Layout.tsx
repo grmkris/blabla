@@ -53,7 +53,7 @@ export const Layout = (props: { children: ReactNode; title: string }) => {
 
   return (
     <>
-      <main>
+      <main className={"mb-20"}>
         <nav className="fixed top-0 z-50 w-full lg:block">
           <NavigationTop />
         </nav>
@@ -89,7 +89,7 @@ export const Layout = (props: { children: ReactNode; title: string }) => {
 
 const NavigationBottom = () => {
   return (
-    <nav className="btm-nav lg:hidden">
+    <nav className="btm-nav">
       <Link href="/" shallow>
         <HomeIcon className={"h-5 w-5"} />{" "}
       </Link>

@@ -10,7 +10,7 @@ import { useSqlite } from "../hooks/useSqlite";
 import { useEvents } from "../hooks/useEvents";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import { api } from "../web-sqlite/sqlite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NewPost } from "./NewPost";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -19,6 +19,7 @@ import { visit } from "unist-util-visit";
 import { is } from "unist-util-is";
 import { useEvent } from "../hooks/useEvent";
 import { z } from "zod";
+import { Tweet } from "react-twitter-widgets";
 
 export const EventComponent = (props: { note: Note }) => {
   const [showInputCommentArea, setShowInputCommentArea] = useState(false);
@@ -85,6 +86,11 @@ export const EventComponent = (props: { note: Note }) => {
               ]}
               components={{
                 a: ({ node, ...props }) => {
+                  // if node is twitter url, render a tweet
+                  if (props.href?.startsWith("https://twitter.com")) {
+                    console.log("twitter url", props.href);
+                    return <CustomTwitterPreview value={props.href} />;
+                  }
                   return (
                     <a
                       className={"text-blue-500"}
@@ -353,3 +359,11 @@ function hashTagAttacher() {
     });
   }
 }
+
+export const CustomTwitterPreview = ({ value }: { value: string }) => {
+  // get tweetID from value -> last part of url
+  const tweetID = value.split("/").pop();
+  if (!tweetID) return null;
+  console.log("tweetID", tweetID);
+  return <Tweet tweetId={tweetID} />;
+};
