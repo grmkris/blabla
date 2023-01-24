@@ -26,7 +26,6 @@ export const insertOrUpdateEvents = async (events: Event[]) => {
       };
     })
   );
-  await api.createOrUpdateTags(tags);
 };
 export const eventToNoteMapper = (event: EventTable): Note => {
   const referencedNotes: string[] = [];

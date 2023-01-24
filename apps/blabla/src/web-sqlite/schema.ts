@@ -40,7 +40,7 @@ export class EventTable {
   @Column({ nullable: true })
   sig?: string;
 
-  @OneToMany(() => Tags, (tag) => tag.event_id)
+  @OneToMany(() => Tags, (tag) => tag.event_id, { cascade: true })
   tags?: Tags[];
 
   @Column({ default: false })

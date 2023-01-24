@@ -6,7 +6,10 @@ import type { NewPostSchema } from "../components/NewPost";
 import { api } from "../web-sqlite/sqlite";
 import toast from "react-hot-toast";
 import { NoIdentitiesToast } from "../components/NewPost";
-import { dateToUnix, useNostrRelayPool } from "./useNostrRelayPool";
+import {
+  dateToUnix,
+  useNostrRelayPool,
+} from "./nostr-relay-pool/useNostrRelayPool";
 import { useAppStore } from "../AppStore";
 
 export const useNewEvent = () => {

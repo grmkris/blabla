@@ -8,7 +8,7 @@ import { useEvents } from "../../hooks/useEvents";
 import NoSSR from "../../components/common/NoSSR";
 import { Button } from "../../components/common/Button";
 import { EventComponent } from "../../components/event-view/EventComponent";
-import { useNostrRelayPool } from "../../hooks/useNostrRelayPool";
+import { useNostrRelayPool } from "../../hooks/nostr-relay-pool/useNostrRelayPool";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -76,13 +76,13 @@ export const IdentityInformationCard = (props: { identity: string }) => {
             <h3 className="card-title">{profile?.data?.name}</h3>
             <p>{profile?.data?.about}</p>
             <div className={"flex flex-col md:flex-row"}>
-              <div className="badge badge-outline w-56 truncate">
+              <div className="badge-outline badge w-56 truncate">
                 {profile?.data?.npub}
               </div>
-              <div className="badge badge-outline">
+              <div className="badge-outline badge">
                 {profile?.data?.website}
               </div>
-              <div className="badge badge-outline">{profile?.data?.lud16}</div>
+              <div className="badge-outline badge">{profile?.data?.lud16}</div>
             </div>
             <div className="card-actions">
               <div className="btn-group">

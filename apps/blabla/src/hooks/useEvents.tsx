@@ -60,7 +60,6 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
     bookmarkEvent,
     unbookmarkEvent,
     bookmarkedEvents,
-    event,
     isBookmarked,
     eventsByPubkey,
   };

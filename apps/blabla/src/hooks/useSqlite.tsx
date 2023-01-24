@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { useCallback } from "react";
-import { useNostrRelayPool } from "./useNostrRelayPool";
+import { useNostrRelayPool } from "./nostr-relay-pool/useNostrRelayPool";
 
 export const useSqlite = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
@@ -42,6 +42,9 @@ export const useSqlite = (props: { pubkey?: string }) => {
     },
     enabled: !!props?.pubkey,
     refetchInterval: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   const isBookmarked = useCallback(() => {

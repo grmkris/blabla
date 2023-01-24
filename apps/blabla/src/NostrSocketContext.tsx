@@ -1,12 +1,15 @@
 import type { ReactNode } from "react";
-import { createContext, useEffect, useState } from "react";
-import { RelayPool } from "nostr-relaypool";
+import { createContext, useCallback, useEffect, useState } from "react";
+import { RelayPool, collect } from "nostr-relaypool";
+import type { Event } from "nostr-tools";
 import { useAppStore } from "./AppStore";
 import { EventKinds } from "./types";
 import { insertOrUpdateEvents } from "./web-sqlite/client-functions";
-import { dateToUnix } from "./hooks/useNostrRelayPool";
+import { dateToUnix } from "./hooks/nostr-relay-pool/useNostrRelayPool";
 import { api } from "./web-sqlite/sqlite";
 import { proxy } from "comlink";
+import { useGetGlobalFilterSinceTime } from "./hooks/useGetGlobalFilterSinceTime";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const NostrSocketContext = createContext<{
   relayPool?: RelayPool;
@@ -28,6 +31,8 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   const [relayPool, setRelayPool] = useState<RelayPool>();
   const [subscribed, setSubscribed] = useState(false);
   const [now, setNow] = useState(dateToUnix(new Date())); // Make sure current time isn't re-rendered
+  const { data } = useGetGlobalFilterSinceTime();
+  const queryClient = useQueryClient();
   const refreshNow = () => {
     setNow(dateToUnix(new Date()));
   };
@@ -40,33 +45,38 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
     api.notifyWhenReady(proxy(callback));
   }, []);
 
-  useEffect(() => {
-    console.log("NostrSocketProvider: useEffect");
-    if (!!relayPool || !isSqliteReady) return;
-    const pool = new RelayPool(nostrRelays);
-    setRelayPool(pool);
-    pool.subscribe(
+  const onCollect = async (events: Event[]) => {
+    await insertOrUpdateEvents(events);
+    queryClient.invalidateQueries();
+  };
+
+  const createRelayPoolSubscriptions = useCallback(() => {
+    console.log("NostrSocketProvider: useCallback", relayPool);
+    if (!relayPool) return;
+    console.log("NostrSocketProvider: useCallback: subscribing", {
+      since: data,
+    });
+    relayPool.subscribe(
       [
         {
-          since: now - 1000, // all new events from now
+          since: data,
           kinds: [EventKinds.TEXT_NOTE],
-          limit: 100,
+          limit: 20,
         },
       ],
       nostrRelays,
-      (event, isAfterEose) => {
-        // console.log("useNostrRelayPool: useEffect: event", event);
-        insertOrUpdateEvents([event]);
-      },
-      undefined,
-      (events) => {
-        // console.log("useNostrRelayPool: useEffect: events", events);
-        // insertOrUpdateEvents(events ?? []);
-      },
-      { allowDuplicateEvents: false, allowOlderEvents: true }
+      collect(onCollect),
+      0
     );
-    setSubscribed(true);
-  }, [nostrRelays, relayPool]);
+  }, [relayPool, nostrRelays]);
+
+  useEffect(() => {
+    console.log("NostrSocketProvider: useEffect");
+    createRelayPoolSubscriptions();
+    if (!!relayPool || !isSqliteReady || subscribed || !data) return;
+    const pool = new RelayPool(nostrRelays);
+    setRelayPool(pool);
+  }, [nostrRelays, relayPool, data]);
 
   const ret = {
     relayPool,

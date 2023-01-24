@@ -2,11 +2,11 @@ import { Author } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
 import { useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { insertOrUpdateEvents } from "../web-sqlite/client-functions";
-import { api } from "../web-sqlite/sqlite";
-import { NostrSocketContext } from "../NostrSocketContext";
-import { useAppStore } from "../AppStore";
-import { NostrProfileTableSchema } from "../web-sqlite/schema";
+import { insertOrUpdateEvents } from "../../web-sqlite/client-functions";
+import { api } from "../../web-sqlite/sqlite";
+import { NostrSocketContext } from "../../NostrSocketContext";
+import { useAppStore } from "../../AppStore";
+import { NostrProfileTableSchema } from "../../web-sqlite/schema";
 
 export const useNostrRelayPool = () => {
   const { relayPool } = useContext(NostrSocketContext);

@@ -101,7 +101,10 @@ async function setup() {
   isReady = true;
 }
 async function createOrUpdateEvents(events: EventTable[]) {
-  console.log("createOrUpdateEvents", events);
+  console.log(
+    "createOrUpdateEvents",
+    events.map((e) => e.id)
+  );
   await eventsRepository.upsert(events, { conflictPaths: ["id"] });
   return true;
 }
@@ -356,6 +359,14 @@ async function updateFollowers(props: { pubkey: string; followers: string[] }) {
   return nostrProfileFollowers;
 }
 
+const getLastEventInDb = async () => {
+  const event = await eventsRepository.findOne({
+    order: { created_at: "DESC" },
+    where: { kind: 1 },
+  });
+  return event;
+};
+
 const api = {
   createOrUpdateEvents,
   getEvents,
@@ -381,6 +392,7 @@ const api = {
   updateFollowers,
   getFollowers,
   markEventAsRead,
+  getLastEventInDb,
 };
 export type Api = typeof api;
 

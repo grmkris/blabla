@@ -40,7 +40,8 @@ export const useGlobalFeed = () => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    staleTime: 1000 * 60 * 60 * 24,
+    staleTime: Infinity,
+    networkMode: "always",
   });
 
   const numberOfNewItems = useQuery({

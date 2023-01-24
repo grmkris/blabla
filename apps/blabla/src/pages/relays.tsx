@@ -1,8 +1,8 @@
 import NoSSR from "../components/common/NoSSR";
-import { useNostrRelayPool } from "../hooks/useNostrRelayPool";
 import { Layout } from "../components/Layout";
 import { AddRelay } from "../components/relays/AddRelay";
 import { Relay } from "../components/relays/Relay";
+import { useNostrRelayPool } from "../hooks/nostr-relay-pool/useNostrRelayPool";
 
 export default function Relays() {
   const { relays } = useNostrRelayPool();

@@ -12,13 +12,13 @@ const queryClient = new QueryClient();
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
-      <NostrSocketProvider>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <NostrSocketProvider>
           <Component {...pageProps} />
           <Toaster />
           <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </NostrSocketProvider>
+        </NostrSocketProvider>
+      </QueryClientProvider>
       <Analytics />
     </>
   );

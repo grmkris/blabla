@@ -2,7 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import { Warning } from "postcss";
-import { useNostrRelayPool } from "./useNostrRelayPool";
+import { useNostrRelayPool } from "./nostr-relay-pool/useNostrRelayPool";
 
 const PAGE_SIZE = 20;
 export const useEvent = (props: { eventId?: string }) => {

@@ -13,7 +13,7 @@ export const GlobalFeed = () => {
           }}
           loading={refresh.isLoading}
         >
-          {numberOfNewItems.data} new items
+          ~ {numberOfNewItems.data} new items
         </Button>
       ) : null}
       {globalFeed.data?.pages?.map((notes) =>
