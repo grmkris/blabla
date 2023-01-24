@@ -261,7 +261,10 @@ async function createOrUpdateNostrProfile(profiles: NostrProfileTable[]) {
 }
 
 async function getNostrProfile(pubkey: string) {
-  const profile = await nostrProfileRepository.findOne({ where: { pubkey } });
+  const profile = await nostrProfileRepository.findOne({
+    where: { pubkey },
+    relations: ["followers"],
+  });
   return profile;
 }
 
@@ -339,11 +342,12 @@ async function getFollowers(pubkey: string) {
   return followers?.followers;
 }
 
-async function updateFollowers(pubkey: string, followers: string[]) {
+async function updateFollowers(props: { pubkey: string; followers: string[] }) {
+  console.log("updateFollowers", props);
   const nostrProfileFollowers = await nostrProfileFollowersRepository.upsert(
-    followers.map((follower) => {
+    props.followers.map((follower) => {
       return {
-        pubkey,
+        pubkey: props.pubkey,
         follower,
       };
     }),
@@ -374,7 +378,7 @@ const api = {
   fullTextSearchProfiles,
   getEventsByPubkeys,
   getPostComments,
-  insertFollowers: updateFollowers,
+  updateFollowers,
   getFollowers,
   markEventAsRead,
 };

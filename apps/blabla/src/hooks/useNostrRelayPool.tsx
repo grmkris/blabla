@@ -1,7 +1,7 @@
 import { Author } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
 import { useContext } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertOrUpdateEvents } from "../web-sqlite/client-functions";
 import { api } from "../web-sqlite/sqlite";
 import { NostrSocketContext } from "../NostrSocketContext";
@@ -11,6 +11,7 @@ import { NostrProfileTableSchema } from "../web-sqlite/schema";
 export const useNostrRelayPool = () => {
   const { relayPool } = useContext(NostrSocketContext);
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
+  const queryClient = useQueryClient();
 
   const getNostrData = useMutation(async (variables: { filter: Filter[] }) => {
     if (!relayPool) return;
@@ -18,7 +19,7 @@ export const useNostrRelayPool = () => {
       variables.filter,
       nostrRelays,
       (event, isAfterEose, relayURL) => {
-        insertOrUpdateEvents([event]);
+        // insertOrUpdateEvents([event]);
         console.log("useNostrRelayPool: getNostrData: event", event);
       },
       500,
@@ -36,41 +37,9 @@ export const useNostrRelayPool = () => {
     relayPool?.publish(variables.event, nostrRelays);
   });
 
-  const author = useMutation(async (variables: { author: string }) => {
+  const retrievePubkeyMetadata = async (variables: { author: string }) => {
     if (!relayPool || !variables.author) return;
     const author = new Author(relayPool, nostrRelays, variables.author);
-    console.log("author123567", author, variables.author, nostrRelays);
-    author.text(
-      (event) => {
-        // insertOrUpdateEvents([event]);
-        // console.log("author.text", event);
-      },
-      10,
-      10
-    );
-    author.follows((author) => {
-      // console.log("author.follows", author);
-      // api.insertFollowers(
-      //         variables.author,
-      //         author.map((x) => x.pubkey)
-      //       );
-    }, 100);
-    author.followers(
-      (event) => {
-        // console.log("author.followers", event);
-        /*api.insertFollowers([
-          {
-            pubkey: variables.author,
-            followedPubkey: event.pubkey,
-          },
-        ]);*/
-      },
-      10,
-      100
-    );
-    author.followsPubkeys((pubkey) => {
-      // console.log("author.followsPubkeys", pubkey)
-    }, 100);
     author.metaData((metaData) => {
       if (metaData.pubkey !== variables.author) {
         console.warn(
@@ -87,18 +56,61 @@ export const useNostrRelayPool = () => {
       if (metadataObj.success) {
         console.log("author.metadata metadataObj", metadataObj);
         api.createOrUpdateNostrProfile([metadataObj.data]);
+        queryClient.invalidateQueries([], {
+          predicate: (query) => query.queryKey.includes(variables.author),
+        });
       } else {
         console.warn("author.metadata metadataObj fail", metadataObj);
       }
     }, 100);
-    author.referenced(
+  };
+
+  const retrievePubkeyInfos = async (variables: { author: string }) => {
+    if (!relayPool || !variables.author) return;
+    const author = new Author(relayPool, nostrRelays, variables.author);
+    author.text(
       (event) => {
-        // console.log("author.referenced", event);
+        insertOrUpdateEvents([event]);
+        console.log("author.text", event);
+      },
+      100,
+      500
+    );
+    author.followers(
+      (event) => {
+        console.log("author.followers", event);
+        if (event.pubkey !== variables.author) {
+          console.warn(
+            "followers event and requested pubkey author does not match",
+            event.pubkey,
+            variables.author
+          );
+          return;
+        }
+        api.updateFollowers({
+          pubkey: variables.author,
+          followers: event.tags.map((tag) => {
+            return tag[1];
+          }),
+        });
       },
       10,
-      10
+      500
     );
-  });
+    author.followsPubkeys((pubkey) => {
+      console.log("author.followsPubkeys", pubkey);
+      const follows = pubkey.map((pubkey) => ({
+        pubkey: pubkey,
+        followers: [variables.author],
+      }));
+      follows.forEach((follow) => {
+        api.updateFollowers({
+          pubkey: follow.pubkey,
+          followers: [variables.author],
+        });
+      });
+    }, 500);
+  };
 
   const getEventById = useMutation(async (variables: { id: string }) => {
     if (!relayPool) return;
@@ -108,7 +120,8 @@ export const useNostrRelayPool = () => {
   return {
     getNostrData,
     publish,
-    author,
+    retrievePubkeyInfos,
+    retrievePubkeyMetadata,
     relays: relayPool?.relayByUrl,
     getEventById,
   };

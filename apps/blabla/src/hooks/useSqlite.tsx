@@ -5,7 +5,7 @@ import { useNostrRelayPool } from "./useNostrRelayPool";
 
 export const useSqlite = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
-  const { author } = useNostrRelayPool();
+  const { retrievePubkeyMetadata } = useNostrRelayPool();
 
   const bookmarkProfile = useMutation(async (pubkey: string) => {
     await api.bookmarkProfile(pubkey);
@@ -36,7 +36,7 @@ export const useSqlite = (props: { pubkey?: string }) => {
       console.log("nostrProfile", profile, props.pubkey);
       if (!profile) {
         console.warn("No profile found for pubkey", props.pubkey);
-        author.mutate({ author: props.pubkey });
+        await retrievePubkeyMetadata({ author: props.pubkey });
       }
       return profile;
     },

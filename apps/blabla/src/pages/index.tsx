@@ -16,14 +16,10 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-type selectedTabType = {
-  selectedTab: "Global" | "Followed" | "Bookmarked" | "Lists";
-};
+type SelectedTab = "Global" | "Followed" | "Bookmarked" | "Lists";
 
 export const Home = () => {
-  const [selectedTab, setSelectedTab] = useState<
-    "Global" | "Followed" | "Bookmarked" | "Lists"
-  >("Global");
+  const [selectedTab, setSelectedTab] = useState<SelectedTab>("Global");
 
   const onChangeHandler = (
     selectPick: "Global" | "Followed" | "Bookmarked" | "Lists"

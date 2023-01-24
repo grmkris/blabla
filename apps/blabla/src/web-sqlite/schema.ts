@@ -111,9 +111,11 @@ export class NostrProfile {
 export class NostrProfileFollowers {
   @Column({ nullable: true })
   @PrimaryColumn()
+  @ManyToOne(() => NostrProfile, (profile) => profile.followers)
   pubkey?: string;
 
   @Column({ nullable: true })
   @PrimaryColumn()
+  @ManyToOne(() => NostrProfile, (profile) => profile.following)
   follower?: string;
 }

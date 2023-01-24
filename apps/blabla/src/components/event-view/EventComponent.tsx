@@ -57,11 +57,19 @@ export const EventComponent = (props: { note: Note }) => {
                 />
               </div>
             </div>
-            <div className="truncate text-sm font-medium ">
-              {profile?.data?.display_name}
-              {profile?.data?.name}
-              {profile?.data?.npub}
-              {props.note.event.pubkey}
+            <div className="flex flex-col">
+              <div className="text truncate font-medium ">
+                {profile?.data?.display_name ??
+                  profile?.data?.name ??
+                  profile?.data?.npub ??
+                  props.note.event.pubkey}
+              </div>
+              {profile?.data?.display_name ||
+                (profile?.data?.name && (
+                  <div className="truncate text-xs font-medium ">
+                    {profile?.data?.npub ?? props.note.event.pubkey}
+                  </div>
+                ))}
             </div>
           </div>
         </Link>
@@ -76,7 +84,7 @@ export const EventComponent = (props: { note: Note }) => {
               </p>
             </Link>
           </div>
-          <div className="prose mt-2 overflow-hidden text-ellipsis text-sm text-gray-400">
+          <div className="prose mt-2 overflow-hidden text-ellipsis text-gray-400">
             <ReactMarkdown
               remarkPlugins={[
                 remarkGfm,

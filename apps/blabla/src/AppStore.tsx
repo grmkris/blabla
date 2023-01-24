@@ -6,6 +6,7 @@ import { createSelectors, LocalStateStorage } from "./utils";
 const relays: NostrRelay[] = [
   "wss://nostr-pub.wellorder.net",
   "wss://relay.nostr.ch",
+  "wss://relay.damus.io",
 ].map((r) => ({ url: r, status: "idle" }));
 
 export type NostrRelayStatus = "idle" | "connecting" | "connected" | "error";

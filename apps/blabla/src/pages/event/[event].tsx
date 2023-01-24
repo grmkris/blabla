@@ -29,7 +29,6 @@ const EventView = (props: { event: string }) => {
   const { comments } = useEvent({ eventId: props.event });
 
   useEffect(() => {
-    console.log("comments", comments);
     getNostrData.mutate({ filter: [{ "#e": [props.event] }] });
   }, []);
 

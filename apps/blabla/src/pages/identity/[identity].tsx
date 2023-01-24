@@ -8,6 +8,7 @@ import { useEvents } from "../../hooks/useEvents";
 import NoSSR from "../../components/common/NoSSR";
 import { Button } from "../../components/common/Button";
 import { EventComponent } from "../../components/event-view/EventComponent";
+import { useNostrRelayPool } from "../../hooks/useNostrRelayPool";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -107,12 +108,18 @@ export const IdentityInformationCard = (props: { identity: string }) => {
 
 export const IdentityEvents = (props: { identity: string }) => {
   const { eventsByPubkey } = useEvents({ pubkey: props.identity });
+  const { retrievePubkeyInfos } = useNostrRelayPool();
+
   if (eventsByPubkey.isLoading) {
     return <div>Loading...</div>;
   }
   return (
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
+      <Button onClick={() => retrievePubkeyInfos({ author: props.identity })}>
+        {" "}
+        Retrieve pubkey infos
+      </Button>
       {eventsByPubkey?.data?.pages.map((page) =>
         page.map((note) => <EventComponent note={note} key={note.event.id} />)
       )}
