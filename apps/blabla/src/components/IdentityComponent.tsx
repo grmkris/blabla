@@ -1,4 +1,4 @@
-import type { NostrLocalProfile } from "../store/appStore";
+import type { NostrLocalProfile } from "../AppStore";
 
 export const IdentityComponent = (props: { identity: NostrLocalProfile }) => {
   return (

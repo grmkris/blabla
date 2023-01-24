@@ -1,13 +1,12 @@
 import { Author } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
-import { useAppStore } from "../store/appStore";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { insertOrUpdateEvents } from "../web-sqlite/client-functions";
 import { api } from "../web-sqlite/sqlite";
-import { NostrProfileTableSchema } from "../web-sqlite/schema";
 import { NostrSocketContext } from "../NostrSocketContext";
 import { EventKinds } from "../types";
+import { useAppStore } from "../AppStore";
 
 export const useNostrRelayPool = () => {
   const { relayPool } = useContext(NostrSocketContext);

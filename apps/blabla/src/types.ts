@@ -1,6 +1,3 @@
-// above is the enum version which we don't want to use, let's use the object version instead
-import { z } from "zod";
-import type { Event } from "nostr-tools";
 import type { EventTable } from "./web-sqlite/schema";
 
 export const EventKinds = {

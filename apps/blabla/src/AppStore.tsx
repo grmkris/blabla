@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { createSelectors, LocalStateStorage } from "../utils/utils";
+import { createSelectors, LocalStateStorage } from "./utils";
 
 const relays: NostrRelay[] = [
   "wss://nostr-pub.wellorder.net",
