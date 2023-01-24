@@ -102,7 +102,7 @@ export const Home = () => {
 
 const HomePage: NextPage = () => {
   return (
-    <Layout title="Feed">
+    <Layout>
       <NoSSR>
         <Home />
       </NoSSR>

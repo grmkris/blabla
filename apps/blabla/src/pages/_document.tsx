@@ -17,12 +17,11 @@ export default function Document() {
 
   return (
     <Html
-      className={`bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-amber-600 via-slate-900 to-emerald-800 ${
+      className={`min-h-screen bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-amber-600 via-slate-900 to-emerald-800 ${
         mode === "dark" ? "text-white" : "text-black"
       }`}
     >
       <Head>
-        <title>Blabla</title>
         <meta name="description" content="Blabla is nostr client app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
