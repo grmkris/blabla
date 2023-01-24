@@ -15,7 +15,6 @@ export const insertOrUpdateEvents = async (events: Event[]) => {
           tagDb.tag = tag[0];
           tagDb.value = tag[1];
           tagDb.id = event.id ?? "" + tag[0] ?? "" + tag[1];
-          tagDb.event_id = event.id;
           tags.push(tagDb);
           return tagDb;
         }),

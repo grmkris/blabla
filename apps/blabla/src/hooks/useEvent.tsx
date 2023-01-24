@@ -8,7 +8,7 @@ const PAGE_SIZE = 20;
 export const useEvent = (props: { eventId?: string }) => {
   const { getEventById } = useNostrRelayPool();
   const comments = useInfiniteQuery({
-    queryKey: ["eventsByTag", props.eventId],
+    queryKey: ["getPostComments", props.eventId],
     queryFn: async ({ pageParam = 0 }) => {
       if (!props.eventId) throw new Error("No event id");
       const events = await api.getPostComments({

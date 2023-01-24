@@ -1,49 +1,28 @@
 import { Author } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { insertOrUpdateEvents } from "../web-sqlite/client-functions";
 import { api } from "../web-sqlite/sqlite";
 import { NostrSocketContext } from "../NostrSocketContext";
-import { EventKinds } from "../types";
 import { useAppStore } from "../AppStore";
+import { NostrProfileTableSchema } from "../web-sqlite/schema";
 
 export const useNostrRelayPool = () => {
   const { relayPool } = useContext(NostrSocketContext);
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
-  const now = useRef(dateToUnix(new Date())); // Make sure current time isn't re-rendered
-  const [subscribed, setSubscribed] = useState(false);
-
-  useEffect(() => {
-    if (!relayPool || subscribed) return;
-    console.log("useNostrRelayPool: useEffect", relayPool);
-    relayPool.subscribe(
-      [
-        {
-          since: now.current - 1000, // all new events from now
-          kinds: [EventKinds.TEXT_NOTE],
-        },
-      ],
-      nostrRelays,
-      (event, isAfterEose) => isAfterEose && insertOrUpdateEvents([event]),
-      undefined,
-      (events) => insertOrUpdateEvents(events ?? []),
-      { allowDuplicateEvents: false, allowOlderEvents: true }
-    );
-    setSubscribed(true);
-  }, []);
 
   const getNostrData = useMutation(async (variables: { filter: Filter[] }) => {
-    if (!relayPool) {
-      throw new Error("No relay pool");
-    }
+    if (!relayPool) return;
     relayPool.subscribe(
       variables.filter,
       nostrRelays,
-      (event, isAfterEose, relayURL) =>
-        isAfterEose && insertOrUpdateEvents([event]),
-      undefined,
-      async (events, url) => insertOrUpdateEvents(events ?? [])
+      (event, isAfterEose, relayURL) => {
+        insertOrUpdateEvents([event]);
+        console.log("useNostrRelayPool: getNostrData: event", event);
+      },
+      500,
+      undefined
     );
     relayPool.onerror((err, relayUrl) => {
       console.log("RelayPool error", err, " from relay ", relayUrl);
@@ -63,47 +42,61 @@ export const useNostrRelayPool = () => {
     console.log("author123567", author, variables.author, nostrRelays);
     author.text(
       (event) => {
-        insertOrUpdateEvents([event]);
-        console.log("author.text", event);
+        // insertOrUpdateEvents([event]);
+        // console.log("author.text", event);
       },
-      100,
-      100
+      10,
+      10
     );
     author.follows((author) => {
-      console.log("follows-todo", author);
-      api.insertFollowers(
-        author.map((x) => ({
-          pubkey: x.pubkey,
-          followedPubkey: variables.author,
-        }))
-      );
+      // console.log("author.follows", author);
+      // api.insertFollowers(
+      //         variables.author,
+      //         author.map((x) => x.pubkey)
+      //       );
     }, 100);
     author.followers(
       (event) => {
-        console.log("followers-todo", event);
-        api.insertFollowers([
+        // console.log("author.followers", event);
+        /*api.insertFollowers([
           {
             pubkey: variables.author,
             followedPubkey: event.pubkey,
           },
-        ]);
+        ]);*/
       },
-      100,
+      10,
       100
     );
-    author.followsPubkeys(
-      (pubkey) => console.log("followsPubkeys-todo", pubkey),
-      100
-    );
+    author.followsPubkeys((pubkey) => {
+      // console.log("author.followsPubkeys", pubkey)
+    }, 100);
     author.metaData((metaData) => {
-      console.log("metaData-todo", metaData);
+      if (metaData.pubkey !== variables.author) {
+        console.warn(
+          "metadata event and requested pubkey author does not match",
+          metaData.pubkey,
+          variables.author
+        );
+        return;
+      }
+      const metadataObj = NostrProfileTableSchema.safeParse({
+        pubkey: variables.author,
+        ...JSON.parse(metaData.content),
+      });
+      if (metadataObj.success) {
+        console.log("author.metadata metadataObj", metadataObj);
+        api.createOrUpdateNostrProfile([metadataObj.data]);
+      } else {
+        console.warn("author.metadata metadataObj fail", metadataObj);
+      }
     }, 100);
     author.referenced(
       (event) => {
-        console.log("referenced-todo", event);
+        // console.log("author.referenced", event);
       },
-      100,
-      100
+      10,
+      10
     );
   });
 

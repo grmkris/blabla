@@ -8,17 +8,14 @@ import { SQLiteFS } from "@nikvdp/absurd-sql";
 // @ts-ignore
 import IndexedDBBackend from "@nikvdp/absurd-sql/dist/indexeddb-backend";
 import type { Connection, Repository } from "typeorm";
-import { createConnection, MoreThan, LessThan } from "typeorm";
+import { createConnection, LessThan, MoreThan } from "typeorm";
 import { expose } from "comlink";
 import type { NostrProfileTable } from "./schema";
 import {
-  BookmarkedEvents,
-  BookmarkedProfiles,
   EventTable,
   NostrProfile,
-  Seen,
+  NostrProfileFollowers,
   Tags,
-  Follows,
 } from "./schema";
 
 let isReady = false;
@@ -81,11 +78,8 @@ async function setupTypeormEnvWithSqljs(dbPath: string) {
 let conn: Connection;
 let eventsRepository: Repository<EventTable>;
 let tagsRepository: Repository<Tags>;
-let seenRepository: Repository<Seen>;
 let nostrProfileRepository: Repository<NostrProfile>;
-let bookmarkedEventsRepository: Repository<BookmarkedEvents>;
-let bookmarkedProfilesRepository: Repository<BookmarkedProfiles>;
-let followsRepository: Repository<Follows>;
+let nostrProfileFollowersRepository: Repository<NostrProfileFollowers>;
 async function setup() {
   console.log("Setting up typeorm");
   // with /sql/ namespace
@@ -96,24 +90,13 @@ async function setup() {
     location: DBNAME,
     autoSave: false, // commit by absurd-sql
     synchronize: true,
-    entities: [
-      EventTable,
-      Tags,
-      Seen,
-      NostrProfile,
-      BookmarkedEvents,
-      BookmarkedProfiles,
-      Follows,
-    ],
+    entities: [EventTable, Tags, NostrProfile, NostrProfileFollowers],
     logging: ["query", "schema"],
   });
   eventsRepository = conn.getRepository(EventTable);
   tagsRepository = conn.getRepository(Tags);
-  seenRepository = conn.getRepository(Seen);
   nostrProfileRepository = conn.getRepository(NostrProfile);
-  bookmarkedEventsRepository = conn.getRepository(BookmarkedEvents);
-  bookmarkedProfilesRepository = conn.getRepository(BookmarkedProfiles);
-  followsRepository = conn.getRepository(Follows);
+  nostrProfileFollowersRepository = conn.getRepository(NostrProfileFollowers);
   console.log("typeorm setup done");
   isReady = true;
 }
@@ -123,23 +106,19 @@ async function createOrUpdateEvents(events: EventTable[]) {
   return true;
 }
 async function bookmarkEvent(event_id: string) {
-  const bookmark = new BookmarkedEvents();
-  bookmark.event_id = event_id;
-  await bookmarkedEventsRepository.save(bookmark);
+  await eventsRepository.update({ id: event_id }, { bookmarked: true });
   return true;
 }
 
 async function unbookmarkEvent(event_id: string) {
-  await bookmarkedEventsRepository.delete({ event_id });
-  return true;
+  return eventsRepository.update({ id: event_id }, { bookmarked: false });
 }
 
 async function getBookmarkedEvents() {
   // combine results from bookmarked events and also get the event details
-  const bookmarkedEvents = await bookmarkedEventsRepository.find();
-  const eventIds = bookmarkedEvents.map((e) => e.event_id);
-  const events = await eventsRepository.findByIds(eventIds);
-  return events;
+  return await eventsRepository.findBy({
+    is_bookmarked: true,
+  });
 }
 
 /**
@@ -190,14 +169,12 @@ async function getEvents({
   filter_operator?: string;
 }) {
   const query = eventsRepository
-    .createQueryBuilder("events")
-    .limit(limit)
-    .offset(offset);
-  if (order_by) {
-    query.orderBy(order_by, order);
-  }
-  if (filter) {
-    query.where(`${filter} ${filter_operator} :filter_value`, {
+    .createQueryBuilder("event")
+    .leftJoinAndSelect("event.tags", "tags")
+    .skip(offset)
+    .take(limit);
+  if (filter && filter_value && filter_operator) {
+    query.andWhere(`${filter} ${filter_operator} :filter_value`, {
       filter_value,
     });
   }
@@ -238,14 +215,14 @@ async function getTags() {
   return tags;
 }
 
-async function createOrUpdateSeen(seen: Seen) {
-  await seenRepository.save(seen);
+async function markEventAsRead(eventIds: string[]) {
+  await eventsRepository.update(eventIds, { seen: true });
   return true;
 }
 
 async function getSeen() {
-  const seen = await seenRepository.find();
-  return seen;
+  const events = await eventsRepository.find({ where: { is_read: true } });
+  return events;
 }
 
 async function getNewPostsCount(props: { created_at: number }) {
@@ -256,20 +233,24 @@ async function getNewPostsCount(props: { created_at: number }) {
 }
 
 async function getBookmarkedProfiles() {
-  const bookmarks = await bookmarkedProfilesRepository.find();
-  return bookmarks;
+  const profiles = await nostrProfileRepository.find({
+    where: { is_bookmarked: true },
+  });
+  return profiles;
 }
 
-async function bookmarkProfile(profile_id: string) {
-  const bookmark = new BookmarkedProfiles();
-  bookmark.pubkey = profile_id;
-  await bookmarkedProfilesRepository.save(bookmark);
-  return true;
+async function bookmarkProfile(pubkey: string) {
+  return nostrProfileRepository.update(
+    { pubkey: pubkey },
+    { bookmarked: true }
+  );
 }
 
-async function unbookmarkProfile(profile_id: string) {
-  await bookmarkedProfilesRepository.delete({ pubkey: profile_id });
-  return true;
+async function unbookmarkProfile(pubkey: string) {
+  return nostrProfileRepository.update(
+    { pubkey: pubkey },
+    { bookmarked: false }
+  );
 }
 
 async function createOrUpdateNostrProfile(profiles: NostrProfileTable[]) {
@@ -350,15 +331,25 @@ async function getEventsByPubkeys(props: {
 }
 
 async function getFollowers(pubkey: string) {
-  const followers = await followsRepository.find({
-    where: { pubkey },
-  });
-  return followers;
+  const followers = await nostrProfileRepository
+    .createQueryBuilder("nostr_profile")
+    .leftJoinAndSelect("nostr_profile.followers", "followers")
+    .where("nostr_profile.pubkey = :pubkey", { pubkey: pubkey })
+    .getOne();
+  return followers?.followers;
 }
 
-async function insertFollowers(followers: Follows[]) {
-  await followsRepository.save(followers);
-  return true;
+async function updateFollowers(pubkey: string, followers: string[]) {
+  const nostrProfileFollowers = await nostrProfileFollowersRepository.upsert(
+    followers.map((follower) => {
+      return {
+        pubkey,
+        follower,
+      };
+    }),
+    { conflictPaths: ["pubkey", "follower"] }
+  );
+  return nostrProfileFollowers;
 }
 
 const api = {
@@ -371,7 +362,6 @@ const api = {
   unbookmarkEvent,
   getBookmarkedEvents,
   getGlobalFeed,
-  createOrUpdateSeen,
   getSeen,
   getNewPostsCount,
   getBookmarkedProfiles,
@@ -384,8 +374,9 @@ const api = {
   fullTextSearchProfiles,
   getEventsByPubkeys,
   getPostComments,
-  insertFollowers,
+  insertFollowers: updateFollowers,
   getFollowers,
+  markEventAsRead,
 };
 export type Api = typeof api;
 

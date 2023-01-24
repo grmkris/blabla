@@ -7,13 +7,6 @@ export const TagsTableSchema = z.object({
   value: z.string(),
 });
 export type TagsTable = z.infer<typeof TagsTableSchema>;
-
-export const SeenTableSchema = z.object({
-  event_id: z.string(),
-  relay: z.string(),
-});
-export type SeenTable = z.infer<typeof SeenTableSchema>;
-
 export const NostrProfileTableSchema = z.object({
   pubkey: z.string(),
   npub: z.string().optional(),
@@ -27,20 +20,9 @@ export const NostrProfileTableSchema = z.object({
   nip06: z.string().optional(),
 });
 export type NostrProfileTable = z.infer<typeof NostrProfileTableSchema>;
-
-export const BookmarkedEventsTableSchema = z.object({
-  event_id: z.string(),
-});
-export type BookmarkedEventsTable = z.infer<typeof BookmarkedEventsTableSchema>;
-
-export const BookmarkedProfilesTableSchema = z.object({ pubkey: z.string() });
-export type BookmarkedProfilesTable = z.infer<
-  typeof BookmarkedProfilesTableSchema
->;
-
 @Entity()
 export class EventTable {
-  @PrimaryColumn({ nullable: false })
+  @PrimaryColumn()
   id?: string;
 
   @Column({ nullable: true })
@@ -60,6 +42,12 @@ export class EventTable {
 
   @OneToMany(() => Tags, (tag) => tag.event_id)
   tags?: Tags[];
+
+  @Column({ default: false })
+  is_bookmarked?: boolean;
+
+  @Column({ default: false })
+  is_read?: boolean;
 }
 
 @Entity()
@@ -75,15 +63,6 @@ export class Tags {
   @ManyToOne(() => EventTable, (event) => event.tags)
   @Column({ nullable: true, unique: false })
   event_id?: string;
-}
-
-@Entity()
-export class Seen {
-  @PrimaryColumn()
-  event_id?: string;
-
-  @Column()
-  relay?: string;
 }
 
 @Entity()
@@ -118,30 +97,23 @@ export class NostrProfile {
   @Column({ nullable: true })
   nip06?: string;
 
-  @OneToMany(() => Follows, (follows) => follows.pubkey)
-  followers?: Follows[];
+  @OneToMany(() => NostrProfileFollowers, (follower) => follower.follower)
+  followers?: NostrProfileFollowers[];
 
-  @OneToMany(() => Follows, (follows) => follows.followedPubkey)
-  follows?: Follows[];
+  @OneToMany(() => NostrProfileFollowers, (follower) => follower.pubkey)
+  following?: NostrProfileFollowers[];
+
+  @Column({ default: false })
+  is_bookmarked?: boolean;
 }
 
 @Entity()
-export class BookmarkedEvents {
-  @PrimaryColumn()
-  event_id?: string;
-}
-
-@Entity()
-export class BookmarkedProfiles {
-  @PrimaryColumn()
-  pubkey?: string;
-}
-
-@Entity()
-export class Follows {
+export class NostrProfileFollowers {
+  @Column({ nullable: true })
   @PrimaryColumn()
   pubkey?: string;
 
+  @Column({ nullable: true })
   @PrimaryColumn()
-  followedPubkey?: string;
+  follower?: string;
 }

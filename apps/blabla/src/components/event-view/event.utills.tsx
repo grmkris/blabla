@@ -189,6 +189,7 @@ export function hashTagAttacher() {
 export const CustomTwitterPreview = ({ value }: { value: string }) => {
   // get tweetID from value -> last part of url
   const tweetID = value.split("/").pop();
-  if (!tweetID) return null;
+  if (!tweetID) return <a href={value}>{value}</a>;
+  console.log("tweetID", tweetID);
   return <Tweet tweetId={tweetID} />;
 };

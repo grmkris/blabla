@@ -15,7 +15,7 @@ export const IdentityPage = () => {
   const { identity } = router.query;
   const parsed = z.string().safeParse(identity);
   return (
-    <Layout title={"Events"}>
+    <Layout title={""}>
       <div className="flex flex-col space-y-4">
         {parsed.success && <IdentityView identity={parsed.data} />}
         {!parsed.success && <div>Invalid identity</div>}

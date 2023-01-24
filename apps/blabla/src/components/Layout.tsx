@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
-import { api } from "../web-sqlite/sqlite";
-import { proxy } from "comlink";
 import { Button } from "./common/Button";
 import { LoadingSpinner } from "./common/LoadingSpinner";
 import { useRouter } from "next/router";
@@ -18,20 +16,14 @@ import {
   InboxStackIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { NostrSocketContext } from "../NostrSocketContext";
 
 export const Layout = (props: { children: ReactNode; title?: string }) => {
-  const [isSqliteReady, setIsSqliteReady] = useState(false);
+  const { isSqliteReady } = useContext(NostrSocketContext);
   const [showClearDBMessage, setShowClearDBMessage] = useState(false);
   const router = useRouter();
 
-  function callback() {
-    setIsSqliteReady(true);
-  }
-
   useEffect(() => {
-    // register the sqlite worker callback
-    api.notifyWhenReady(proxy(callback));
-
     // clear db message timeout start
     setTimeout(() => {
       setShowClearDBMessage(true);

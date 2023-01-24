@@ -5,17 +5,18 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
-import { useRef } from "react";
+import { useContext } from "react";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import { useSqlite } from "./useSqlite";
-import { dateToUnix } from "./useNostrRelayPool";
+import { NostrSocketContext } from "../NostrSocketContext";
 
 const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
-  const now = useRef(dateToUnix(new Date())); // Make sure current time isn't re-rendered
+  const { now, refreshNow } = useContext(NostrSocketContext);
+
   const globalFeed = useInfiniteQuery({
-    queryKey: ["globalFeed", now.current],
-    queryFn: async ({ pageParam = now.current }) => {
+    queryKey: ["globalFeed", now],
+    queryFn: async ({ pageParam = now }) => {
       const tags = await api.getTags();
       console.log("useGlobalFeed- tags", tags);
       const events = await api.getGlobalFeed({
@@ -43,15 +44,15 @@ export const useGlobalFeed = () => {
   });
 
   const numberOfNewItems = useQuery({
-    queryKey: ["globalFeed", "numberOfNewItems", now.current],
+    queryKey: ["globalFeed", "numberOfNewItems", now],
     queryFn: async () => {
-      return await api.getNewPostsCount({ created_at: now.current });
+      return await api.getNewPostsCount({ created_at: now });
     },
     refetchInterval: 3000,
   });
 
   const refresh = useMutation(async () => {
-    now.current = dateToUnix(new Date());
+    await refreshNow();
     await globalFeed.refetch();
   });
 
@@ -64,12 +65,12 @@ export const useGlobalFeed = () => {
 };
 
 export const useBookmarksFeed = () => {
-  const now = useRef(dateToUnix(new Date())); // Make sure current time isn't re-rendered
+  const { now } = useContext(NostrSocketContext);
   const { bookmarkedProfiles } = useSqlite({});
   const queryCLient = useQueryClient();
   const bookmarksFeed = useInfiniteQuery({
-    queryKey: ["bookmarksFeed", now.current],
-    queryFn: async ({ pageParam = now.current }) => {
+    queryKey: ["bookmarksFeed", now],
+    queryFn: async ({ pageParam = now }) => {
       const events = await api.getEventsByPubkeys({
         pageParam,
         pageSize: PAGE_SIZE,
@@ -91,15 +92,14 @@ export const useBookmarksFeed = () => {
   });
 
   const numberOfNewItems = useQuery({
-    queryKey: ["bookmarksFeed", "numberOfNewItems", now.current],
+    queryKey: ["bookmarksFeed", "numberOfNewItems", now],
     queryFn: async () => {
-      return await api.getNewPostsCount({ created_at: now.current });
+      return await api.getNewPostsCount({ created_at: now });
     },
     refetchInterval: 3000,
   });
 
   const refresh = async () => {
-    now.current = dateToUnix(new Date());
     await queryCLient.invalidateQueries();
     await bookmarksFeed.refetch();
   };
