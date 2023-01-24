@@ -1,28 +1,23 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowTrendingUpIcon,
-  BookmarkIcon,
-  BookmarkSquareIcon,
-  ChatBubbleLeftEllipsisIcon,
-  ChevronUpIcon,
-  FireIcon,
-  HomeIcon,
-  InboxStackIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-  UserGroupIcon,
-  UserIcon,
-} from "@heroicons/react/20/solid";
 import { api } from "../web-sqlite/sqlite";
 import { proxy } from "comlink";
 import { Button } from "./common/Button";
 import { LoadingSpinner } from "./common/LoadingSpinner";
 import { useRouter } from "next/router";
-
-import { Popover } from "@headlessui/react";
 import Head from "next/head";
+import {
+  MagnifyingGlassIcon,
+  ChatBubbleLeftEllipsisIcon,
+  BookmarkIcon,
+  BookmarkSquareIcon,
+  ChevronUpIcon,
+  FireIcon,
+  HomeIcon,
+  InboxStackIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 
 export const Layout = (props: { children: ReactNode; title?: string }) => {
   const [isSqliteReady, setIsSqliteReady] = useState(false);
@@ -63,9 +58,7 @@ export const Layout = (props: { children: ReactNode; title?: string }) => {
   return (
     <>
       <Head>
-        <Head>
-          <title>Blabla</title>
-        </Head>
+        <title>Blabla</title>
       </Head>
 
       <nav className="fixed top-0 z-50 w-full lg:block">
@@ -127,86 +120,67 @@ const NavigationTop = () => {
 
   const [value, setValue] = useState("");
   return (
-    <Popover
-      as="header"
+    <nav
       className={
         "flex-none border-slate-50/[0.06] bg-slate-900/50 shadow-sm backdrop-blur transition-colors duration-500 lg:overflow-y-visible lg:border-b lg:border-slate-900/10"
       }
     >
-      <>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative flex items-center justify-between space-x-5 py-2">
-            <Link href="/" className="btn-ghost btn text-xl normal-case">
-              BlaBla
-            </Link>
-
-            <div className="hidden w-full max-w-lg sm:block">
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <MagnifyingGlassIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                </div>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    router.push(`/search/${value}`);
-                  }}
-                >
-                  <input
-                    type="text"
-                    name="search"
-                    className="block w-full rounded-md border bg-base-100 py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-emerald-900 focus:text-gray-900 focus:placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-900 sm:text-sm"
-                    placeholder="Search"
-                    autoComplete="off"
-                    onChange={(e) => setValue(e.target.value)}
-                  />
-                </form>
-              </div>
-            </div>
-
-            <div>
-              <Link href="/new-post">
-                <button className="w-32 rounded-md border border-transparent bg-emerald-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none ">
-                  New Post
-                </button>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12">
+          <div className="flex md:inset-y-0 md:left-0 lg:static xl:col-span-2">
+            <div className="flex  items-center">
+              <Link href="/" className="btn-ghost btn text-xl normal-case">
+                BlaBla
               </Link>
             </div>
           </div>
+          <div className="min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-6">
+            <div className="sm:w-max-w-lg flex items-center px-6 py-4 md:mx-auto md:max-w-3xl lg:mx-0 lg:max-w-none xl:px-0">
+              <div className="w-full">
+                <label htmlFor="search" className="sr-only">
+                  Search
+                </label>
+                <div className="relative">
+                  <form
+                    className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      router.push(`/search/${value}`);
+                    }}
+                  >
+                    <MagnifyingGlassIcon
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </form>
+                  <input
+                    name="search"
+                    className="block w-full rounded-md border bg-base-100 py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-emerald-900 focus:text-gray-900 focus:placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-900 sm:text-sm"
+                    placeholder="Search"
+                    type="search"
+                    onChange={(e) => setValue(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden lg:flex lg:items-center lg:justify-end xl:col-span-4">
+            <Link href="/new-post">
+              <button className="w-32 rounded-md border border-transparent bg-emerald-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none ">
+                New Post
+              </button>
+            </Link>
+          </div>
         </div>
-      </>
-    </Popover>
+      </div>
+    </nav>
   );
 };
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
-
-const whoToFollow = [
-  {
-    name: "Leonard Krasner",
-    handle: "leonardkrasner",
-    href: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  // More people...
-];
-const trendingPosts = [
-  {
-    id: 1,
-    user: {
-      name: "Floyd Miles",
-      imageUrl:
-        "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    body: "What books do you have on your bookshelf just to look smarter than you actually are?",
-    comments: 291,
-  },
-  // More posts...
-];
 
 const NewLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -220,6 +194,30 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
       href: "/profile",
       icon: UserIcon,
     },
+  ];
+
+  const trendingPosts = [
+    {
+      id: 1,
+      user: {
+        name: "Floyd Miles",
+        imageUrl:
+          "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      },
+      body: "What books do you have on your bookshelf just to look smarter than you actually are?",
+      comments: 291,
+    },
+    {
+      id: 2,
+      user: {
+        name: "Floyd Miles",
+        imageUrl:
+          "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      },
+      body: "What books do you have on your bookshelf just to look smarter than you actually are?",
+      comments: 5321,
+    },
+    // More posts...
   ];
 
   return (
@@ -275,7 +273,7 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
                     Trending
                   </h2>
                   <div className="mt-6 flow-root">
-                    <ul role="list" className="-my-4 divide-y divide-gray-200">
+                    <ul role="list" className="-my-4 divide-y divide-slate-400">
                       {trendingPosts.map((post) => (
                         <li key={post.id} className="flex space-x-3 py-4">
                           <div className="flex-shrink-0">
