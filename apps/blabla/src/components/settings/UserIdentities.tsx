@@ -1,7 +1,7 @@
 import { generatePrivateKey, getPublicKey } from "nostr-tools";
-import { useAppStore } from "../../store/appStore";
 import { IdentityComponent } from "../IdentityComponent";
 import { Button } from "../common/Button";
+import { useAppStore } from "../../AppStore";
 
 export const UserIdentities = () => {
   const addOrUpdateLocalProfile = useAppStore.use.addOrUpdateLocalProfile();

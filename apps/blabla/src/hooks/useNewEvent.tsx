@@ -3,16 +3,14 @@ import { getEventHash, Kind, signEvent } from "nostr-tools";
 import { useMutation } from "@tanstack/react-query";
 import type { z } from "zod";
 import type { NewPostSchema } from "../components/NewPost";
-import { useAppStore } from "../store/appStore";
 import { api } from "../web-sqlite/sqlite";
 import toast from "react-hot-toast";
-import { useGlobalFeed } from "./useGlobalFeed";
 import { NoIdentitiesToast } from "../components/NewPost";
 import { dateToUnix, useNostrRelayPool } from "./useNostrRelayPool";
+import { useAppStore } from "../AppStore";
 
 export const useNewEvent = () => {
   const { publish } = useNostrRelayPool();
-  const { refresh } = useGlobalFeed();
   const identities = useAppStore.use.localProfiles();
 
   const newNote = useMutation(

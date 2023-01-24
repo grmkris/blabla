@@ -1,8 +1,8 @@
 import { WifiIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
-import { useAppStore } from "../../store/appStore";
 import { Button } from "../common/Button";
 import { Input } from "../common/Input";
+import { useAppStore } from "../../AppStore";
 
 export const AddRelay = () => {
   const addOrUpdateRelay = useAppStore.use.addOrUpdateNostrRelay();
