@@ -40,7 +40,9 @@ export class EventTable {
   @Column({ nullable: true })
   sig?: string;
 
-  @OneToMany(() => Tags, (tag) => tag.event_id, { cascade: true })
+  @OneToMany(() => Tags, (tag) => tag.event_id, {
+    cascade: ["insert", "update", "remove", "soft-remove", "recover"],
+  })
   tags?: Tags[];
 
   @Column({ default: false })
@@ -52,7 +54,7 @@ export class EventTable {
 
 @Entity()
 export class Tags {
-  @PrimaryColumn({ generated: "rowid" })
+  @PrimaryColumn()
   id?: string;
   @Column({ nullable: true, unique: false })
   tag?: string;

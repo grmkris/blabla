@@ -14,6 +14,12 @@ const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
   const { now, refreshNow } = useContext(NostrSocketContext);
 
+  const tags = useQuery({
+    queryKey: ["tags"],
+    queryFn: async () => {
+      return await api.getTags();
+    },
+  });
   const globalFeed = useInfiniteQuery({
     queryKey: ["globalFeed", now],
     queryFn: async ({ pageParam = now }) => {

@@ -5,19 +5,20 @@ import { Tags } from "./schema";
 import type { Event } from "nostr-tools";
 
 export const insertOrUpdateEvents = async (events: Event[]) => {
-  const tags: Tags[] = [];
   await api.createOrUpdateEvents(
     events.map((event) => {
+      const tags = event.tags.map((tag) => {
+        const tagDb = new Tags();
+        tagDb.tag = tag[0];
+        tagDb.value = tag[1];
+        tagDb.id = event.id ?? "" + tag[0] ?? "" + tag[1];
+        tagDb.event_id = event.id;
+        return tagDb;
+      });
+      console.log("tags123", tags);
       return {
         sig: "",
-        tags: event.tags.map((tag) => {
-          const tagDb = new Tags();
-          tagDb.tag = tag[0];
-          tagDb.value = tag[1];
-          tagDb.id = event.id ?? "" + tag[0] ?? "" + tag[1];
-          tags.push(tagDb);
-          return tagDb;
-        }),
+        tags: tags,
         created_at: event.created_at,
         content: event.content,
         kind: event.kind,

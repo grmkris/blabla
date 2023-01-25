@@ -104,6 +104,12 @@ async function createOrUpdateEvents(events: EventTable[]) {
   await eventsRepository.upsert(events, {
     conflictPaths: ["id"],
   });
+  await tagsRepository.upsert(
+    events.flatMap((event) => event.tags),
+    {
+      conflictPaths: ["id"],
+    }
+  );
   return true;
 }
 async function bookmarkEvent(event_id: string) {
@@ -194,7 +200,9 @@ async function getGlobalFeed(props: { pageParam: number; pageSize: number }) {
     where: {
       created_at: LessThan(props.pageParam),
     },
-    order: { created_at: "DESC" },
+    order: {
+      created_at: "DESC",
+    },
     take: props.pageSize,
   });
   return events;
@@ -215,10 +223,8 @@ async function createOrUpdateTags(tags: Tags[]) {
   return true;
 }
 
-async function getTags(eventId: string) {
-  const tags = await tagsRepository.find({
-    where: { event_id: eventId },
-  });
+async function getTags() {
+  const tags = await tagsRepository.find();
   return tags;
 }
 
@@ -355,6 +361,7 @@ async function getEventsByPubkeys(props: {
     .where("created_at < :pageParam", { pageParam: props.pageParam })
     .andWhere("pubkey IN (:...pubkeys)", { pubkeys: props.pubkeys })
     .orderBy("created_at", "DESC")
+    .leftJoinAndSelect("events.tags", "tags")
     .limit(props.pageSize)
     .getMany();
 }
