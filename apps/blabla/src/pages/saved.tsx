@@ -1,11 +1,11 @@
 import { Layout } from "../components/Layout";
 import { useState } from "react";
-import { IdentityInformationCard } from "./identity/[identity]";
 import { useSqlite } from "../hooks/useSqlite";
 import { useEvents } from "../hooks/useEvents";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import NoSSR from "../components/common/NoSSR";
 import { EventComponent } from "../components/event-view/EventComponent";
+import { IdentityPreview } from "../components/IdentityPreview";
 
 export default function Saved() {
   const [selectedTab, setSelectedTab] = useState<"profiles" | "events">(
@@ -47,7 +47,7 @@ function SavedProfiles() {
       {bookmarkedProfiles.data?.map(
         (person, index) =>
           person?.pubkey && (
-            <IdentityInformationCard identity={person?.pubkey} key={index} />
+            <IdentityPreview identity={person?.pubkey} key={index} />
           )
       )}
     </div>

@@ -107,12 +107,13 @@ async function createOrUpdateEvents(events: EventTable[]) {
   return true;
 }
 async function bookmarkEvent(event_id: string) {
-  await eventsRepository.update({ id: event_id }, { bookmarked: true });
+  console.log("bookmarkEvent", event_id);
+  await eventsRepository.update({ id: event_id }, { is_bookmarked: true });
   return true;
 }
 
 async function unbookmarkEvent(event_id: string) {
-  return eventsRepository.update({ id: event_id }, { bookmarked: false });
+  return eventsRepository.update({ id: event_id }, { is_bookmarked: false });
 }
 
 async function getBookmarkedEvents() {
@@ -231,11 +232,28 @@ async function getSeen() {
   return events;
 }
 
-async function getNewPostsCount(props: { created_at: number }) {
-  const count = await eventsRepository.count({
-    where: { created_at: MoreThan(props.created_at) },
-  });
-  return count;
+async function getNewPostsCount(props: {
+  created_at: number;
+  pubkeys?: string[];
+}) {
+  const { created_at, pubkeys } = props;
+
+  if (pubkeys) {
+    const events = await eventsRepository.count({
+      where: {
+        created_at: MoreThan(created_at),
+        pubkey: In(pubkeys),
+      },
+    });
+    return events;
+  } else {
+    const events = await eventsRepository.count({
+      where: {
+        created_at: MoreThan(created_at),
+      },
+    });
+    return events;
+  }
 }
 
 async function getBookmarkedProfiles() {
@@ -246,16 +264,18 @@ async function getBookmarkedProfiles() {
 }
 
 async function bookmarkProfile(pubkey: string) {
-  return nostrProfileRepository.update(
-    { pubkey: pubkey },
-    { bookmarked: true }
+  console.log("bookmarkProfile", pubkey);
+  return nostrProfileRepository.upsert(
+    { pubkey: pubkey, is_bookmarked: true },
+    { conflictPaths: ["pubkey"] }
   );
 }
 
 async function unbookmarkProfile(pubkey: string) {
-  return nostrProfileRepository.update(
-    { pubkey: pubkey },
-    { bookmarked: false }
+  console.log("bookmarkProfile", pubkey);
+  return nostrProfileRepository.upsert(
+    { pubkey: pubkey, is_bookmarked: false },
+    { conflictPaths: ["pubkey"] }
   );
 }
 
@@ -340,21 +360,17 @@ async function getEventsByPubkeys(props: {
 }
 
 async function getFollowers(pubkey: string) {
-  const followers = await nostrProfileRepository
-    .createQueryBuilder("nostr_profile")
-    .leftJoinAndSelect("nostr_profile.followers", "followers")
-    .where("nostr_profile.pubkey = :pubkey", { pubkey: pubkey })
-    .getOne();
-  return followers?.followers;
+  const followers = await nostrProfileFollowersRepository.find({
+    where: { follower: pubkey },
+  });
+  return followers || [];
 }
 
 async function getFollowing(pubkey: string) {
-  const following = await nostrProfileRepository
-    .createQueryBuilder("nostr_profile")
-    .leftJoinAndSelect("nostr_profile.following", "following")
-    .where("nostr_profile.pubkey = :pubkey", { pubkey: pubkey })
-    .getOne();
-  return following?.following;
+  const following = await nostrProfileFollowersRepository.find({
+    where: { follower: pubkey },
+  });
+  return following || [];
 }
 
 async function getFollowersCount(pubkey: string) {

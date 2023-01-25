@@ -8,10 +8,13 @@ export const useSqlite = (props: { pubkey?: string }) => {
   const { retrievePubkeyMetadata } = useNostrRelayPool();
 
   const bookmarkProfile = useMutation(async (pubkey: string) => {
+    console.log("bookmarkProfile123", pubkey);
     await api.bookmarkProfile(pubkey);
+    await queryClient.invalidateQueries(["bookmarkedProfiles"]);
   });
   const unbookmarkProfile = useMutation(async (pubkey: string) => {
     await api.unbookmarkProfile(pubkey);
+    await queryClient.invalidateQueries(["bookmarkedProfiles"]);
   });
 
   const followProfile = useMutation(async (pubkey: string) => {

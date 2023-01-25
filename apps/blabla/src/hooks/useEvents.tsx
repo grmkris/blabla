@@ -1,15 +1,9 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { useCallback } from "react";
 
 export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
-  const bookmarkEvent = useMutation(async (eventId: string) => {
-    await api.bookmarkEvent(eventId);
-  });
-
-  const unbookmarkEvent = useMutation(async (eventId: string) => {
-    await api.unbookmarkEvent(eventId);
-  });
+  const queryClient = useQueryClient();
 
   const bookmarkedEvents = useQuery({
     queryKey: ["bookmarkedEvents"],
@@ -17,6 +11,16 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
       return await api.getBookmarkedEvents();
     },
     refetchInterval: false,
+  });
+
+  const bookmarkEvent = useMutation(async (eventId: string) => {
+    await api.bookmarkEvent(eventId);
+    await queryClient.invalidateQueries(["bookmarkedEvents"]);
+  });
+
+  const unbookmarkEvent = useMutation(async (eventId: string) => {
+    await api.unbookmarkEvent(eventId);
+    await queryClient.invalidateQueries(["bookmarkedEvents"]);
   });
 
   const isBookmarked = useCallback(() => {

@@ -3,9 +3,9 @@ import { api } from "../../web-sqlite/sqlite";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "../../components/Layout";
 import { eventToNoteMapper } from "../../web-sqlite/client-functions";
-import { IdentityInformationCard } from "../identity/[identity]";
 import { LoadingSpinner } from "../../components/common/LoadingSpinner";
 import { EventComponent } from "../../components/event-view/EventComponent";
+import { IdentityInformationCard } from "../identity";
 
 export const SearchPage = () => {
   const { search } = useRouter().query;

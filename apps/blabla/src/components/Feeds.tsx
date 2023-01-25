@@ -43,7 +43,13 @@ export const BookmarkedFeed = () => {
   return (
     <div className="flex max-w-full flex-col items-start space-y-2">
       {numberOfNewItems?.data && numberOfNewItems.data > 0 ? (
-        <Button onClick={refresh}>{numberOfNewItems.data} new items</Button>
+        <Button
+          onClick={() => {
+            refresh.mutate();
+          }}
+        >
+          {numberOfNewItems.data} new items
+        </Button>
       ) : null}
       {bookmarksFeed.data?.pages?.map((notes) =>
         notes.map((note) => <EventComponent note={note} key={note.event.id} />)

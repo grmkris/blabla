@@ -55,9 +55,8 @@ export const useGlobalFeed = () => {
 };
 
 export const useBookmarksFeed = () => {
-  const { now } = useContext(NostrSocketContext);
+  const { now, refreshNow } = useContext(NostrSocketContext);
   const { bookmarkedProfiles } = useSqlite({});
-  const queryCLient = useQueryClient();
   const bookmarksFeed = useInfiniteQuery({
     queryKey: ["bookmarksFeed", now],
     queryFn: async ({ pageParam = now }) => {
@@ -82,16 +81,24 @@ export const useBookmarksFeed = () => {
   });
 
   const numberOfNewItems = useQuery({
-    queryKey: ["bookmarksFeed", "numberOfNewItems", now],
+    queryKey: [
+      "bookmarksFeed",
+      "numberOfNewItems",
+      now,
+      bookmarkedProfiles.data?.map((x) => x.pubkey),
+    ],
     queryFn: async () => {
-      return await api.getNewPostsCount({ created_at: now });
+      return await api.getNewPostsCount({
+        created_at: now,
+        pubkeys: bookmarkedProfiles.data?.map((x) => x.pubkey ?? ""),
+      });
     },
     refetchInterval: 3000,
   });
 
-  const refresh = async () => {
-    await bookmarksFeed.refetch();
-  };
+  const refresh = useMutation(async () => {
+    await refreshNow();
+  });
 
   return {
     bookmarksFeed,
