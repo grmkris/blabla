@@ -52,7 +52,7 @@ export class EventTable {
 
 @Entity()
 export class Tags {
-  @PrimaryColumn()
+  @PrimaryColumn({ generated: "rowid" })
   id?: string;
   @Column({ nullable: true, unique: false })
   tag?: string;
@@ -61,7 +61,7 @@ export class Tags {
   value?: string;
 
   @ManyToOne(() => EventTable, (event) => event.tags)
-  @Column({ nullable: true, unique: false })
+  @Column({ unique: false })
   event_id?: string;
 }
 

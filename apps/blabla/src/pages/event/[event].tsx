@@ -1,11 +1,13 @@
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { Layout } from "../../components/Layout";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useEvent } from "../../hooks/useEvent";
 import NoSSR from "../../components/common/NoSSR";
 import { EventComponent } from "../../components/event-view/EventComponent";
 import { useNostrRelayPool } from "../../hooks/nostr-relay-pool/useNostrRelayPool";
+import { eventToNoteMapper } from "../../web-sqlite/client-functions";
+import { NostrSocketContext } from "../../NostrSocketContext";
 
 export const EventPage = () => {
   // get identity id from url
@@ -13,9 +15,9 @@ export const EventPage = () => {
   const { event } = router.query;
   const parsed = z.string().safeParse(event);
   return (
-    <Layout title={"Post"}>
+    <Layout>
       <div className="flex flex-col">
-        {parsed.success && <EventView event={parsed.data} />}
+        {parsed.success && <EventPageDetailedView event={parsed.data} />}
         {!parsed.success && <div>Invalid identity</div>}
       </div>
     </Layout>
@@ -24,20 +26,21 @@ export const EventPage = () => {
 
 export default EventPage;
 
-const EventView = (props: { event: string }) => {
+const EventPageDetailedView = (props: { event: string }) => {
+  const { relayPool } = useContext(NostrSocketContext);
   const { getNostrData } = useNostrRelayPool();
-  const { comments } = useEvent({ eventId: props.event });
+  const { event, comments } = useEvent({ eventId: props.event });
 
   useEffect(() => {
-    getNostrData.mutate({ filter: [{ "#e": [props.event] }] });
-  }, []);
+    if (relayPool) {
+      getNostrData.mutate({ filter: [{ "#e": [props.event] }] });
+    }
+  }, [relayPool]);
 
   return (
     <NoSSR>
       <div className={"m-4 space-y-1"}>
-        {/*{referencedByEvents.map(eventToNoteMapper).map((note) => (
-          <EventComponent note={note} key={note.event.id} />
-        ))}*/}
+        {event.data && <EventComponent note={eventToNoteMapper(event.data)} />}
         Comments:
         {comments.data?.pages.map((page, i) =>
           page.map((note) => <EventComponent note={note} key={note.event.id} />)

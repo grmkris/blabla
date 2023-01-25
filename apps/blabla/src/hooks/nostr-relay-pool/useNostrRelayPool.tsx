@@ -13,18 +13,15 @@ export const useNostrRelayPool = () => {
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
   const queryClient = useQueryClient();
 
+  const onCollect = (events: Event[]) => {
+    console.log("useNostrRelayPool: onCollect", events);
+    insertOrUpdateEvents(events);
+    queryClient.invalidateQueries();
+  };
+
   const getNostrData = useMutation(async (variables: { filter: Filter[] }) => {
     if (!relayPool) return;
-    relayPool.subscribe(
-      variables.filter,
-      nostrRelays,
-      (event, isAfterEose, relayURL) => {
-        // insertOrUpdateEvents([event]);
-        console.log("useNostrRelayPool: getNostrData: event", event);
-      },
-      500,
-      undefined
-    );
+    relayPool.subscribe(variables.filter, nostrRelays, collect(onCollect), 500);
     relayPool.onerror((err, relayUrl) => {
       console.log("RelayPool error", err, " from relay ", relayUrl);
     });

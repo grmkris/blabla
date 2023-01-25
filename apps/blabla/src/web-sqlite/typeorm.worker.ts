@@ -101,11 +101,9 @@ async function setup() {
   isReady = true;
 }
 async function createOrUpdateEvents(events: EventTable[]) {
-  console.log(
-    "createOrUpdateEvents",
-    events.map((e) => e.id)
-  );
   await eventsRepository.upsert(events, { conflictPaths: ["id"] });
+  const flatmapTags = events.flatMap((e) => ({ ...e.tags, event_id: e.id }));
+  await tagsRepository.upsert(flatmapTags, { conflictPaths: ["id"] });
   return true;
 }
 async function bookmarkEvent(event_id: string) {
@@ -202,7 +200,10 @@ async function getGlobalFeed(props: { pageParam: number; pageSize: number }) {
 }
 
 async function getEvent(event_id: string) {
-  const event = await eventsRepository.findOne({ where: { id: event_id } });
+  const event = await eventsRepository.findOne({
+    where: { id: event_id },
+    relations: ["tags"],
+  });
   return event;
 }
 
@@ -213,8 +214,10 @@ async function createOrUpdateTags(tags: Tags[]) {
   return true;
 }
 
-async function getTags() {
-  const tags = await tagsRepository.find();
+async function getTags(eventId: string) {
+  const tags = await tagsRepository.find({
+    where: { event_id: eventId },
+  });
   return tags;
 }
 
