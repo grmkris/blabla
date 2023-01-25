@@ -63,7 +63,6 @@ export const useNostrRelayPool = () => {
 
   const retrievePubkeyInfos = useMutation(
     async (variables: { author: string }) => {
-      const collectEventCount = 0;
       console.log("retrievePubkeyInfos", variables);
       if (!relayPool || !variables.author) return;
       const author = new Author(relayPool, nostrRelays, variables.author);
@@ -98,7 +97,6 @@ export const useNostrRelayPool = () => {
       author.text(collect(onCollect), 20, 200);
       author.followers(filterAndSaveFollowers, undefined, 200);
       author.followsPubkeys(async (pubkey) => {
-        console.log("author.followsPubkeys", pubkey);
         const follows = pubkey.map((pubkey) => ({
           pubkey: pubkey,
           followers: [variables.author],

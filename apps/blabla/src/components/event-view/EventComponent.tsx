@@ -95,12 +95,27 @@ export const EventComponent = (props: { note: Note }) => {
                 a: ({ node, ...props }) => {
                   // if node is twitter url, render a tweet
                   if (props.href?.startsWith("https://twitter.com")) {
-                    console.log("twitter url", props.href);
-                    return <CustomTwitterPreview value={props.href} />;
+                    return (
+                      <>
+                        <a {...props} />
+                        <CustomTwitterPreview value={props.href} />;
+                      </>
+                    );
+                  }
+                  // find urls that end with .mp4 and render a video
+                  if (props.href?.endsWith(".mp4")) {
+                    return (
+                      <>
+                        <a {...props} />
+                        <video src={props.href} controls />;
+                      </>
+                    );
                   }
                   return (
                     <a
-                      className={"text-blue-500"}
+                      className={
+                        "text-blue-500 decoration-blue-700 underline-offset-4 hover:text-blue-700 hover:underline"
+                      }
                       {...props}
                       href={props.href}
                       target="_blank"
@@ -166,11 +181,7 @@ const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
   }
   return (
     <Link href={"/identity/" + props.pubkey} shallow>
-      <div className="avatar">
-        <div className="w-8">
-          <img src={profile?.data?.picture ?? "/images/placeholder.png"} />
-        </div>
-      </div>
+      <ProfileAvatar picture={profile.data?.picture} />
     </Link>
   );
 };
@@ -183,5 +194,15 @@ const EventReferencedEventComponent = (props: { eventId: string }) => {
   }
   return (
     <EventComponent note={eventToNoteMapper(event.data)} key={props.eventId} />
+  );
+};
+
+export const ProfileAvatar = (props: { picture?: string }) => {
+  return (
+    <div className="avatar">
+      <div className="mask mask-squircle w-12">
+        <img src={props.picture ?? "/images/placeholder.png"} />
+      </div>
+    </div>
   );
 };
