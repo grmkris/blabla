@@ -190,32 +190,8 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
     },
   ];
 
-  const trendingPosts = [
-    {
-      id: 1,
-      user: {
-        name: "Floyd Miles",
-        imageUrl:
-          "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      },
-      body: "What books do you have on your bookshelf just to look smarter than you actually are?",
-      comments: 291,
-    },
-    {
-      id: 2,
-      user: {
-        name: "Floyd Miles",
-        imageUrl:
-          "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      },
-      body: "What books do you have on your bookshelf just to look smarter than you actually are?",
-      comments: 5321,
-    },
-    // More posts...
-  ];
-
   return (
-    <div className="mt-20 py-10 px-4 sm:px-0">
+    <div className="mt-20 py-10 px-2 sm:px-0">
       <div className="mx-auto max-w-3xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="hidden lg:col-span-3 lg:block xl:col-span-2">
           <nav
@@ -266,42 +242,7 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
                   >
                     Trending
                   </h2>
-                  <div className="mt-6 flow-root">
-                    <ul role="list" className="-my-4 divide-y divide-slate-400">
-                      {trendingPosts.map((post) => (
-                        <li key={post.id} className="flex space-x-3 py-4">
-                          <div className="flex-shrink-0">
-                            <img
-                              className="h-8 w-8 rounded-full"
-                              src={post.user.imageUrl}
-                              alt={post.user.name}
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm text-slate-400">
-                              {post.body}
-                            </p>
-                            <div className="mt-2 flex">
-                              <span className="inline-flex items-center text-sm">
-                                <button
-                                  type="button"
-                                  className="inline-flex space-x-2 text-gray-400 hover:text-gray-500"
-                                >
-                                  <ChatBubbleLeftEllipsisIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                  <span className="font-medium text-slate-400">
-                                    {post.comments}
-                                  </span>
-                                </button>
-                              </span>
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <div className="mt-6 flow-root"></div>
                   <div className="mt-6">
                     <button className="w-full rounded-md border border-transparent bg-emerald-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none ">
                       View all

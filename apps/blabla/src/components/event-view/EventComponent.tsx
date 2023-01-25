@@ -41,7 +41,7 @@ export const EventComponent = (props: { note: Note }) => {
   };
 
   return (
-    <div className="card w-full max-w-full overflow-auto bg-slate-900/70 shadow-xl">
+    <div className="card card-compact w-full max-w-full overflow-auto bg-slate-900/70 shadow-xl">
       <div className="card-body">
         <Link
           href={`/identity?id=${props.note.event.pubkey}`}

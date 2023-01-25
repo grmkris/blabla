@@ -61,10 +61,25 @@ export const IdentityView = (props: { identity: string }) => {
           onFollowingClick={handleFollowingClick}
         />
 
-        <div className="flex flex-row">
-          <Button onClick={handleEventsClick}>Events</Button>
-          <Button onClick={handleFollowerClick}>Followers</Button>
-          <Button onClick={handleFollowingClick}>Following</Button>
+        <div className="btn-group">
+          <Button
+            className={selected === "events" ? "btn-active" : ""}
+            onClick={handleEventsClick}
+          >
+            Events
+          </Button>
+          <Button
+            className={selected === "followers" ? "btn-active" : ""}
+            onClick={handleFollowerClick}
+          >
+            Followers
+          </Button>
+          <Button
+            className={selected === "following" ? "btn-active" : ""}
+            onClick={handleFollowingClick}
+          >
+            Following
+          </Button>
         </div>
         {selected === "events" && <IdentityEvents identity={props.identity} />}
         {selected === "followers" && (

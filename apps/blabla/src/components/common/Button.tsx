@@ -27,7 +27,7 @@ export const Button = (props: ButtonProps) => {
     <button
       type="button"
       disabled={loading || disabled}
-      className={`btn inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+      className={`btn inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 shadow-sm ${
         disabled
           ? "cursor-not-allowed bg-gray-300"
           : "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"

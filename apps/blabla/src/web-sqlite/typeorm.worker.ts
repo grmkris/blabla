@@ -361,7 +361,7 @@ async function getEventsByPubkeys(props: {
 
 async function getFollowers(pubkey: string) {
   const followers = await nostrProfileFollowersRepository.find({
-    where: { follower: pubkey },
+    where: { pubkey: pubkey },
   });
   return followers || [];
 }
