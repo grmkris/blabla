@@ -1,27 +1,29 @@
-import { useRouter } from "next/router";
-import { api } from "../../web-sqlite/sqlite";
+import { api } from "../web-sqlite/sqlite";
 import { useQuery } from "@tanstack/react-query";
-import { Layout } from "../../components/Layout";
-import { eventToNoteMapper } from "../../web-sqlite/client-functions";
-import { LoadingSpinner } from "../../components/common/LoadingSpinner";
-import { EventComponent } from "../../components/event-view/EventComponent";
-import { IdentityInformationCard } from "../identity";
+import { Layout } from "../components/Layout";
+import { eventToNoteMapper } from "../web-sqlite/client-functions";
+import { LoadingSpinner } from "../components/common/LoadingSpinner";
+import { EventComponent } from "../components/event-view/EventComponent";
+import { IdentityInformationCard } from "./identity";
+import { useSearchParams } from "@jokullsolberg/next-use-search-params";
+import { z } from "zod";
+import { IdentityPreview } from "../components/IdentityPreview";
 
 export const SearchPage = () => {
-  const { search } = useRouter().query;
+  const [{ q }, setSearchParam] = useSearchParams({
+    q: z.string(),
+  });
   const { profiles, events } = useSqliteSearch({
-    search: search as string,
+    search: q,
   });
 
   return (
-    <Layout title={`Search for ${search}`}>
+    <Layout title={`Search for ${q}`}>
       <h2>Profiles</h2>
       {profiles.isLoading && <LoadingSpinner />}
       {profiles.data?.map(
         (x) =>
-          x.pubkey && (
-            <IdentityInformationCard identity={x.pubkey} key={x.pubkey} />
-          )
+          x.pubkey && <IdentityPreview identity={x.pubkey} key={x.pubkey} />
       )}
       <h2>Events</h2>
       {profiles.isLoading && <LoadingSpinner />}

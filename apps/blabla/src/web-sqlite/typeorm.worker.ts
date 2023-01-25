@@ -104,12 +104,14 @@ async function createOrUpdateEvents(events: EventTable[]) {
   await eventsRepository.upsert(events, {
     conflictPaths: ["id"],
   });
-  await tagsRepository.upsert(
-    events.flatMap((event) => event.tags),
-    {
-      conflictPaths: ["id"],
+  for (const event of events) {
+    if (event.tags && event.tags.length > 0) {
+      await tagsRepository.upsert(event.tags, {
+        conflictPaths: ["id"],
+      });
+      console.log("tags101010", event.tags, event.pubkey);
     }
-  );
+  }
   return true;
 }
 async function bookmarkEvent(event_id: string) {

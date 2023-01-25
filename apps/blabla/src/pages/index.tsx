@@ -4,6 +4,8 @@ import { Layout } from "../components/Layout";
 import { useState } from "react";
 import React from "react";
 import { BookmarkedFeed, GlobalFeed } from "../components/Feeds";
+import { useSearchParams } from "@jokullsolberg/next-use-search-params";
+import { z } from "zod";
 
 const tabs = [
   { name: "Global", href: "global" },
@@ -16,15 +18,16 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-type SelectedTab = "Global" | "Followed" | "Bookmarked" | "Lists";
+const SelectedTabSchema = z.enum(["Global", "Followed", "Bookmarked", "Lists"]);
+export type SelectedTab = z.infer<typeof SelectedTabSchema>;
 
 export const Home = () => {
-  const [selectedTab, setSelectedTab] = useState<SelectedTab>("Global");
+  const [{ selected }, setSearchParam] = useSearchParams({
+    selected: SelectedTabSchema.default("Global"),
+  });
 
-  const onChangeHandler = (
-    selectPick: "Global" | "Followed" | "Bookmarked" | "Lists"
-  ) => {
-    setSelectedTab(selectPick);
+  const onChangeHandler = (selectPick: z.infer<typeof SelectedTabSchema>) => {
+    setSearchParam("selected", selectPick);
   };
 
   return (
@@ -42,7 +45,7 @@ export const Home = () => {
                 e.target.value as "Global" | "Followed" | "Bookmarked" | "Lists"
               )
             }
-            value={selectedTab}
+            value={selected}
           >
             {tabs.map((tab) => (
               <option key={tab.name}>{tab.name}</option>
@@ -58,13 +61,11 @@ export const Home = () => {
               <a
                 key={tab.name}
                 onClick={() =>
-                  setSelectedTab(
-                    tab.name as "Global" | "Followed" | "Bookmarked" | "Lists"
-                  )
+                  setSearchParam("selected", tab.name as SelectedTab)
                 }
-                aria-current={selectedTab === tab.name ? "page" : undefined}
+                aria-current={selected === tab.name ? "page" : undefined}
                 className={classNames(
-                  selectedTab === tab.name
+                  selected === tab.name
                     ? "text-white"
                     : "text-slate-400 hover:text-slate-400",
                   tabIdx === 0 ? "rounded-l-lg" : "",
@@ -76,9 +77,7 @@ export const Home = () => {
                 <span
                   aria-hidden="true"
                   className={classNames(
-                    selectedTab === tab.name
-                      ? "bg-emerald-900"
-                      : "bg-transparent",
+                    selected === tab.name ? "bg-emerald-900" : "bg-transparent",
                     "absolute inset-x-0 bottom-0 h-0.5"
                   )}
                 />
@@ -89,8 +88,8 @@ export const Home = () => {
       </div>
 
       <div className="mt-4">
-        {selectedTab === "Global" && <GlobalFeed />}
-        {selectedTab === "Bookmarked" && <BookmarkedFeed />}
+        {selected === "Global" && <GlobalFeed />}
+        {selected === "Bookmarked" && <BookmarkedFeed />}
       </div>
     </>
   );

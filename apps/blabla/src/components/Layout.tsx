@@ -149,7 +149,7 @@ const NavigationTop = () => {
                   </form>
                   <input
                     name="search"
-                    className="block w-full rounded-md border bg-base-100 py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-emerald-900 focus:text-gray-900 focus:placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-900 sm:text-sm"
+                    className="block w-full rounded-md border bg-base-100 py-2 pl-10 pr-3 text-sm text-white placeholder-gray-500 focus:border-emerald-900 focus:text-gray-900 focus:placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-900 sm:text-sm"
                     placeholder="Search"
                     type="search"
                     onChange={(e) => setValue(e.target.value)}
