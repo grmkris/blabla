@@ -57,17 +57,17 @@ export const EventComponent = (props: { note: Note }) => {
                 />
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className="text truncate font-medium ">
+            <div className="flex flex-col truncate">
+              <p className="font-medium">
                 {profile?.data?.display_name ??
                   profile?.data?.name ??
                   profile?.data?.npub ??
                   props.note.event.pubkey}
-              </div>
+              </p>
               {(profile?.data?.display_name || profile?.data?.name) && (
-                <div className="truncate text-xs font-medium ">
+                <p className="text-xs font-medium">
                   {profile?.data?.npub ?? props.note.event.pubkey}
-                </div>
+                </p>
               )}
             </div>
           </div>

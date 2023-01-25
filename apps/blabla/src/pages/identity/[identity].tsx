@@ -11,6 +11,7 @@ import { EventComponent } from "../../components/event-view/EventComponent";
 import { useNostrRelayPool } from "../../hooks/nostr-relay-pool/useNostrRelayPool";
 import { useCallback, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePubkey } from "../../hooks/usePubkey";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -45,6 +46,8 @@ export const IdentityInformationCard = (props: { identity: string }) => {
     useSqlite({
       pubkey: props.identity,
     });
+  const { getFollowingCount, getFollowersCount, getFollowers, getFollowing } =
+    usePubkey({ pubkey: props.identity });
   const handleBookmarkProfileClicked = () => {
     const bookmarked = isBookmarked();
     if (bookmarked) {
@@ -86,6 +89,14 @@ export const IdentityInformationCard = (props: { identity: string }) => {
               </div>
               <div className="badge-outline badge">{profile?.data?.lud16}</div>
             </div>
+            <div className={"flex flex-col md:flex-row"}>
+              <div className="badge-outline badge">
+                {getFollowersCount.data} followers
+              </div>
+              <div className="badge-outline badge">
+                {getFollowingCount.data} following
+              </div>
+            </div>
             <div className="card-actions">
               <div className="btn-group">
                 <Button className="btn-sm btn">Follow</Button>
@@ -109,7 +120,7 @@ export const IdentityInformationCard = (props: { identity: string }) => {
 };
 
 export const IdentityEvents = (props: { identity: string }) => {
-  const { eventsByPubkey } = useEvents({ pubkey: props.identity });
+  const { eventsByPubkey } = usePubkey({ pubkey: props.identity });
   const { retrievePubkeyInfos } = useNostrRelayPool();
 
   const useEffectCallback = useCallback(() => {

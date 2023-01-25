@@ -30,7 +30,7 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
   const [relayPool, setRelayPool] = useState<RelayPool>();
   const [subscribed, setSubscribed] = useState(false);
-  const [now, setNow] = useState(dateToUnix(new Date())); // Make sure current time isn't re-rendered
+  const [now, setNow] = useState(dateToUnix(new Date()));
   const { data } = useGetGlobalFilterSinceTime();
   const queryClient = useQueryClient();
   const refreshNow = () => {
@@ -47,7 +47,8 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
 
   const onCollect = async (events: Event[]) => {
     await insertOrUpdateEvents(events);
-    queryClient.invalidateQueries();
+    setSubscribed(true);
+    await queryClient.invalidateQueries(["globalFeed"]);
   };
 
   const createRelayPoolSubscriptions = useCallback(() => {

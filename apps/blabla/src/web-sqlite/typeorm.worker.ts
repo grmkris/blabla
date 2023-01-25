@@ -8,7 +8,7 @@ import { SQLiteFS } from "@nikvdp/absurd-sql";
 // @ts-ignore
 import IndexedDBBackend from "@nikvdp/absurd-sql/dist/indexeddb-backend";
 import type { Connection, Repository } from "typeorm";
-import { createConnection, LessThan, MoreThan } from "typeorm";
+import { createConnection, In, LessThan, MoreThan } from "typeorm";
 import { expose } from "comlink";
 import type { NostrProfileTable } from "./schema";
 import {
@@ -101,9 +101,9 @@ async function setup() {
   isReady = true;
 }
 async function createOrUpdateEvents(events: EventTable[]) {
-  await eventsRepository.upsert(events, { conflictPaths: ["id"] });
-  const flatmapTags = events.flatMap((e) => ({ ...e.tags, event_id: e.id }));
-  await tagsRepository.upsert(flatmapTags, { conflictPaths: ["id"] });
+  await eventsRepository.upsert(events, {
+    conflictPaths: ["id"],
+  });
   return true;
 }
 async function bookmarkEvent(event_id: string) {
@@ -348,16 +348,45 @@ async function getFollowers(pubkey: string) {
   return followers?.followers;
 }
 
+async function getFollowing(pubkey: string) {
+  const following = await nostrProfileRepository
+    .createQueryBuilder("nostr_profile")
+    .leftJoinAndSelect("nostr_profile.following", "following")
+    .where("nostr_profile.pubkey = :pubkey", { pubkey: pubkey })
+    .getOne();
+  return following?.following;
+}
+
+async function getFollowersCount(pubkey: string) {
+  const count = await nostrProfileFollowersRepository.count({
+    where: { pubkey: pubkey },
+  });
+  return count;
+}
+async function getFollowingCount(pubkey: string) {
+  const count = await nostrProfileFollowersRepository.count({
+    where: { follower: pubkey },
+  });
+  return count;
+}
+
 async function updateFollowers(props: { pubkey: string; followers: string[] }) {
   console.log("updateFollowers", props);
+  const data = props.followers.map((follower) => {
+    return {
+      id: `${props.pubkey}-${follower}`,
+      pubkey: props.pubkey,
+      follower,
+    };
+  });
+  console.log("updateFollowers,data", data);
+  const ids = data.map((d) => d.id);
+  console.log("updateFollowers,ids", ids);
   const nostrProfileFollowers = await nostrProfileFollowersRepository.upsert(
-    props.followers.map((follower) => {
-      return {
-        pubkey: props.pubkey,
-        follower,
-      };
-    }),
-    { conflictPaths: ["pubkey", "follower"] }
+    data,
+    {
+      conflictPaths: ["id"],
+    }
   );
   return nostrProfileFollowers;
 }
@@ -396,6 +425,9 @@ const api = {
   getFollowers,
   markEventAsRead,
   getLastEventInDb,
+  getFollowing,
+  getFollowersCount,
+  getFollowingCount,
 };
 export type Api = typeof api;
 

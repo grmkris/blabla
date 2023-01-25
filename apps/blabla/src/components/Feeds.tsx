@@ -1,11 +1,16 @@
-import { useBookmarksFeed, useGlobalFeed } from "../hooks/useGlobalFeed";
+import {
+  useBookmarksFeed,
+  useGlobalFeed,
+  useNumberOfNewItems,
+} from "../hooks/useGlobalFeed";
 import { EventComponent } from "./event-view/EventComponent";
 import { Button } from "./common/Button";
 
-export const GlobalFeed = () => {
-  const { globalFeed, numberOfNewItems, refresh } = useGlobalFeed();
+const NumberOfNumberOfNewItems = () => {
+  const { numberOfNewItems } = useNumberOfNewItems();
+  const { refresh } = useGlobalFeed();
   return (
-    <div className="flex w-max max-w-full flex-col items-start space-y-2">
+    <>
       {numberOfNewItems?.data ? (
         <Button
           onClick={() => {
@@ -16,6 +21,14 @@ export const GlobalFeed = () => {
           ~ {numberOfNewItems.data} new items
         </Button>
       ) : null}
+    </>
+  );
+};
+export const GlobalFeed = () => {
+  const { globalFeed } = useGlobalFeed();
+  return (
+    <div className="flex w-max max-w-full flex-col items-start space-y-2">
+      <NumberOfNumberOfNewItems />
       {globalFeed.data?.pages?.map((notes) =>
         notes.map((note) => <EventComponent note={note} key={note.event.id} />)
       )}

@@ -9,11 +9,9 @@ export const useSqlite = (props: { pubkey?: string }) => {
 
   const bookmarkProfile = useMutation(async (pubkey: string) => {
     await api.bookmarkProfile(pubkey);
-    await queryClient.invalidateQueries();
   });
   const unbookmarkProfile = useMutation(async (pubkey: string) => {
     await api.unbookmarkProfile(pubkey);
-    await queryClient.invalidateQueries();
   });
 
   const followProfile = useMutation(async (pubkey: string) => {

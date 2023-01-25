@@ -109,13 +109,17 @@ export class NostrProfile {
 
 @Entity()
 export class NostrProfileFollowers {
-  @Column({ nullable: true })
   @PrimaryColumn()
-  @ManyToOne(() => NostrProfile, (profile) => profile.followers)
+  id?: string;
+  @Column()
+  @ManyToOne(() => NostrProfile, (profile) => profile.followers, {
+    createForeignKeyConstraints: false,
+  })
   pubkey?: string;
 
-  @Column({ nullable: true })
-  @PrimaryColumn()
-  @ManyToOne(() => NostrProfile, (profile) => profile.following)
+  @Column()
+  @ManyToOne(() => NostrProfile, (profile) => profile.following, {
+    createForeignKeyConstraints: false,
+  })
   follower?: string;
 }

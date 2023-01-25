@@ -17,10 +17,12 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { NostrSocketContext } from "../NostrSocketContext";
+import { useGetGlobalFilterSinceTime } from "../hooks/useGetGlobalFilterSinceTime";
 
 export const Layout = (props: { children: ReactNode; title?: string }) => {
-  const { isSqliteReady } = useContext(NostrSocketContext);
+  const { isSqliteReady, subscribed } = useContext(NostrSocketContext);
   const [showClearDBMessage, setShowClearDBMessage] = useState(false);
+  const globalFilterSinceTime = useGetGlobalFilterSinceTime();
   const router = useRouter();
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export const Layout = (props: { children: ReactNode; title?: string }) => {
       </nav>
 
       <NewLayout>
-        {isSqliteReady ? (
+        {isSqliteReady && (globalFilterSinceTime.data || subscribed) ? (
           <>
             {props.title ? (
               <h3 className="mb-6 mt-1 text-4xl font-medium leading-6">

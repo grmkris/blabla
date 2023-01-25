@@ -39,25 +39,16 @@ export const useGlobalFeed = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     staleTime: Infinity,
+    cacheTime: Infinity,
     networkMode: "always",
-  });
-
-  const numberOfNewItems = useQuery({
-    queryKey: ["globalFeed", "numberOfNewItems", now],
-    queryFn: async () => {
-      return await api.getNewPostsCount({ created_at: now });
-    },
-    refetchInterval: 3000,
   });
 
   const refresh = useMutation(async () => {
     await refreshNow();
-    await globalFeed.refetch();
   });
 
   return {
     globalFeed,
-    numberOfNewItems,
     refresh,
     now,
   };
@@ -99,7 +90,6 @@ export const useBookmarksFeed = () => {
   });
 
   const refresh = async () => {
-    await queryCLient.invalidateQueries();
     await bookmarksFeed.refetch();
   };
 
@@ -108,5 +98,21 @@ export const useBookmarksFeed = () => {
     numberOfNewItems,
     refresh,
     now,
+  };
+};
+
+export const useNumberOfNewItems = () => {
+  const { now } = useContext(NostrSocketContext);
+
+  const numberOfNewItems = useQuery({
+    queryKey: ["globalFeed", "numberOfNewItems", now],
+    queryFn: async () => {
+      return await api.getNewPostsCount({ created_at: now });
+    },
+    refetchInterval: 3000,
+  });
+
+  return {
+    numberOfNewItems,
   };
 };

@@ -16,7 +16,6 @@ export const useNostrRelayPool = () => {
   const onCollect = (events: Event[]) => {
     console.log("useNostrRelayPool: onCollect", events);
     insertOrUpdateEvents(events);
-    queryClient.invalidateQueries();
   };
 
   const getNostrData = useMutation(async (variables: { filter: Filter[] }) => {
@@ -64,48 +63,59 @@ export const useNostrRelayPool = () => {
 
   const retrievePubkeyInfos = useMutation(
     async (variables: { author: string }) => {
+      const collectEventCount = 0;
       console.log("retrievePubkeyInfos", variables);
       if (!relayPool || !variables.author) return;
       const author = new Author(relayPool, nostrRelays, variables.author);
 
-      const filterAndSaveFollowers = (events: Event[]) => {
-        const event = events[0];
-        console.log("author.followers", event);
-        if (event.pubkey !== variables.author) {
-          console.warn(
-            "followers event and requested pubkey author does not match",
-            event.pubkey,
-            variables.author
-          );
-          return;
-        }
-        api.updateFollowers({
-          pubkey: variables.author,
-          followers: event.tags.map((tag) => {
-            return tag[1];
-          }),
+      const filterAndSaveFollowers = async (event: Event) => {
+        console.log("author.followers filterAndSaveFollowers", {
+          event,
+          variables,
         });
+        await api.updateFollowers({
+          pubkey: variables.author,
+          followers: [event.pubkey],
+        });
+        await queryClient.invalidateQueries(["getFollowers", variables.author]);
+        await queryClient.invalidateQueries([
+          "getFollowersCount",
+          variables.author,
+        ]);
       };
 
       const onCollect = async (events: Event[]) => {
-        await insertOrUpdateEvents(events);
-        queryClient.invalidateQueries(["eventsByPubkey"]);
+        console.log("author.followers onCollect", events);
+        if (events.length === 20) {
+          await insertOrUpdateEvents(events);
+          await queryClient.invalidateQueries([
+            "eventsByPubkey",
+            variables.author,
+          ]);
+        }
       };
 
-      author.text(collect(onCollect), 20, 500);
-      author.followers(collect(filterAndSaveFollowers), 20, 500);
-      author.followsPubkeys((pubkey) => {
+      author.text(collect(onCollect), 20, 200);
+      author.followers(filterAndSaveFollowers, undefined, 200);
+      author.followsPubkeys(async (pubkey) => {
         console.log("author.followsPubkeys", pubkey);
         const follows = pubkey.map((pubkey) => ({
           pubkey: pubkey,
           followers: [variables.author],
         }));
-        follows.forEach((follow) => {
-          api.updateFollowers({
-            pubkey: follow.pubkey,
-            followers: [variables.author],
-          });
-        });
+        await Promise.all(
+          follows.map((follow) =>
+            api.updateFollowers({
+              pubkey: follow.pubkey,
+              followers: [variables.author],
+            })
+          )
+        );
+        await queryClient.invalidateQueries(["getFollowing", variables.author]);
+        await queryClient.invalidateQueries([
+          "getFollowingCount",
+          variables.author,
+        ]);
       }, 500);
     }
   );
