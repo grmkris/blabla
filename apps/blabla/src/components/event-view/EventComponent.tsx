@@ -41,7 +41,7 @@ export const EventComponent = (props: { note: Note }) => {
   };
 
   return (
-    <div className="card min-w-0 max-w-full overflow-auto bg-slate-900/70 shadow-xl">
+    <div className="card w-full max-w-full overflow-auto bg-slate-900/70 shadow-xl">
       <div className="card-body">
         <Link
           href={`/identity/${props.note.event.pubkey}`}
@@ -64,12 +64,11 @@ export const EventComponent = (props: { note: Note }) => {
                   profile?.data?.npub ??
                   props.note.event.pubkey}
               </div>
-              {profile?.data?.display_name ||
-                (profile?.data?.name && (
-                  <div className="truncate text-xs font-medium ">
-                    {profile?.data?.npub ?? props.note.event.pubkey}
-                  </div>
-                ))}
+              {(profile?.data?.display_name || profile?.data?.name) && (
+                <div className="truncate text-xs font-medium ">
+                  {profile?.data?.npub ?? props.note.event.pubkey}
+                </div>
+              )}
             </div>
           </div>
         </Link>
@@ -84,7 +83,7 @@ export const EventComponent = (props: { note: Note }) => {
               </p>
             </Link>
           </div>
-          <div className="prose mt-2 overflow-hidden text-ellipsis text-gray-400">
+          <div className="prose mt-2 overflow-hidden text-ellipsis text-xl text-gray-400">
             <ReactMarkdown
               remarkPlugins={[
                 remarkGfm,

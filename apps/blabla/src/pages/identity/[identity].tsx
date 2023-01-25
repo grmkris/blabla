@@ -9,6 +9,8 @@ import NoSSR from "../../components/common/NoSSR";
 import { Button } from "../../components/common/Button";
 import { EventComponent } from "../../components/event-view/EventComponent";
 import { useNostrRelayPool } from "../../hooks/nostr-relay-pool/useNostrRelayPool";
+import { useCallback, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const IdentityPage = () => {
   // get identity id from url
@@ -110,16 +112,23 @@ export const IdentityEvents = (props: { identity: string }) => {
   const { eventsByPubkey } = useEvents({ pubkey: props.identity });
   const { retrievePubkeyInfos } = useNostrRelayPool();
 
+  const useEffectCallback = useCallback(() => {
+    retrievePubkeyInfos.mutate({ author: props.identity });
+  }, []);
+
+  useEffect(useEffectCallback, [props.identity]);
+
   if (eventsByPubkey.isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading from cache...</div>;
   }
+
+  if (retrievePubkeyInfos.isLoading) {
+    return <div>Loading from network...</div>;
+  }
+
   return (
     <div className="flex flex-col space-y-4">
       <h1>Events</h1>
-      <Button onClick={() => retrievePubkeyInfos({ author: props.identity })}>
-        {" "}
-        Retrieve pubkey infos
-      </Button>
       {eventsByPubkey?.data?.pages.map((page) =>
         page.map((note) => <EventComponent note={note} key={note.event.id} />)
       )}

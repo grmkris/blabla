@@ -5,7 +5,7 @@ import { Button } from "./common/Button";
 export const GlobalFeed = () => {
   const { globalFeed, numberOfNewItems, refresh } = useGlobalFeed();
   return (
-    <div className="flex max-w-full flex-col items-start space-y-2">
+    <div className="flex w-max max-w-full flex-col items-start space-y-2">
       {numberOfNewItems?.data ? (
         <Button
           onClick={() => {

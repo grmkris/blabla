@@ -1,4 +1,4 @@
-import { Author } from "nostr-relaypool";
+import { Author, collect } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
 import { useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -65,19 +65,14 @@ export const useNostrRelayPool = () => {
     }, 100);
   };
 
-  const retrievePubkeyInfos = async (variables: { author: string }) => {
-    if (!relayPool || !variables.author) return;
-    const author = new Author(relayPool, nostrRelays, variables.author);
-    author.text(
-      (event) => {
-        insertOrUpdateEvents([event]);
-        console.log("author.text", event);
-      },
-      100,
-      500
-    );
-    author.followers(
-      (event) => {
+  const retrievePubkeyInfos = useMutation(
+    async (variables: { author: string }) => {
+      console.log("retrievePubkeyInfos", variables);
+      if (!relayPool || !variables.author) return;
+      const author = new Author(relayPool, nostrRelays, variables.author);
+
+      const filterAndSaveFollowers = (events: Event[]) => {
+        const event = events[0];
         console.log("author.followers", event);
         if (event.pubkey !== variables.author) {
           console.warn(
@@ -93,24 +88,30 @@ export const useNostrRelayPool = () => {
             return tag[1];
           }),
         });
-      },
-      10,
-      500
-    );
-    author.followsPubkeys((pubkey) => {
-      console.log("author.followsPubkeys", pubkey);
-      const follows = pubkey.map((pubkey) => ({
-        pubkey: pubkey,
-        followers: [variables.author],
-      }));
-      follows.forEach((follow) => {
-        api.updateFollowers({
-          pubkey: follow.pubkey,
+      };
+
+      const onCollect = async (events: Event[]) => {
+        await insertOrUpdateEvents(events);
+        queryClient.invalidateQueries(["eventsByPubkey"]);
+      };
+
+      author.text(collect(onCollect), 20, 500);
+      author.followers(collect(filterAndSaveFollowers), 20, 500);
+      author.followsPubkeys((pubkey) => {
+        console.log("author.followsPubkeys", pubkey);
+        const follows = pubkey.map((pubkey) => ({
+          pubkey: pubkey,
           followers: [variables.author],
+        }));
+        follows.forEach((follow) => {
+          api.updateFollowers({
+            pubkey: follow.pubkey,
+            followers: [variables.author],
+          });
         });
-      });
-    }, 500);
-  };
+      }, 500);
+    }
+  );
 
   const getEventById = useMutation(async (variables: { id: string }) => {
     if (!relayPool) return;
