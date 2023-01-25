@@ -17,8 +17,6 @@ export const useGlobalFeed = () => {
   const globalFeed = useInfiniteQuery({
     queryKey: ["globalFeed", now],
     queryFn: async ({ pageParam = now }) => {
-      const tags = await api.getTags();
-      console.log("useGlobalFeed- tags", tags);
       const events = await api.getGlobalFeed({
         pageParam,
         pageSize: PAGE_SIZE,
