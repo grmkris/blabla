@@ -4,9 +4,28 @@ import { Button } from "./common/Button";
 import Link from "next/link";
 
 export const IdentityPreview = (props: { identity: string }) => {
-  const { profile, bookmarkProfile, followProfile } = useSqlite({
+  const {
+    profile,
+    bookmarkProfile,
+    followProfile,
+    bookmarkedProfiles,
+    unbookmarkProfile,
+  } = useSqlite({
     pubkey: props.identity,
   });
+
+  const isBookmarked =
+    bookmarkedProfiles.data?.some((x) => x.pubkey === props.identity) ?? false;
+  const handleBookmarkProfileClicked = () => {
+    console.log("bookmarkProfile", isBookmarked);
+    isBookmarked
+      ? unbookmarkProfile.mutate(props.identity)
+      : bookmarkProfile.mutate(props.identity);
+  };
+
+  const handleFollowProfileClicked = () => {
+    followProfile.mutate(props.identity);
+  };
 
   return (
     <div className="flex items-center space-x-4">
@@ -28,10 +47,10 @@ export const IdentityPreview = (props: { identity: string }) => {
         <Button onClick={() => followProfile.mutate(props.identity)}>
           Follow
         </Button>
-        <Button onClick={() => bookmarkProfile.mutate(props.identity)}>
-          Bookmark
+        <Button onClick={handleBookmarkProfileClicked}>
+          {isBookmarked ? "Unbookmark" : "Bookmark"}
         </Button>
-        <Link href={`/identity/${props.identity}`}>
+        <Link href={`/identity/?id=${props.identity}`}>
           <Button>Open</Button>
         </Link>
       </div>

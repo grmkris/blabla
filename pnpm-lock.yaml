@@ -36,6 +36,7 @@ importers:
       '@heroicons/react': ^2.0.13
       '@hookform/resolvers': ^2.9.10
       '@jlongster/sql.js': ^1.6.7
+      '@jokullsolberg/next-use-search-params': ^0.2.0
       '@milkdown/core': ^6.5.4
       '@milkdown/preset-commonmark': ^6.5.4
       '@milkdown/prose': ^6.5.4
@@ -103,6 +104,7 @@ importers:
       '@heroicons/react': 2.0.13_react@18.2.0
       '@hookform/resolvers': 2.9.10_react-hook-form@7.42.1
       '@jlongster/sql.js': 1.6.7
+      '@jokullsolberg/next-use-search-params': 0.2.0_q76c2b4vyoegvsbrcwkfvimnai
       '@milkdown/core': 6.5.4_feeu3rccj56m5mgdgnpn6xorsu
       '@milkdown/preset-commonmark': 6.5.4_hcx5jzbrehmpjr4bwjtmcqoyxa
       '@milkdown/prose': 6.5.4
@@ -2522,6 +2524,19 @@ packages:
 
   /@jlongster/sql.js/1.6.7:
     resolution: {integrity: sha512-4hf0kZr5WPoirdR5hUSfQ9O0JpH/qlW1CaR2wZ6zGrDz1xjSdTPuR8AW/oXzIHnJvZSEvlcIE+dfXJZwh/Lxfw==}
+    dev: false
+
+  /@jokullsolberg/next-use-search-params/0.2.0_q76c2b4vyoegvsbrcwkfvimnai:
+    resolution: {integrity: sha512-dz9pmK/9+/3+wRUx9S7mB8QBiJdmxGg9myadD7CQMk00R77FrKL9QplszgdMpNMIwK3R0r3oEVlu/M5doOblIw==}
+    peerDependencies:
+      next: ^12.0.0 || ^13.0.0
+      react: ^16.8.0  || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0  || ^17.0.0 || ^18.0.0
+    dependencies:
+      next: 13.1.1_pjwopsidmaokadturxaafygjp4
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      zod: 3.20.2
     dev: false
 
   /@jridgewell/gen-mapping/0.1.1:

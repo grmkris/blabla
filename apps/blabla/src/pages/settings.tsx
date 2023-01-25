@@ -2,7 +2,7 @@ import { Layout } from "../components/Layout";
 import NoSSR from "../components/common/NoSSR";
 import { UserIdentities } from "../components/settings/UserIdentities";
 
-export default function Profile() {
+export default function Settings() {
   return (
     <Layout title={"Profile"}>
       <NoSSR>

@@ -66,7 +66,7 @@ export function tagAttacher(note: Note) {
           const userData = api.getNostrProfile(text);
           node.children.push({
             type: "link",
-            url: "/identity/" + text,
+            url: "/identity/?id=" + text,
             children: [{ type: "text", value: text ?? match[0] }],
           });
         } else if (tagType === "e") {
@@ -191,5 +191,9 @@ export const CustomTwitterPreview = ({ value }: { value: string }) => {
   const tweetID = value.split("/").pop()?.split("?").shift();
   if (!tweetID) return <a href={value}>{value}</a>;
   console.log("tweetID", tweetID);
-  return <Tweet tweetId={tweetID} />;
+  return (
+    <div>
+      <Tweet tweetId={tweetID} />
+    </div>
+  );
 };

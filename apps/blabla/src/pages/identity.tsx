@@ -1,36 +1,33 @@
 import { useRouter } from "next/router";
-import { Layout } from "../../components/Layout";
-import Link from "next/link";
+import { Layout } from "../components/Layout";
 import { z } from "zod";
 import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
-import { useSqlite } from "../../hooks/useSqlite";
-import { useEvents } from "../../hooks/useEvents";
-import NoSSR from "../../components/common/NoSSR";
-import { Button } from "../../components/common/Button";
-import { EventComponent } from "../../components/event-view/EventComponent";
-import { useNostrRelayPool } from "../../hooks/nostr-relay-pool/useNostrRelayPool";
-import { useCallback, useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { usePubkey } from "../../hooks/usePubkey";
+import { useSqlite } from "../hooks/useSqlite";
+import NoSSR from "../components/common/NoSSR";
+import { Button } from "../components/common/Button";
+import { EventComponent } from "../components/event-view/EventComponent";
+import { useNostrRelayPool } from "../hooks/nostr-relay-pool/useNostrRelayPool";
+import { useCallback, useEffect } from "react";
+import { usePubkey } from "../hooks/usePubkey";
 import remarkGfm from "remark-gfm";
 import remarkImages from "remark-images";
-import {
-  CustomTwitterPreview,
-  hashTagAttacher,
-} from "../../components/event-view/event.utills";
+import { hashTagAttacher } from "../components/event-view/event.utills";
 import ReactMarkdown from "react-markdown";
-import { IdentityPreview } from "../../components/IdentityPreview";
+import { IdentityPreview } from "../components/IdentityPreview";
+import { useSearchParams } from "@jokullsolberg/next-use-search-params";
 
 export const IdentityPage = () => {
   // get identity id from url
   const router = useRouter();
-  const { identity } = router.query;
-  const parsed = z.string().safeParse(identity);
+  const [{ id }] = useSearchParams({
+    id: z.string(),
+    selected: IdentityViewSchema.default("events"),
+  });
+
   return (
     <Layout title={""}>
       <div className="flex flex-col space-y-4">
-        {parsed.success && <IdentityView identity={parsed.data} />}
-        {!parsed.success && <div>Invalid identity</div>}
+        {id && <IdentityView identity={id} />}
       </div>
     </Layout>
   );
@@ -38,19 +35,21 @@ export const IdentityPage = () => {
 
 export default IdentityPage;
 
+const IdentityViewSchema = z.enum(["events", "followers", "following"]);
 export const IdentityView = (props: { identity: string }) => {
-  const [selected, setSelected] = useState<
-    "events" | "followers" | "following"
-  >("events");
+  const [{ selected }, setSearchParam] = useSearchParams({
+    id: z.string(),
+    selected: IdentityViewSchema.default("events"),
+  });
 
   const handleFollowerClick = () => {
-    setSelected("followers");
+    setSearchParam("selected", "followers");
   };
   const handleFollowingClick = () => {
-    setSelected("following");
+    setSearchParam("selected", "following");
   };
   const handleEventsClick = () => {
-    setSelected("events");
+    setSearchParam("selected", "events");
   };
 
   return (
@@ -92,10 +91,10 @@ export const IdentityInformationCard = (props: {
   const handleBookmarkProfileClicked = () => {
     const bookmarked = isBookmarked();
     if (bookmarked) {
-      console.log("unbookmark", isBookmarked());
+      console.log("unbookmarkProfile", isBookmarked());
       unbookmarkProfile.mutate(props.identity);
     } else {
-      console.log("bookmark");
+      console.log("bookmarkProfile");
       bookmarkProfile.mutate(props.identity);
     }
   };
@@ -222,7 +221,9 @@ export const FollowersList = (props: { identity: string }) => {
       <ul role="list" className="divide-y divide-gray-200">
         {getFollowers.data?.map((identity) => (
           <li key={identity.id} className="px-4 py-4 sm:px-0">
-            <IdentityPreview identity={identity.pubkey!} />
+            {identity.follower && (
+              <IdentityPreview identity={identity.follower} />
+            )}
           </li>
         ))}
       </ul>
@@ -238,7 +239,7 @@ export const FollowsList = (props: { identity: string }) => {
       <ul role="list" className="divide-y divide-gray-200">
         {getFollowing.data?.map((identity) => (
           <li key={identity.id} className="px-4 py-4 sm:px-0">
-            <IdentityPreview identity={identity.follower!} />
+            {identity.pubkey && <IdentityPreview identity={identity.pubkey} />}
           </li>
         ))}
       </ul>

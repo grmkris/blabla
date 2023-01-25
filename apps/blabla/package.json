@@ -15,6 +15,7 @@
     "@heroicons/react": "^2.0.13",
     "@hookform/resolvers": "^2.9.10",
     "@jlongster/sql.js": "^1.6.7",
+    "@jokullsolberg/next-use-search-params": "^0.2.0",
     "@milkdown/core": "^6.5.4",
     "@milkdown/preset-commonmark": "^6.5.4",
     "@milkdown/prose": "^6.5.4",

@@ -44,7 +44,7 @@ export const EventComponent = (props: { note: Note }) => {
     <div className="card w-full max-w-full overflow-auto bg-slate-900/70 shadow-xl">
       <div className="card-body">
         <Link
-          href={`/identity/${props.note.event.pubkey}`}
+          href={`/identity?id=${props.note.event.pubkey}`}
           shallow
           className="text-gray-500 decoration-blue-700 underline-offset-4 hover:text-blue-700 hover:underline"
         >
@@ -95,12 +95,7 @@ export const EventComponent = (props: { note: Note }) => {
                 a: ({ node, ...props }) => {
                   // if node is twitter url, render a tweet
                   if (props.href?.startsWith("https://twitter.com")) {
-                    return (
-                      <>
-                        <a {...props} />
-                        <CustomTwitterPreview value={props.href} />;
-                      </>
-                    );
+                    return <CustomTwitterPreview value={props.href} />;
                   }
                   // find urls that end with .mp4 and render a video
                   if (props.href?.endsWith(".mp4")) {
@@ -180,7 +175,7 @@ const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
     return null;
   }
   return (
-    <Link href={"/identity/" + props.pubkey} shallow>
+    <Link href={"/identity/?id=" + props.pubkey} shallow>
       <ProfileAvatar picture={profile.data?.picture} />
     </Link>
   );

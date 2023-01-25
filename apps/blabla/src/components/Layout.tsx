@@ -102,7 +102,7 @@ const NavigationBottom = () => {
       <Link href="/saved" shallow>
         <BookmarkSquareIcon className={"h-5 w-5"} />
       </Link>
-      <Link href="/profile" shallow>
+      <Link href="/settings" shallow>
         <ChevronUpIcon className={"h-5 w-5"} />
       </Link>
     </nav>
@@ -184,8 +184,8 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
     { name: "Relays", href: "/relays", icon: FireIcon },
     { name: "Saved", href: "/saved", icon: BookmarkIcon },
     {
-      name: "Profile",
-      href: "/profile",
+      name: "Settings",
+      href: "/settings",
       icon: UserIcon,
     },
   ];
