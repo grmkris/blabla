@@ -1,9 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
+import {
+  dateToUnix,
+  useNostrRelayPool,
+} from "./nostr-relay-pool/useNostrRelayPool";
 
 export const useEventsByPubkey = (props: { pubkey: string }) => {
   const PAGE_SIZE = 15;
+  const { retrievePubkeyTexts } = useNostrRelayPool();
   const eventsByPubkey = useInfiniteQuery({
     queryKey: ["eventsByPubkey", props.pubkey],
     queryFn: async ({ pageParam = 0 }) => {
@@ -14,8 +19,14 @@ export const useEventsByPubkey = (props: { pubkey: string }) => {
         order: "DESC",
         filter_operator: "=",
         offset: pageParam,
-        order_by: "created_at",
+        order_by: "event.created_at",
       });
+      if (pageParam === 0) {
+        // if we are on the first page and latest event is not in last
+        retrievePubkeyTexts.mutate({
+          author: props.pubkey,
+        });
+      }
       return events.map((x) => eventToNoteMapper(x));
     },
     getNextPageParam: (lastPage) => {

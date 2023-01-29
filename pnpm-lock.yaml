@@ -74,8 +74,8 @@ importers:
       idb-keyval: ^6.2.0
       localforage: ^1.10.0
       next: 13.1.1
-      nostr-relaypool: ^0.3.24
-      nostr-tools: ^1.2.0
+      nostr-relaypool: ^0.4.1
+      nostr-tools: ^1.2.1
       postcss: ^8.4.21
       prettier: ^2.8.2
       prettier-plugin-tailwindcss: ^0.2.1
@@ -132,8 +132,8 @@ importers:
       idb-keyval: 6.2.0
       localforage: 1.10.0
       next: 13.1.1_pjwopsidmaokadturxaafygjp4
-      nostr-relaypool: 0.3.24_ws@8.12.0
-      nostr-tools: 1.2.0
+      nostr-relaypool: 0.4.1_ws@8.12.0
+      nostr-tools: 1.2.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.42.1_react@18.2.0
@@ -7819,18 +7819,18 @@ packages:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
     engines: {node: '>=0.10.0'}
 
-  /nostr-relaypool/0.3.24_ws@8.12.0:
-    resolution: {integrity: sha512-qScdrzjkeaVGGiobGioucvEUh29JGGSwrN0G8keZQygYXt6C8ve6284Yv7qtsKA7qlgWwrco2JhVs1/vkvnmOw==}
+  /nostr-relaypool/0.4.1_ws@8.12.0:
+    resolution: {integrity: sha512-5q5nsHUfowEyRG4JVLx4vzbLmAvTEM16ZRwQNfLjHewQPW2DQB7QQznh9M9CT1xpcwBBN63hMtutwf+UXujcnA==}
     dependencies:
       isomorphic-ws: 5.0.0_ws@8.12.0
-      nostr-tools: 1.2.0
+      nostr-tools: 1.2.1
       safe-stable-stringify: 2.4.2
     transitivePeerDependencies:
       - ws
     dev: false
 
-  /nostr-tools/1.2.0:
-    resolution: {integrity: sha512-5bISmkAsFP2ZgSWlWo7Ra0PHpkDRDKylOxQQAfWs3I8OpuQBUmOKuQAAO2jYSFa3FGRvcCFmF+tO7+m533dtLw==}
+  /nostr-tools/1.2.1:
+    resolution: {integrity: sha512-SL0sst29mrQ7oUPGQn+NMH4yuTe69a8S4bliNpYB2IG0fDl3Cx+xSLnuCTb4nZiNalatYsA5l+751wQiDGA3+A==}
     dependencies:
       '@noble/hashes': 0.5.9
       '@noble/secp256k1': 1.7.1

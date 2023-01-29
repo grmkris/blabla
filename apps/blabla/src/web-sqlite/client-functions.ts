@@ -15,7 +15,6 @@ export const insertOrUpdateEvents = async (events: Event[]) => {
         tagDb.event_id = event.id;
         return tagDb;
       });
-      console.log("tags123", tags);
       return {
         sig: "",
         tags: tags,

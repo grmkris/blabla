@@ -58,7 +58,6 @@ export function tagAttacher(note: Note) {
         const tagIndex = z
           .number()
           .safeParse(match[0].replace("#[", "").replace("]", ""));
-        console.log("matchesTags", note, tagIndex);
         if (!tagIndex.success) return;
         const text = note.event?.tags?.[tagIndex.data]?.value ?? "";
         const tagType = note.event?.tags?.[tagIndex.data]?.tag;
@@ -190,7 +189,6 @@ export const CustomTwitterPreview = ({ value }: { value: string }) => {
   // get tweetID from value -> last part of url
   const tweetID = value.split("/").pop()?.split("?").shift();
   if (!tweetID) return <a href={value}>{value}</a>;
-  console.log("tweetID", tweetID);
   return (
     <div>
       <Tweet tweetId={tweetID} />

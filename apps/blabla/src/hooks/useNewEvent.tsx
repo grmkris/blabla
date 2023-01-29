@@ -50,13 +50,10 @@ export const useNewEvent = () => {
         throw new Error("event.id is missing");
       }
       await publish.mutateAsync({ event });
-      console.log("eventSent", event);
       let eventFromDb = await api.getEvent(event.id);
-      console.log("eventFromDbFirst", eventFromDb);
       while (!eventFromDb) {
         await new Promise((r) => setTimeout(r, 2000));
         eventFromDb = await api.getEvent(event.id);
-        console.log("eventFromDb", eventFromDb);
       }
       toast.success("Note sent");
     }

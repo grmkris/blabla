@@ -3,6 +3,7 @@ import { ProfileAvatar } from "./event-view/EventComponent";
 import { Button } from "./common/Button";
 import Link from "next/link";
 import { LoadingSpinner } from "./common/LoadingSpinner";
+import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
 
 export const IdentityPreview = (props: { identity: string }) => {
   const { profile, bookmarkProfile, followProfile, unbookmarkProfile } =
@@ -11,7 +12,6 @@ export const IdentityPreview = (props: { identity: string }) => {
     });
 
   const handleBookmarkProfileClicked = () => {
-    console.log("bookmarkProfile", profile.data?.is_bookmarked);
     profile.data?.is_bookmarked
       ? unbookmarkProfile.mutate(props.identity)
       : bookmarkProfile.mutate(props.identity);
@@ -45,16 +45,20 @@ export const IdentityPreview = (props: { identity: string }) => {
           {profile.data?.display_name && "@" + profile.data?.pubkey}
         </p>
       </div>
-      <div>
+      <div className={"btn-group"}>
         <Button onClick={() => followProfile.mutate(props.identity)}>
           Follow
         </Button>
         <Button onClick={handleBookmarkProfileClicked}>
-          {profile.data?.is_bookmarked ? "Unbookmark" : "Bookmark"}
+          {profile.data?.is_bookmarked ? (
+            <BookmarkSlashIcon className="h-5 w-5" />
+          ) : (
+            <BookmarkIcon className="h-5 w-5" />
+          )}
         </Button>
-        <Link href={`/identity/?id=${props.identity}`}>
-          <Button>Open</Button>
-        </Link>
+        <Button>
+          <Link href={`/identity/?id=${props.identity}`}>Open</Link>
+        </Button>
       </div>
     </div>
   );

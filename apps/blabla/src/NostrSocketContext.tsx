@@ -46,17 +46,9 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   }, []);
 
   const createRelayPoolSubscriptions = useCallback(() => {
-    console.log("NostrSocketProvider: useCallback", relayPool);
     if (!relayPool) return;
-    console.log("NostrSocketProvider: useCallback: subscribing", {
-      since: data,
-    });
     const onCollect = async (events: Event[]) => {
       const newEvent = events[events.length - 1];
-      console.log(
-        "NostrSocketProvider: onCollect: inserting last 10 events",
-        newEvent
-      );
       await insertOrUpdateEvents([newEvent]);
       if (events && events.length % 2 === 0) {
         if (!subscribed) {
@@ -79,7 +71,6 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   }, [relayPool, nostrRelays]);
 
   useEffect(() => {
-    console.log("NostrSocketProvider: useEffect");
     createRelayPoolSubscriptions();
     if (!!relayPool || !isSqliteReady || subscribed || !data) return;
     const pool = new RelayPool(nostrRelays);

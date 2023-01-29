@@ -7,15 +7,15 @@ import { NostrSocketContext } from "../../NostrSocketContext";
 import { useAppStore } from "../../AppStore";
 import type { NostrProfileTable } from "../../web-sqlite/schema";
 import { NostrProfileTableSchema } from "../../web-sqlite/schema";
-import { Kind } from "nostr-tools";
 import { insertOrUpdateEvents } from "../../web-sqlite/client-functions";
+import { Kind } from "nostr-tools";
 
 export const useNostrRelayPool = () => {
   const { relayPool } = useContext(NostrSocketContext);
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
   const queryClient = useQueryClient();
 
-  const getNostrData = useMutation(
+  const getPostComments = useMutation(
     async (variables: {
       filter: Filter[];
       batch?: number;
@@ -52,48 +52,73 @@ export const useNostrRelayPool = () => {
     relayPool?.publish(variables.event, nostrRelays);
   });
 
-  const retrievePubkeyMetadata = async (variables: { author: string }) => {
-    if (!relayPool || !variables.author) return;
-    return new Promise<NostrProfileTable>((resolve, reject) => {
-      const author = new Author(relayPool, nostrRelays, variables.author);
-      author.metaData(async (metaData) => {
-        if (metaData.pubkey !== variables.author) {
-          console.warn(
-            "useNostrRelayPool: metadata event and requested pubkey author does not match",
-            metaData.pubkey,
-            variables.author
-          );
-          reject(
-            "useNostrRelayPool: metadata event and requested pubkey author does not match"
-          );
-        }
-        const metadataObj = NostrProfileTableSchema.safeParse({
-          pubkey: variables.author,
-          ...JSON.parse(metaData.content),
-        });
-        if (metadataObj.success) {
-          await api.createOrUpdateNostrProfile([metadataObj.data]);
-          resolve(metadataObj.data);
-        } else {
-          console.warn("author.metadata metadataObj fail", metadataObj);
-          reject("author.metadata metadataObj fail");
-        }
-      }, 100);
-    });
-  };
+  const retrievePubkeyMetadata = useMutation(
+    async (variables: { author: string }) => {
+      console.log("retrievePubkeyMetadata", variables.author);
+      if (!relayPool || !variables.author) {
+        console.warn(
+          "retrievePubkeyMetadata useNostrRelayPool: no relayPool or author"
+        );
+        return;
+      }
+      return new Promise<NostrProfileTable>((resolve, reject) => {
+        const author = new Author(relayPool, nostrRelays, variables.author);
+        author.metaData(async (metaData) => {
+          console.log("author.metadata", metaData);
+          if (metaData.pubkey !== variables.author) {
+            console.warn(
+              "useNostrRelayPool: metadata event and requested pubkey author does not match",
+              metaData.pubkey,
+              variables.author
+            );
+            reject(
+              "useNostrRelayPool: metadata event and requested pubkey author does not match"
+            );
+            return;
+          }
+          const metadataObj = NostrProfileTableSchema.safeParse({
+            pubkey: variables.author,
+            ...JSON.parse(metaData.content),
+          });
+          if (!metadataObj.success) {
+            console.warn("author.metadata metadataObj fail", metadataObj);
+            reject("author.metadata metadataObj fail");
+            return;
+          }
+          if (metadataObj.success) {
+            console.log(
+              "author.metadata metadataObj success",
+              metadataObj.data
+            );
+            await api.createOrUpdateNostrProfile([metadataObj.data]);
+            await queryClient.invalidateQueries([
+              "usePubkey.nostrProfile",
+              variables.author,
+            ]);
+            resolve(metadataObj.data);
+            return;
+          } else {
+            console.warn("author.metadata metadataObj fail", metadataObj);
+            reject("author.metadata metadataObj fail");
+          }
+        }, 0);
+      });
+    }
+  );
 
   const retrievePubkeyInfos = useMutation(
-    async (variables: { author: string; batch?: number }) => {
+    async (variables: { author: string }) => {
       if (!relayPool || !variables.author) return;
       const author = new Author(relayPool, nostrRelays, variables.author);
 
       const filterAndSaveFollowers = async (events: Event[]) => {
-        const event = events[events.length - 1];
-        await api.updateFollowers({
-          pubkey: variables.author,
-          followers: [event.pubkey],
-        });
+        console.log("filterAndSaveFollowers", events.length);
         if (events.length % 10 === 0) {
+          const eventsNew = events.slice(0, 10);
+          await api.updateFollowers({
+            pubkey: variables.author,
+            followers: eventsNew.map((event) => event.pubkey),
+          });
           await queryClient.invalidateQueries({
             predicate: ({ queryKey }) =>
               (queryKey[0] === "usePubkeyFollowersCount" &&
@@ -104,19 +129,8 @@ export const useNostrRelayPool = () => {
         }
       };
 
-      const onCollect = async (events: Event[]) => {
-        if (events.length % 10 === 0) {
-          await insertOrUpdateEvents(events.splice(0, 10));
-          await queryClient.invalidateQueries([
-            "eventsByPubkey",
-            variables.author,
-          ]);
-        }
-      };
-
-      author.text(collect(onCollect), 200, 200);
       // get author followers
-      author.followers(collect(filterAndSaveFollowers), undefined, 200);
+      author.followers(collect(filterAndSaveFollowers), undefined, Infinity);
       author.followsPubkeys(async (pubkey) => {
         const follows = pubkey.map((pubkey) => ({
           pubkey: pubkey,
@@ -149,13 +163,46 @@ export const useNostrRelayPool = () => {
     return await relayPool.getEventById(variables.id, nostrRelays, 1000);
   });
 
+  const retrievePubkeyTexts = useMutation(
+    async (variables: { author: string; since?: number }) => {
+      if (!relayPool) return;
+      const onCollect = async (events: Event[]) => {
+        console.log(
+          "retrievePubkeyTexts.onCollect:" + variables.author,
+          events.length
+        );
+        if (events.length % 10 === 0) {
+          await insertOrUpdateEvents(events.splice(0, 10));
+        }
+      };
+      relayPool.subscribe(
+        [
+          {
+            since:
+              variables.since ?? dateToUnix(new Date()) - 60 * 60 * 24 * 30,
+            authors: [variables.author],
+            kinds: [Kind.Text],
+          },
+        ],
+        nostrRelays,
+        collect(onCollect),
+        undefined,
+        undefined
+      );
+    }
+  );
+
   return {
-    getNostrData,
     publish,
     retrievePubkeyInfos,
     retrievePubkeyMetadata,
+    nostrRelays,
     relays: relayPool?.relayByUrl,
     getEventById,
+    ready: !!relayPool,
+    retrievePubkeyTexts,
+    getPostComments,
+    relayPool,
   };
 };
 

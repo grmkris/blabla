@@ -8,15 +8,21 @@ import type { StoreApi, UseBoundStore } from "zustand";
  */
 export const LocalStateStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
-    console.log(name, "has been retrieved");
+    console.debug("LocalStateStorage", name, "has been retrieved");
     return (await get(name)) || null;
   },
   setItem: async (name: string, value: string): Promise<void> => {
-    console.log(name, "with value", value, "has been saved");
+    console.debug(
+      "LocalStateStorage",
+      name,
+      "with value",
+      value,
+      "has been saved"
+    );
     await set(name, value);
   },
   removeItem: async (name: string): Promise<void> => {
-    console.log(name, "has been deleted");
+    console.debug("LocalStateStorage", name, "has been deleted");
     await del(name);
   },
 };

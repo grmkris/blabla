@@ -18,6 +18,14 @@ import {
 import { NostrSocketContext } from "../NostrSocketContext";
 import { useGetGlobalFilterSinceTime } from "../hooks/useGetGlobalFilterSinceTime";
 import { useWebLn } from "../hooks/useWebLn";
+import {
+  FollowersList,
+  IdentityViewSchema,
+  RecommendedList,
+} from "./IdentityView";
+import identity from "../pages/identity";
+import { useSearchParams } from "@jokullsolberg/next-use-search-params";
+import { z } from "zod";
 
 export const Layout = (props: { children: ReactNode; title?: string }) => {
   const { isSqliteReady, subscribed } = useContext(NostrSocketContext);
@@ -178,6 +186,10 @@ function classNames(...classes: any) {
 
 const NewLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const [{ id }] = useSearchParams({
+    id: z.string(),
+    selected: IdentityViewSchema.default("events"),
+  });
 
   const navigation = [
     { name: "Home", href: "/", icon: HomeIcon },
@@ -240,13 +252,10 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
                     id="trending-heading"
                     className="text-base font-medium text-white"
                   >
-                    Trending
+                    Recommended follows
                   </h2>
-                  <div className="mt-6 flow-root"></div>
-                  <div className="mt-6">
-                    <button className="w-full rounded-md border border-transparent bg-emerald-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none ">
-                      View all
-                    </button>
+                  <div className="mt-6 flow-root">
+                    {/*<RecommendedList identity={id} />*/}
                   </div>
                 </div>
               </div>

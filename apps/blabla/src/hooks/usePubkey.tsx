@@ -9,7 +9,7 @@ import { useNostrRelayPool } from "./nostr-relay-pool/useNostrRelayPool";
 
 export const usePubkey = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
-  const { retrievePubkeyMetadata } = useNostrRelayPool();
+  const { retrievePubkeyMetadata, ready } = useNostrRelayPool();
 
   const toggleBlocked = useMutation(
     async (pubkey: string, blocked?: boolean) => {
@@ -41,18 +41,13 @@ export const usePubkey = (props: { pubkey?: string }) => {
       console.log("usePubkey.nostrProfile", profileDb);
       if (!profileDb) {
         console.warn("usePubkey-No profile found for pubkey", props.pubkey);
-        const profileRemote = await retrievePubkeyMetadata({
+        await retrievePubkeyMetadata.mutate({
           author: props.pubkey,
         });
-        const profileDbAgain = await api.getNostrProfile(props.pubkey);
-        if (!profileDbAgain) {
-          throw new Error("usePubkey-Profile not found remotely");
-        }
-        return profileDbAgain;
       }
       return profileDb;
     },
-    enabled: !!props?.pubkey,
+    enabled: !!props?.pubkey && ready,
     refetchInterval: false,
     refetchOnMount: false,
     refetchOnReconnect: false,

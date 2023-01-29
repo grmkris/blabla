@@ -29,13 +29,13 @@ export default EventPage;
 
 const EventPageDetailedView = (props: { event: string }) => {
   const { relayPool } = useContext(NostrSocketContext);
-  const { getNostrData } = useNostrRelayPool();
+  const { getPostComments } = useNostrRelayPool();
   const { event } = useEvent({ eventId: props.event });
   const { comments } = useNoteComments({ eventId: props.event });
 
   useEffect(() => {
     if (relayPool) {
-      getNostrData.mutate({ filter: [{ "#e": [props.event] }] });
+      getPostComments.mutate({ filter: [{ "#e": [props.event] }] });
     }
   }, [relayPool]);
 

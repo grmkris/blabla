@@ -113,7 +113,6 @@ async function createOrUpdateEvents(events: EventTable[]) {
   return true;
 }
 async function bookmarkEvent(event_id: string) {
-  console.log("bookmarkEvent", event_id);
   await eventsRepository.update({ id: event_id }, { is_bookmarked: true });
   return true;
 }
@@ -180,7 +179,8 @@ async function getEvents({
     .createQueryBuilder("event")
     .leftJoinAndSelect("event.tags", "tags")
     .skip(offset)
-    .take(limit);
+    .take(limit)
+    .orderBy(order_by || "event.created_at", order || "DESC");
   if (filter && filter_value && filter_operator) {
     query.andWhere(`${filter} ${filter_operator} :filter_value`, {
       filter_value,
@@ -292,7 +292,6 @@ async function getBookmarkedProfiles() {
 }
 
 async function bookmarkProfile(pubkey: string) {
-  console.log("bookmarkProfile", pubkey);
   return nostrProfileRepository.upsert(
     { pubkey: pubkey, is_bookmarked: true },
     { conflictPaths: ["pubkey"] }
@@ -300,7 +299,6 @@ async function bookmarkProfile(pubkey: string) {
 }
 
 async function unbookmarkProfile(pubkey: string) {
-  console.log("bookmarkProfile", pubkey);
   return nostrProfileRepository.upsert(
     { pubkey: pubkey, is_bookmarked: false },
     { conflictPaths: ["pubkey"] }
@@ -426,7 +424,6 @@ async function getFollowingCount(pubkey: string) {
 }
 
 async function updateFollowers(props: { pubkey: string; followers: string[] }) {
-  console.log("updateFollowers", props);
   const data = props.followers.map((follower) => {
     return {
       id: `${props.pubkey}-${follower}`,
@@ -434,9 +431,7 @@ async function updateFollowers(props: { pubkey: string; followers: string[] }) {
       follower,
     };
   });
-  console.log("updateFollowers,data", data);
   const ids = data.map((d) => d.id);
-  console.log("updateFollowers,ids", ids);
   const nostrProfileFollowers = await nostrProfileFollowersRepository.upsert(
     data,
     {
