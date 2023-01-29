@@ -54,7 +54,9 @@ export const BookmarkedFeed = () => {
       {bookmarksFeed.data?.pages?.map((notes) =>
         notes.map((note) => <EventComponent note={note} key={note.event.id} />)
       )}
-      <Button onClick={() => bookmarksFeed.fetchNextPage()}>Load more</Button>
+      <div className={"w-max"}>
+        <Button onClick={() => bookmarksFeed.fetchNextPage()}>Load more</Button>
+      </div>
     </div>
   );
 };

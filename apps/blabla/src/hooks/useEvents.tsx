@@ -1,10 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
-import { useCallback } from "react";
 
-export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
+export const useEvents = () => {
   const queryClient = useQueryClient();
-
   const bookmarkedEvents = useQuery({
     queryKey: ["bookmarkedEvents"],
     queryFn: async () => {
@@ -23,15 +21,9 @@ export const useEvents = (props: { eventId?: string; pubkey?: string }) => {
     await queryClient.invalidateQueries(["bookmarkedEvents"]);
   });
 
-  const isBookmarked = useCallback(() => {
-    if (!props.eventId || !bookmarkedEvents.data) return false;
-    return bookmarkedEvents.data.some((x) => x.id === props.eventId);
-  }, [props.eventId, bookmarkedEvents.data]);
-
   return {
+    bookmarkedEvents,
     bookmarkEvent,
     unbookmarkEvent,
-    bookmarkedEvents,
-    isBookmarked,
   };
 };

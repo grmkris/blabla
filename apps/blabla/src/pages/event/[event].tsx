@@ -8,6 +8,7 @@ import { EventComponent } from "../../components/event-view/EventComponent";
 import { useNostrRelayPool } from "../../hooks/nostr-relay-pool/useNostrRelayPool";
 import { eventToNoteMapper } from "../../web-sqlite/client-functions";
 import { NostrSocketContext } from "../../NostrSocketContext";
+import { useNoteComments } from "../../hooks/useNoteComments";
 
 export const EventPage = () => {
   // get identity id from url
@@ -29,7 +30,8 @@ export default EventPage;
 const EventPageDetailedView = (props: { event: string }) => {
   const { relayPool } = useContext(NostrSocketContext);
   const { getNostrData } = useNostrRelayPool();
-  const { event, comments } = useEvent({ eventId: props.event });
+  const { event } = useEvent({ eventId: props.event });
+  const { comments } = useNoteComments({ eventId: props.event });
 
   useEffect(() => {
     if (relayPool) {

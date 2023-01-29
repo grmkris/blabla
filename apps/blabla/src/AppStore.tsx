@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { createSelectors, LocalStateStorage } from "./utils";
+import type { Note } from "./types";
 
 const relays: NostrRelay[] = [
   "wss://nostr-pub.wellorder.net",
@@ -81,3 +82,40 @@ export interface IBlaBlaAppStore {
   addOrUpdateNostrRelay: (relay: NostrRelay) => void;
   removeNostrRelay: (relay: Pick<NostrRelay, "url">) => void;
 }
+
+export interface ISettingsStore {
+  webLNConnection: string;
+  setWebLNConnection: (isConnected: string) => void;
+
+  nostrPubKeyNip07: string;
+  setNostrPubKeyNip07: (pubKey: string) => void;
+}
+
+export const useSettingsStore = createSelectors(
+  create<ISettingsStore>()(
+    immer(
+      devtools(
+        persist(
+          (set) => ({
+            webLNConnection: "",
+            setWebLNConnection: (isConnected) => {
+              set((state) => {
+                state.webLNConnection = isConnected;
+              });
+            },
+            nostrPubKeyNip07: "",
+            setNostrPubKeyNip07: (pubKey) => {
+              set((state) => {
+                state.nostrPubKeyNip07 = pubKey;
+              });
+            },
+          }),
+          {
+            name: "BlaBlaSettingsStorage",
+            getStorage: () => LocalStateStorage,
+          }
+        )
+      )
+    )
+  )
+);

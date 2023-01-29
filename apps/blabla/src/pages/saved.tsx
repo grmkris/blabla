@@ -1,11 +1,11 @@
 import { Layout } from "../components/Layout";
 import { useState } from "react";
-import { useSqlite } from "../hooks/useSqlite";
 import { useEvents } from "../hooks/useEvents";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import NoSSR from "../components/common/NoSSR";
 import { EventComponent } from "../components/event-view/EventComponent";
 import { IdentityPreview } from "../components/IdentityPreview";
+import { useProfiles } from "../hooks/useProfiles";
 
 export default function Saved() {
   const [selectedTab, setSelectedTab] = useState<"profiles" | "events">(
@@ -41,7 +41,7 @@ export default function Saved() {
 }
 
 function SavedProfiles() {
-  const { bookmarkedProfiles } = useSqlite({});
+  const { bookmarkedProfiles } = useProfiles();
   return (
     <div className="flex flex-col space-y-4">
       {bookmarkedProfiles.data?.map(
@@ -55,7 +55,7 @@ function SavedProfiles() {
 }
 
 function SavedEvents() {
-  const { bookmarkedEvents } = useEvents({});
+  const { bookmarkedEvents } = useEvents();
   return (
     <div className="flex flex-col space-y-4">
       {bookmarkedEvents.data

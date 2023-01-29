@@ -45,24 +45,31 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
     api.notifyWhenReady(proxy(callback));
   }, []);
 
-  const onCollect = async (events: Event[]) => {
-    await insertOrUpdateEvents(events);
-    setSubscribed(true);
-    await queryClient.invalidateQueries(["globalFeed"]);
-  };
-
   const createRelayPoolSubscriptions = useCallback(() => {
     console.log("NostrSocketProvider: useCallback", relayPool);
     if (!relayPool) return;
     console.log("NostrSocketProvider: useCallback: subscribing", {
       since: data,
     });
+    const onCollect = async (events: Event[]) => {
+      const newEvent = events[events.length - 1];
+      console.log(
+        "NostrSocketProvider: onCollect: inserting last 10 events",
+        newEvent
+      );
+      await insertOrUpdateEvents([newEvent]);
+      if (events && events.length % 2 === 0) {
+        if (!subscribed) {
+          setSubscribed(true);
+          await queryClient.invalidateQueries(["globalFeed"]);
+        }
+      }
+    };
     relayPool.subscribe(
       [
         {
           since: data,
           kinds: [EventKinds.TEXT_NOTE],
-          limit: 20,
         },
       ],
       nostrRelays,

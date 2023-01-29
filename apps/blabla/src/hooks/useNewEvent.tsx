@@ -11,17 +11,19 @@ import {
   useNostrRelayPool,
 } from "./nostr-relay-pool/useNostrRelayPool";
 import { useAppStore } from "../AppStore";
+import { useWindowNostr } from "./useWindowNostr";
 
 export const useNewEvent = () => {
   const { publish } = useNostrRelayPool();
   const identities = useAppStore.use.localProfiles();
+  const { signEvent: signEventWindow, windowNostr } = useWindowNostr();
 
   const newNote = useMutation(
     async (variables: {
       data: z.infer<typeof NewPostSchema>;
       eventId?: string;
     }) => {
-      if (!identities[0]?.publicKey) {
+      if (!identities[0]?.publicKey && !windowNostr) {
         NoIdentitiesToast();
         return;
       }
@@ -30,27 +32,32 @@ export const useNewEvent = () => {
         tags.push(["e", variables.eventId]);
       }
       // gets typesafe data when form is submitted
-      const event: NostrEvent = {
+      let event: NostrEvent = {
         content: variables.data.text,
         kind: Kind.Text,
         tags: tags,
         created_at: dateToUnix(),
-        pubkey: identities[0].publicKey,
+        pubkey: "",
       };
-
-      event.id = getEventHash(event);
-      event.sig = signEvent(event, identities[0].privateKey);
-      publish.mutate({ event });
-      // wait untill the event appears in the database
-      console.log("eventFromDb waiting for event to appear in db");
+      if (windowNostr) {
+        event = await signEventWindow.mutateAsync(event);
+      } else {
+        event.pubkey = identities[0].publicKey;
+        event.id = getEventHash(event);
+        event.sig = signEvent(event, identities[0].privateKey);
+      }
+      if (!event.id) {
+        throw new Error("event.id is missing");
+      }
+      await publish.mutateAsync({ event });
+      console.log("eventSent", event);
       let eventFromDb = await api.getEvent(event.id);
-      console.log("eventFromDb", eventFromDb);
+      console.log("eventFromDbFirst", eventFromDb);
       while (!eventFromDb) {
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 2000));
         eventFromDb = await api.getEvent(event.id);
         console.log("eventFromDb", eventFromDb);
       }
-      console.log("eventFromDb end", eventFromDb);
       toast.success("Note sent");
     }
   );

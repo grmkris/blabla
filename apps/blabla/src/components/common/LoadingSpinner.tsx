@@ -1,11 +1,11 @@
 import { BounceLoader } from "react-spinners";
 
-export const LoadingSpinner = () => {
+export const LoadingSpinner = (props: { size?: number }) => {
   return (
     <BounceLoader
       color={"#4f46e5"}
       loading={true}
-      size={150}
+      size={props.size ?? 150}
       aria-label="Loading Spinner"
       data-testid="loader"
     />

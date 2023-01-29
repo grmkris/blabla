@@ -6,8 +6,6 @@ import {
   HeartIcon,
 } from "@heroicons/react/20/solid";
 import type { Note } from "../../types";
-import { useSqlite } from "../../hooks/useSqlite";
-import { useEvents } from "../../hooks/useEvents";
 import { eventToNoteMapper } from "../../web-sqlite/client-functions";
 import { useState } from "react";
 import { NewPost } from "../NewPost";
@@ -20,13 +18,13 @@ import {
   hashTagAttacher,
   tagAttacher,
 } from "./event.utills";
+import { usePubkey } from "../../hooks/usePubkey";
+import { useEvents } from "../../hooks/useEvents";
 
 export const EventComponent = (props: { note: Note }) => {
   const [showInputCommentArea, setShowInputCommentArea] = useState(false);
-  const { bookmarkEvent, isBookmarked, unbookmarkEvent } = useEvents({
-    eventId: props.note.event.id,
-  });
-  const { profile } = useSqlite({
+  const { bookmarkEvent, unbookmarkEvent } = useEvents();
+  const { profile } = usePubkey({
     pubkey: props.note.event.pubkey,
   });
 
@@ -35,7 +33,7 @@ export const EventComponent = (props: { note: Note }) => {
   };
   const handleBookmarkEventClicked = () => {
     if (!props.note.event.id) return;
-    isBookmarked()
+    props.note.event.is_bookmarked
       ? unbookmarkEvent.mutate(props.note.event.id)
       : bookmarkEvent.mutate(props.note.event.id);
   };
@@ -136,7 +134,7 @@ export const EventComponent = (props: { note: Note }) => {
                 className="btn-sm btn"
                 onClick={handleBookmarkEventClicked}
               >
-                {isBookmarked() ? (
+                {props.note?.event.is_bookmarked ? (
                   <BookmarkSlashIcon className="h-5 w-5" />
                 ) : (
                   <BookmarkIcon className="h-5 w-5" />
@@ -169,7 +167,7 @@ export const EventComponent = (props: { note: Note }) => {
 };
 
 const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
-  const { profile } = useSqlite({ pubkey: props.pubkey });
+  const { profile } = usePubkey({ pubkey: props.pubkey });
 
   if (!profile) {
     return null;

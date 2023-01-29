@@ -1,67 +1,150 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
-import { eventToNoteMapper } from "../web-sqlite/client-functions";
+import { useNostrRelayPool } from "./nostr-relay-pool/useNostrRelayPool";
 
-export const usePubkey = (props: { pubkey: string }) => {
-  const PAGE_SIZE = 20;
-  const eventsByPubkey = useInfiniteQuery({
-    queryKey: ["eventsByPubkey", props.pubkey],
-    queryFn: async ({ pageParam = 0 }) => {
-      const events = await api.getEvents({
-        filter: "pubkey",
-        filter_value: props.pubkey,
-        limit: PAGE_SIZE,
-        order: "DESC",
-        filter_operator: "=",
-        offset: pageParam,
-        order_by: "created_at",
-      });
-      return events.map((x) => eventToNoteMapper(x));
-    },
-    getNextPageParam: (lastPage) => {
-      return lastPage.length === PAGE_SIZE ? PAGE_SIZE : undefined;
-    },
-    getPreviousPageParam: (firstPage) => {
-      return firstPage.length === PAGE_SIZE ? PAGE_SIZE : undefined;
-    },
+export const usePubkey = (props: { pubkey?: string }) => {
+  const queryClient = useQueryClient();
+  const { retrievePubkeyMetadata } = useNostrRelayPool();
+
+  const toggleBlocked = useMutation(
+    async (pubkey: string, blocked?: boolean) => {
+      await api.toggleBlocked(pubkey, blocked ?? true);
+    }
+  );
+  const bookmarkProfile = useMutation(async (pubkey: string) => {
+    await api.bookmarkProfile(pubkey);
+    await queryClient.invalidateQueries(["usePubkey.nostrProfile", pubkey]);
+  });
+  const unbookmarkProfile = useMutation(async (pubkey: string) => {
+    await api.unbookmarkProfile(pubkey);
+    await queryClient.invalidateQueries(["usePubkey.nostrProfile", pubkey]);
   });
 
-  const getFollowers = useQuery({
-    queryKey: ["getFollowers", props.pubkey],
-    queryFn: async () => {
-      return await api.getFollowers(props.pubkey);
-    },
-    refetchInterval: false,
+  const followProfile = useMutation(async (pubkey: string) => {
+    console.log("TODO Follow profile", pubkey);
   });
 
-  const getFollowing = useQuery({
-    queryKey: ["getFollowing", props.pubkey],
-    queryFn: async () => {
-      return await api.getFollowing(props.pubkey);
-    },
-    refetchInterval: false,
+  const unfollowProfile = useMutation(async (pubkey: string) => {
+    console.log("TODO Unfollow profile", pubkey);
   });
 
-  const getFollowersCount = useQuery({
-    queryKey: ["getFollowersCount", props.pubkey],
+  const profile = useQuery({
+    queryKey: ["usePubkey.nostrProfile", props?.pubkey],
     queryFn: async () => {
-      return await api.getFollowersCount(props.pubkey);
+      if (!props?.pubkey) return;
+      const profileDb = await api.getNostrProfile(props.pubkey);
+      console.log("usePubkey.nostrProfile", profileDb);
+      if (!profileDb) {
+        console.warn("usePubkey-No profile found for pubkey", props.pubkey);
+        const profileRemote = await retrievePubkeyMetadata({
+          author: props.pubkey,
+        });
+        const profileDbAgain = await api.getNostrProfile(props.pubkey);
+        if (!profileDbAgain) {
+          throw new Error("usePubkey-Profile not found remotely");
+        }
+        return profileDbAgain;
+      }
+      return profileDb;
     },
+    enabled: !!props?.pubkey,
     refetchInterval: false,
-  });
-  const getFollowingCount = useQuery({
-    queryKey: ["getFollowingCount", props.pubkey],
-    queryFn: async () => {
-      return await api.getFollowingCount(props.pubkey);
-    },
-    refetchInterval: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   return {
-    eventsByPubkey,
-    getFollowers,
-    getFollowing,
-    getFollowersCount,
-    getFollowingCount,
+    profile,
+    followProfile,
+    unfollowProfile,
+    bookmarkProfile,
+    unbookmarkProfile,
+    toggleBlocked,
+  };
+};
+
+const PAGE_SIZE = 20;
+
+export const usePubkeyFollowers = (props: { pubkey: string }) => {
+  const { pubkey } = props;
+  const followers = useInfiniteQuery({
+    queryKey: ["usePubkeyFollowers", pubkey],
+    queryFn: async ({ pageParam = 0 }) => {
+      const followers = await api.getFollowers({
+        pubkey,
+        pageParam,
+        pageSize: 20,
+      });
+      return followers.map((follower) => {
+        return follower.follower;
+      });
+    },
+    enabled: !!pubkey,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE
+        ? allPages.length * PAGE_SIZE
+        : undefined;
+    },
+    getPreviousPageParam: (firstPage, allPages) => {
+      return firstPage.length === PAGE_SIZE
+        ? (allPages.length - 1) * PAGE_SIZE
+        : undefined;
+    },
+  });
+  const count = useQuery({
+    queryKey: ["usePubkeyFollowersCount", pubkey],
+    queryFn: async () => {
+      const count = await api.getFollowersCount(pubkey);
+      return count;
+    },
+  });
+  return {
+    followers,
+    count,
+  };
+};
+
+export const usePubkeyFollowing = (props: { pubkey: string }) => {
+  const { pubkey } = props;
+  const following = useInfiniteQuery({
+    queryKey: ["usePubkeyFollowing", pubkey],
+    queryFn: async ({ pageParam = 0 }) => {
+      const following = await api.getFollowing({
+        pubkey,
+        pageParam,
+        pageSize: 20,
+      });
+      return following.map((follower) => {
+        return follower.pubkey;
+      });
+    },
+    enabled: !!pubkey,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE
+        ? allPages.length * PAGE_SIZE
+        : undefined;
+    },
+    getPreviousPageParam: (firstPage, allPages) => {
+      return firstPage.length === PAGE_SIZE
+        ? (allPages.length - 1) * PAGE_SIZE
+        : undefined;
+    },
+  });
+  const count = useQuery({
+    queryKey: ["usePubkeyFollowingCount", pubkey],
+    queryFn: async () => {
+      const count = await api.getFollowingCount(pubkey);
+      return count;
+    },
+  });
+  return {
+    following,
+    count,
   };
 };

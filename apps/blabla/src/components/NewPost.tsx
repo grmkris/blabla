@@ -20,7 +20,6 @@ export const NewPost = (props: { eventId?: string }) => {
   const { newNote } = useNewEvent();
   async function onSubmit(data: z.infer<typeof NewPostSchema>) {
     await newNote.mutateAsync({ data, eventId: props.eventId });
-    router.push("/");
   }
 
   return (

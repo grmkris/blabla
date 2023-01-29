@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import {
   MagnifyingGlassIcon,
-  ChatBubbleLeftEllipsisIcon,
   BookmarkIcon,
   BookmarkSquareIcon,
   ChevronUpIcon,
@@ -18,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { NostrSocketContext } from "../NostrSocketContext";
 import { useGetGlobalFilterSinceTime } from "../hooks/useGetGlobalFilterSinceTime";
+import { useWebLn } from "../hooks/useWebLn";
 
 export const Layout = (props: { children: ReactNode; title?: string }) => {
   const { isSqliteReady, subscribed } = useContext(NostrSocketContext);

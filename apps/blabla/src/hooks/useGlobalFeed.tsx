@@ -1,25 +1,14 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
 import { useContext } from "react";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
-import { useSqlite } from "./useSqlite";
 import { NostrSocketContext } from "../NostrSocketContext";
+import { useProfiles } from "./useProfiles";
 
 const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
   const { now, refreshNow } = useContext(NostrSocketContext);
 
-  const tags = useQuery({
-    queryKey: ["tags"],
-    queryFn: async () => {
-      return await api.getTags();
-    },
-  });
   const globalFeed = useInfiniteQuery({
     queryKey: ["globalFeed", now],
     queryFn: async ({ pageParam = now }) => {
@@ -62,7 +51,7 @@ export const useGlobalFeed = () => {
 
 export const useBookmarksFeed = () => {
   const { now, refreshNow } = useContext(NostrSocketContext);
-  const { bookmarkedProfiles } = useSqlite({});
+  const { bookmarkedProfiles } = useProfiles();
   const bookmarksFeed = useInfiniteQuery({
     queryKey: ["bookmarksFeed", now],
     queryFn: async ({ pageParam = now }) => {

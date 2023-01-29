@@ -17,6 +17,8 @@ import {
   NostrProfileFollowers,
   Tags,
 } from "./schema";
+import { Simulate } from "react-dom/test-utils";
+import wheel = Simulate.wheel;
 
 let isReady = false;
 async function setupTypeormEnvWithSqljs(dbPath: string) {
@@ -104,14 +106,10 @@ async function createOrUpdateEvents(events: EventTable[]) {
   await eventsRepository.upsert(events, {
     conflictPaths: ["id"],
   });
-  for (const event of events) {
-    if (event.tags && event.tags.length > 0) {
-      await tagsRepository.upsert(event.tags, {
-        conflictPaths: ["id"],
-      });
-      console.log("tags101010", event.tags, event.pubkey);
-    }
-  }
+  const allTags = events.flatMap((event) => event.tags);
+  await tagsRepository.upsert(allTags, {
+    conflictPaths: ["id"],
+  });
   return true;
 }
 async function bookmarkEvent(event_id: string) {
@@ -218,6 +216,28 @@ async function getEvent(event_id: string) {
   return event;
 }
 
+async function getEventLikes(event_id: string) {
+  const event = await eventsRepository.findOne({
+    where: { id: event_id },
+    relations: ["tags"],
+  });
+  return event;
+}
+async function getEventComments(event_id: string) {
+  const event = await eventsRepository.findOne({
+    where: { id: event_id },
+    relations: ["tags"],
+  });
+  return event;
+}
+async function getEventShares(event_id: string) {
+  const event = await eventsRepository.findOne({
+    where: { id: event_id },
+    relations: ["tags"],
+  });
+  return event;
+}
+
 async function createOrUpdateTags(tags: Tags[]) {
   await tagsRepository.upsert(tags, {
     conflictPaths: ["id"],
@@ -288,16 +308,14 @@ async function unbookmarkProfile(pubkey: string) {
 }
 
 async function createOrUpdateNostrProfile(profiles: NostrProfileTable[]) {
-  await nostrProfileRepository.upsert(profiles, {
+  return nostrProfileRepository.upsert(profiles, {
     conflictPaths: ["pubkey"],
   });
-  return true;
 }
 
 async function getNostrProfile(pubkey: string) {
   const profile = await nostrProfileRepository.findOne({
     where: { pubkey },
-    relations: ["followers"],
   });
   return profile;
 }
@@ -368,16 +386,28 @@ async function getEventsByPubkeys(props: {
     .getMany();
 }
 
-async function getFollowers(pubkey: string) {
+async function getFollowers(props: {
+  pubkey: string;
+  pageParam: number;
+  pageSize: number;
+}) {
   const followers = await nostrProfileFollowersRepository.find({
-    where: { pubkey: pubkey },
+    where: { pubkey: props.pubkey },
+    skip: props.pageParam,
+    take: props.pageSize,
   });
   return followers || [];
 }
 
-async function getFollowing(pubkey: string) {
+async function getFollowing(props: {
+  pubkey: string;
+  pageParam: number;
+  pageSize: number;
+}) {
   const following = await nostrProfileFollowersRepository.find({
-    where: { follower: pubkey },
+    where: { follower: props.pubkey },
+    skip: props.pageParam,
+    take: props.pageSize,
   });
   return following || [];
 }
@@ -424,6 +454,10 @@ const getLastEventInDb = async () => {
   return event;
 };
 
+const toggleBlocked = async (pubkey: string, blocked: boolean) => {
+  return nostrProfileRepository.update({ pubkey }, { is_blocked: true });
+};
+
 const api = {
   createOrUpdateEvents,
   getEvents,
@@ -453,6 +487,10 @@ const api = {
   getFollowing,
   getFollowersCount,
   getFollowingCount,
+  toggleBlocked,
+  getEventLikes,
+  getEventComments,
+  getEventShares,
 };
 export type Api = typeof api;
 

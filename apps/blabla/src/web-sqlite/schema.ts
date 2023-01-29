@@ -41,7 +41,9 @@ export class EventTable {
   sig?: string;
 
   @OneToMany(() => Tags, (tag) => tag.event_id, {
-    cascade: ["insert", "update", "remove", "soft-remove", "recover"],
+    cascade: true, // <= here
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   tags?: Tags[];
 
@@ -99,14 +101,16 @@ export class NostrProfile {
   @Column({ nullable: true })
   nip06?: string;
 
-  @OneToMany(() => NostrProfileFollowers, (follower) => follower.follower)
+  @OneToMany(() => NostrProfileFollowers, (follower) => follower.pubkey)
   followers?: NostrProfileFollowers[];
 
-  @OneToMany(() => NostrProfileFollowers, (follower) => follower.pubkey)
+  @OneToMany(() => NostrProfileFollowers, (follower) => follower.follower)
   following?: NostrProfileFollowers[];
 
   @Column({ default: false })
   is_bookmarked?: boolean;
+  @Column({ default: false })
+  is_blocked?: boolean;
 }
 
 @Entity()

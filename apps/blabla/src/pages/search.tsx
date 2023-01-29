@@ -4,7 +4,6 @@ import { Layout } from "../components/Layout";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { EventComponent } from "../components/event-view/EventComponent";
-import { IdentityInformationCard } from "./identity";
 import { useSearchParams } from "@jokullsolberg/next-use-search-params";
 import { z } from "zod";
 import { IdentityPreview } from "../components/IdentityPreview";
