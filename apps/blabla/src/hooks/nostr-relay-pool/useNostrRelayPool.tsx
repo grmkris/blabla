@@ -1,6 +1,6 @@
 import { Author, collect } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../web-sqlite/sqlite";
 import { NostrSocketContext } from "../../NostrSocketContext";
@@ -9,11 +9,79 @@ import type { NostrProfileTable } from "../../web-sqlite/schema";
 import { NostrProfileTableSchema } from "../../web-sqlite/schema";
 import { insertOrUpdateEvents } from "../../web-sqlite/client-functions";
 import { Kind } from "nostr-tools";
+import { useIdentityViewStore } from "../../components/IdentityView";
+
+interface IdentityViewInterfaceStore {
+  identities: {
+    identity: string;
+    followers: string[];
+    following: string[];
+    secondFollows?: string[];
+  }[];
+  updateIdentity: (props: {
+    identity: string;
+    followers?: string[];
+    following?: string[];
+    secondFollows?: string[];
+  }) => void;
+}
 
 export const useNostrRelayPool = () => {
   const { relayPool } = useContext(NostrSocketContext);
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
   const queryClient = useQueryClient();
+
+  const getFollows = (props: { pubkey: string }) => {
+    if (!props.pubkey || !nostrRelays || !relayPool) {
+      return;
+    }
+    const handleCollectedFollowing = (pubkeys: string[]) => {
+      console.log("handleCollectedFollowing: ", pubkeys);
+      // remove duplicates
+      const uniquePubkeys = [...new Set(pubkeys)];
+      const identity = useIdentityViewStore
+        .getState()
+        .identities.find((x) => x.identity === props.pubkey);
+      if (identity) {
+        identity.following = uniquePubkeys;
+        useIdentityViewStore.getState().updateIdentity(identity);
+      } else {
+        useIdentityViewStore.getState().updateIdentity({
+          identity: props.pubkey,
+          following: uniquePubkeys,
+        });
+      }
+    };
+    const author = new Author(relayPool, nostrRelays, props.pubkey);
+    console.log("useEffect - followers: ", author.pubkey);
+    author.followsPubkeys(handleCollectedFollowing, 100);
+  };
+
+  const getFollowers = (props: { pubkey: string }) => {
+    if (!props.pubkey || !nostrRelays || !relayPool) {
+      return;
+    }
+    const handleCollectedFollowers = (events: Event[]) => {
+      console.log("handleCollectedFollowers: ", events);
+      // remove duplicates
+      const uniquePubkeys = [...new Set(events.map((x) => x.pubkey))];
+      const identity = useIdentityViewStore
+        .getState()
+        .identities.find((x) => x.identity === props.pubkey);
+      if (identity) {
+        identity.followers = uniquePubkeys;
+        useIdentityViewStore.getState().updateIdentity(identity);
+      } else {
+        useIdentityViewStore.getState().updateIdentity({
+          identity: props.pubkey,
+          followers: uniquePubkeys,
+        });
+      }
+    };
+    const author = new Author(relayPool, nostrRelays, props.pubkey);
+    console.log("useEffect - followers: ", author.pubkey);
+    author.followers(collect(handleCollectedFollowers), 100, 100);
+  };
 
   const getPostComments = useMutation(
     async (variables: {
@@ -199,6 +267,8 @@ export const useNostrRelayPool = () => {
     retrievePubkeyTexts,
     getPostComments,
     relayPool,
+    getFollows,
+    getFollowers,
   };
 };
 

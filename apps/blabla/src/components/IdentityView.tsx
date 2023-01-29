@@ -14,14 +14,13 @@ import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
 import { useEventsByPubkey } from "../hooks/useEventsByPubkey";
 import { EventComponent } from "./event-view/EventComponent";
 import { IdentityPreview } from "./IdentityPreview";
-import { LoadingSpinner } from "./common/LoadingSpinner";
 import { useNostrRelayPool } from "../hooks/nostr-relay-pool/useNostrRelayPool";
 import { Author, collect } from "nostr-relaypool";
 import type { Event } from "nostr-tools";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import identity from "../pages/identity";
+import { shallow } from "zustand/shallow";
 
 interface IdentityViewInterfaceStore {
   identities: {
@@ -38,7 +37,7 @@ interface IdentityViewInterfaceStore {
   }) => void;
 }
 
-const useIdentityViewStore = create<IdentityViewInterfaceStore>()(
+export const useIdentityViewStore = create<IdentityViewInterfaceStore>()(
   immer((set, get) => ({
     identities: [],
     updateIdentity: (props) => {
@@ -258,54 +257,22 @@ export const IdentityEvents = (props: { identity: string }) => {
 };
 
 export const FollowsList = (props: { identity: string }) => {
-  const { nostrRelays, relayPool } = useNostrRelayPool();
-  const following = useRef(
-    useIdentityViewStore
-      .getState()
-      .identities?.find((i) => i.identity === props.identity)?.following
+  const { getFollows, ready } = useNostrRelayPool();
+  const following = useIdentityViewStore(
+    (state) =>
+      state.identities.find((i) => i.identity === props.identity)?.following,
+    shallow
   );
-  const updateIdentity = useIdentityViewStore((state) => state.updateIdentity);
 
   useEffect(() => {
-    useIdentityViewStore.subscribe(
-      (scratches) =>
-        (following.current = scratches.identities?.find(
-          (i) => i.identity === props.identity
-        )?.following)
-    );
-  }, [props.identity]);
-
-  const handleCollectedFollowing = (pubkeys: string[]) => {
-    console.log("handleCollectedFollowing: ", pubkeys);
-    // remove duplicates
-    const uniquePubkeys = [...new Set(pubkeys)];
-    updateIdentity({
-      identity: props.identity,
-      following: uniquePubkeys,
-    });
-  };
-
-  const getFollows = useCallback(() => {
-    if (!props.identity || !nostrRelays || !relayPool) {
-      return;
-    }
-    const author = new Author(relayPool, nostrRelays, props.identity);
-    console.log("useEffect - followers: ", author.pubkey);
-    author.followsPubkeys(handleCollectedFollowing, 100);
-  }, [nostrRelays, props.identity, relayPool]);
-
-  useEffect(() => {
-    if (!props.identity || !nostrRelays || !relayPool) {
-      return;
-    }
-    getFollows();
-  }, [nostrRelays, props.identity, relayPool]);
+    ready && getFollows({ pubkey: props.identity });
+  }, [props.identity, ready]);
 
   return (
     <div className="flex flex-col space-y-4">
       <h1>Follows</h1>
       <ul role="list" className="divide-y divide-gray-200">
-        {following.current?.map((identity) => {
+        {following?.map((identity) => {
           return (
             <li key={identity} className="px-4 py-4 sm:px-0">
               {identity && <IdentityPreview identity={identity} />}
@@ -318,50 +285,22 @@ export const FollowsList = (props: { identity: string }) => {
 };
 
 export const FollowersList = (props: { identity: string }) => {
-  const { nostrRelays, relayPool } = useNostrRelayPool();
-  const followers = useRef(
-    useIdentityViewStore
-      .getState()
-      .identities?.find((i) => i.identity === props.identity)
+  const { getFollowers, ready } = useNostrRelayPool();
+  const followers = useIdentityViewStore(
+    (state) =>
+      state.identities.find((i) => i.identity === props.identity)?.followers,
+    shallow
   );
 
-  useEffect(
-    () =>
-      useIdentityViewStore.subscribe(
-        (state) =>
-          (followers.current = state.identities?.find(
-            (i) => i.identity === props.identity
-          ))
-      ),
-    [props.identity]
-  );
-  const updateIdentity = useIdentityViewStore((state) => state.updateIdentity);
-
-  const handleCollectedFollowers = (events: Event[]) => {
-    console.log("handleCollectedFollowers: " + props.identity, events);
-    const pubkeys = events.map((event) => event.pubkey);
-    // remove duplicates
-    const identity = props.identity;
-    const uniquePubkeys = [...new Set(pubkeys)];
-    updateIdentity({
-      identity,
-      followers: uniquePubkeys,
-    });
-  };
   useEffect(() => {
-    if (!props.identity || !nostrRelays || !relayPool) {
-      return;
-    }
-    const author = new Author(relayPool, nostrRelays, props.identity);
-    console.log("useEffect - followers: ", author.pubkey);
-    author.followers(collect(handleCollectedFollowers), 100, 9999999999);
-  }, [nostrRelays, props.identity, relayPool]);
+    ready && getFollowers({ pubkey: props.identity });
+  }, [props.identity, ready]);
 
   return (
     <div className="flex flex-col space-y-4">
       <h1>Followers</h1>
       <ul role="list" className="divide-y divide-gray-200">
-        {followers.current?.followers.map((follower) => {
+        {followers?.map((follower) => {
           return (
             <li key={follower} className="px-4 py-4 sm:px-0">
               {follower && <IdentityPreview identity={follower} />}
@@ -382,16 +321,19 @@ export const RecommendedList = (props: { identity: string }) => {
   );
   const updateIdentity = useIdentityViewStore((state) => state.updateIdentity);
 
-  useEffect(
-    () =>
-      useIdentityViewStore.subscribe(
-        (state) =>
-          (secondsFollows.current = state.identities.find(
-            (i) => i.identity === props.identity
-          ))
-      ),
-    []
-  );
+  useEffect(() => {
+    const id = setInterval(
+      () =>
+        useIdentityViewStore.subscribe(
+          (state) =>
+            (secondsFollows.current = state.identities.find(
+              (i) => i.identity === props.identity
+            ))
+        ),
+      200
+    );
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     console.log("useEffect - RecommendedList: " + props.identity);

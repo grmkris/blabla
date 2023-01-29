@@ -21,7 +21,8 @@ import toast from "react-hot-toast";
 
 export const usePubkey = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
-  const { retrievePubkeyMetadata, ready, publish } = useNostrRelayPool();
+  const { retrievePubkeyMetadata, ready, publish, getFollows } =
+    useNostrRelayPool();
   const identities = useAppStore.use.localProfiles();
   const { signEvent: signEventWindow, windowNostr } = useWindowNostr();
 
@@ -199,37 +200,6 @@ export const usePubkeyFollowing = (props: { pubkey: string }) => {
   return {
     following,
     count,
-  };
-};
-
-export const usePubkeyFollowersRelay = (props: { pubkey: string }) => {
-  const { nostrRelays, relayPool } = useNostrRelayPool();
-  const following = useIdentityViewStore((state) => state.following);
-  const handleCollectedFollowing = (pubkeys: string[]) => {
-    console.log("handleCollectedFollowing: ", pubkeys);
-    // remove duplicates
-    const uniquePubkeys = [...new Set(pubkeys)];
-    useIdentityViewStore.setState({ following: uniquePubkeys });
-  };
-
-  const getFollows = useCallback(() => {
-    if (!props.pubkey || !nostrRelays || !relayPool) {
-      return;
-    }
-    const author = new Author(relayPool, nostrRelays, props.pubkey);
-    console.log("useEffect - followers: ", author.pubkey);
-    author.followsPubkeys(handleCollectedFollowing, 100);
-  }, [nostrRelays, props.pubkey, relayPool]);
-
-  useEffect(() => {
-    if (!props.pubkey || !nostrRelays || !relayPool) {
-      return;
-    }
-    getFollows();
-  }, [nostrRelays, props.pubkey, relayPool]);
-
-  return {
-    following,
   };
 };
 

@@ -8,7 +8,6 @@ export const useEvents = () => {
     queryFn: async () => {
       return await api.getBookmarkedEvents();
     },
-    refetchInterval: false,
   });
 
   const bookmarkEvent = useMutation(async (eventId: string) => {

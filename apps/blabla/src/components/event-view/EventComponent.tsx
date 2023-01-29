@@ -23,7 +23,7 @@ import { useEvents } from "../../hooks/useEvents";
 
 export const EventComponent = (props: { note: Note }) => {
   const [showInputCommentArea, setShowInputCommentArea] = useState(false);
-  const { bookmarkEvent, unbookmarkEvent } = useEvents();
+  const { bookmarkEvent, unbookmarkEvent, bookmarkedEvents } = useEvents();
   const { profile } = usePubkey({
     pubkey: props.note.event.pubkey,
   });
@@ -37,13 +37,15 @@ export const EventComponent = (props: { note: Note }) => {
       ? unbookmarkEvent.mutate(props.note.event.id)
       : bookmarkEvent.mutate(props.note.event.id);
   };
+  const isBookmarked = bookmarkedEvents.data?.some(
+    (event) => event.id === props.note.event.id
+  );
 
   return (
     <div className="card card-compact w-full max-w-full overflow-auto bg-slate-900/70 shadow-xl">
       <div className="card-body">
         <Link
           href={`/identity?id=${props.note.event.pubkey}`}
-          shallow
           className="text-gray-500 decoration-blue-700 underline-offset-4 hover:text-blue-700 hover:underline"
         >
           <div className="card-title ">
@@ -72,7 +74,7 @@ export const EventComponent = (props: { note: Note }) => {
         </Link>
         <div className="min-w-0 flex-1">
           <div>
-            <Link href={`/event/${props.note.event.id}`} shallow>
+            <Link href={`/event/${props.note.event.id}`}>
               <p className="cursc mt-0.5 text-sm text-gray-600 text-gray-500 decoration-blue-700 underline-offset-4 hover:text-blue-700 hover:underline">
                 Commented{" "}
                 {new Date(
@@ -134,7 +136,7 @@ export const EventComponent = (props: { note: Note }) => {
                 className="btn-sm btn"
                 onClick={handleBookmarkEventClicked}
               >
-                {props.note?.event.is_bookmarked ? (
+                {isBookmarked ? (
                   <BookmarkSlashIcon className="h-5 w-5" />
                 ) : (
                   <BookmarkIcon className="h-5 w-5" />
@@ -173,7 +175,7 @@ const EventReferencedAvatarComponent = (props: { pubkey: string }) => {
     return null;
   }
   return (
-    <Link href={"/identity/?id=" + props.pubkey} shallow>
+    <Link href={"/identity/?id=" + props.pubkey}>
       <ProfileAvatar picture={profile.data?.picture} />
     </Link>
   );
