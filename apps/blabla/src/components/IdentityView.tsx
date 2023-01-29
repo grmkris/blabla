@@ -101,30 +101,24 @@ export const IdentityView = (props: { identity: string }) => {
       />
 
       <div className="btn-group m-2 flex justify-center">
-        <Button
-          className={selected === "events" ? "btn-active" : ""}
-          onClick={handleEventsClick}
-        >
-          Events
-        </Button>
-        <Button
-          className={selected === "followers" ? "btn-active" : ""}
-          onClick={handleFollowerClick}
-        >
-          Followers
-        </Button>
-        <Button
-          className={selected === "following" ? "btn-active" : ""}
-          onClick={handleFollowingClick}
-        >
-          Following
-        </Button>
-        <Button
-          className={selected === "explore" ? "btn-active" : ""}
-          onClick={handleExploreClick}
-        >
-          Explore
-        </Button>
+        <ul className="menu rounded-box menu-horizontal bg-base-100 p-2">
+          <li onClick={handleEventsClick}>
+            <a className={selected === "events" ? "active" : ""}>Events</a>
+          </li>
+          <li onClick={handleFollowerClick}>
+            <a className={selected === "followers" ? "active" : ""}>
+              Followers
+            </a>
+          </li>
+          <li onClick={handleFollowingClick}>
+            <a className={selected === "following" ? "active" : ""}>
+              Following
+            </a>
+          </li>
+          <li onClick={handleExploreClick}>
+            <a className={selected === "explore" ? "active" : ""}>Explore</a>
+          </li>
+        </ul>
       </div>
       {selected === "events" && <IdentityEvents identity={props.identity} />}
       {selected === "followers" && <FollowersList identity={props.identity} />}
@@ -141,15 +135,16 @@ export const IdentityInformationCard = (props: {
 }) => {
   const { retrievePubkeyTexts, retrievePubkeyInfos, retrievePubkeyMetadata } =
     useNostrRelayPool();
-  const { profile, bookmarkProfile, unbookmarkProfile } = usePubkey({
-    pubkey: props.identity,
-  });
   const { count: followersCount } = usePubkeyFollowers({
     pubkey: props.identity,
   });
   const { count: followingCount } = usePubkeyFollowing({
     pubkey: props.identity,
   });
+  const { profile, bookmarkProfile, followProfile, unbookmarkProfile } =
+    usePubkey({
+      pubkey: props.identity,
+    });
 
   const handleBookmarkProfileClicked = () => {
     const bookmarked = profile.data?.is_bookmarked;
@@ -165,6 +160,11 @@ export const IdentityInformationCard = (props: {
     retrievePubkeyMetadata.mutate({ author: props.identity });
     retrievePubkeyInfos.mutate({
       author: props.identity,
+    });
+  };
+  const handleFollowClicked = () => {
+    followProfile.mutate({
+      pubkeys: [props.identity],
     });
   };
   return (
@@ -215,7 +215,9 @@ export const IdentityInformationCard = (props: {
           </div>
           <div className="card-actions">
             <div className="btn-group">
-              <Button className="btn-sm btn">Follow</Button>
+              <Button className="btn-sm btn" onClick={handleFollowClicked}>
+                Follow
+              </Button>
               <Button
                 className="btn-sm btn"
                 onClick={handleBookmarkProfileClicked}
@@ -226,8 +228,6 @@ export const IdentityInformationCard = (props: {
                   <BookmarkIcon className="h-5 w-5" />
                 )}
               </Button>
-              <Button className="btn-sm btn">Message</Button>
-              <Button className="btn-sm btn">Open on</Button>
               <Button className="btn-sm btn" onClick={handleRefresh}>
                 Refresh
               </Button>
@@ -266,16 +266,14 @@ export const FollowsList = (props: { identity: string }) => {
   );
   const updateIdentity = useIdentityViewStore((state) => state.updateIdentity);
 
-  useEffect(
-    () =>
-      useIdentityViewStore.subscribe(
-        (scratches) =>
-          (following.current = scratches.identities?.find(
-            (i) => i.identity === props.identity
-          )?.following)
-      ),
-    []
-  );
+  useEffect(() => {
+    useIdentityViewStore.subscribe(
+      (scratches) =>
+        (following.current = scratches.identities?.find(
+          (i) => i.identity === props.identity
+        )?.following)
+    );
+  }, [props.identity]);
 
   const handleCollectedFollowing = (pubkeys: string[]) => {
     console.log("handleCollectedFollowing: ", pubkeys);
@@ -335,7 +333,7 @@ export const FollowersList = (props: { identity: string }) => {
             (i) => i.identity === props.identity
           ))
       ),
-    []
+    [props.identity]
   );
   const updateIdentity = useIdentityViewStore((state) => state.updateIdentity);
 

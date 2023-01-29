@@ -11,21 +11,28 @@ export default function Relays() {
   return (
     <Layout title={"Relays"}>
       <NoSSR>
-        <div className={"flex flex-wrap"}>
-          <AddRelay />
-          {relays &&
-            Array.from(relays).map(([id, relay], index) => (
-              <Relay
-                key={relay.url}
-                relay={{
-                  url: relay.url,
-                  status: relay.status === 1 ? "connected" : "connecting",
-                }}
-                index={index}
-              />
-            ))}
-        </div>
+        <RelaysView />
       </NoSSR>
     </Layout>
   );
 }
+
+export const RelaysView = () => {
+  const { relays } = useNostrRelayPool();
+  return (
+    <div className={"flex flex-wrap"}>
+      <AddRelay />
+      {relays &&
+        Array.from(relays).map(([id, relay], index) => (
+          <Relay
+            key={relay.url}
+            relay={{
+              url: relay.url,
+              status: relay.status === 1 ? "connected" : "connecting",
+            }}
+            index={index}
+          />
+        ))}
+    </div>
+  );
+};

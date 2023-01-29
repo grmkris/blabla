@@ -87,7 +87,7 @@ export const Home = () => {
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-2">
         {selected === "Global" && <GlobalFeed />}
         {selected === "Bookmarked" && <BookmarkedFeed />}
       </div>

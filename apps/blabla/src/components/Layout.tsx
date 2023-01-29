@@ -26,6 +26,7 @@ import {
 import identity from "../pages/identity";
 import { useSearchParams } from "@jokullsolberg/next-use-search-params";
 import { z } from "zod";
+import { RelaysView } from "../pages/relays";
 
 export const Layout = (props: { children: ReactNode; title?: string }) => {
   const { isSqliteReady, subscribed } = useContext(NostrSocketContext);
@@ -100,20 +101,38 @@ export const Layout = (props: { children: ReactNode; title?: string }) => {
 
 const NavigationBottom = () => {
   return (
-    <nav className="btm-nav lg:hidden">
-      <Link href="/" shallow>
-        <HomeIcon className={"h-5 w-5"} />{" "}
-      </Link>
-      <Link href="/relays" shallow>
-        <InboxStackIcon className={"h-5 w-5"} />
-      </Link>
-      <Link href="/saved" shallow>
-        <BookmarkSquareIcon className={"h-5 w-5"} />
-      </Link>
-      <Link href="/settings" shallow>
-        <ChevronUpIcon className={"h-5 w-5"} />
-      </Link>
-    </nav>
+    <>
+      <nav className="btm-nav lg:hidden">
+        <Link href="/">
+          <HomeIcon className={"h-5 w-5"} />{" "}
+        </Link>
+        <Link href="/relays">
+          <InboxStackIcon className={"h-5 w-5"} />
+        </Link>
+        <Link href="/saved">
+          <BookmarkSquareIcon className={"h-5 w-5"} />
+        </Link>
+        <label htmlFor="my-modal-6">
+          <ChevronUpIcon className={"h-5 w-5"} />
+        </label>
+      </nav>
+
+      {/* Put this part before </body> tag */}
+      <input type="checkbox" id="my-modal-6" className="modal-toggle" />
+      <div className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <Button>
+            <Link href="/settings">Settings</Link>
+          </Button>
+          <RelaysView />
+          <div className="modal-action">
+            <label htmlFor="my-modal-6" className="btn">
+              🚀
+            </label>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -203,7 +222,7 @@ const NewLayout = ({ children }: { children: ReactNode }) => {
   ];
 
   return (
-    <div className="mt-20 py-10 px-2 sm:px-0">
+    <div className="mt-10 mb-10 py-10 px-2 sm:px-0">
       <div className="mx-auto max-w-3xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-8 lg:px-8">
         <div className="hidden lg:col-span-3 lg:block xl:col-span-2">
           <nav

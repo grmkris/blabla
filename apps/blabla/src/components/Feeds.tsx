@@ -13,6 +13,7 @@ const NumberOfNumberOfNewItems = () => {
     <>
       {numberOfNewItems?.data ? (
         <Button
+          className="w-max"
           onClick={() => {
             refresh.mutate();
           }}
@@ -44,11 +45,12 @@ export const BookmarkedFeed = () => {
     <div className="flex max-w-full flex-col items-start space-y-2">
       {numberOfNewItems?.data && numberOfNewItems.data > 0 ? (
         <Button
+          className={"w-max"}
           onClick={() => {
             refresh.mutate();
           }}
         >
-          {numberOfNewItems.data} new items
+          ~ {numberOfNewItems.data} new items
         </Button>
       ) : null}
       {bookmarksFeed.data?.pages?.map((notes) =>

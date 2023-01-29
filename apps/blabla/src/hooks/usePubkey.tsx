@@ -5,11 +5,25 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
-import { useNostrRelayPool } from "./nostr-relay-pool/useNostrRelayPool";
+import {
+  dateToUnix,
+  useNostrRelayPool,
+} from "./nostr-relay-pool/useNostrRelayPool";
+import { useCallback, useEffect } from "react";
+import { Author } from "nostr-relaypool";
+import { Event, getEventHash, Kind, signEvent } from "nostr-tools";
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+import type { Event as NostrEvent } from "nostr-tools/event";
+import { useAppStore } from "../AppStore";
+import { useWindowNostr } from "./useWindowNostr";
+import toast from "react-hot-toast";
 
 export const usePubkey = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
-  const { retrievePubkeyMetadata, ready } = useNostrRelayPool();
+  const { retrievePubkeyMetadata, ready, publish } = useNostrRelayPool();
+  const identities = useAppStore.use.localProfiles();
+  const { signEvent: signEventWindow, windowNostr } = useWindowNostr();
 
   const toggleBlocked = useMutation(
     async (pubkey: string, blocked?: boolean) => {
@@ -25,9 +39,42 @@ export const usePubkey = (props: { pubkey?: string }) => {
     await queryClient.invalidateQueries(["usePubkey.nostrProfile", pubkey]);
   });
 
-  const followProfile = useMutation(async (pubkey: string) => {
-    console.log("TODO Follow profile", pubkey);
-  });
+  const followProfile = useMutation(
+    async (variables: { pubkeys: string[] }) => {
+      console.log("followProfile", { variables });
+      const { pubkeys } = variables;
+      // gets typesafe data when form is submitted
+      const tags = [];
+      for (const pubkey of pubkeys) {
+        tags.push(["p", pubkey]);
+      }
+      let event: NostrEvent = {
+        content: "",
+        kind: Kind.Contacts,
+        tags: tags,
+        created_at: dateToUnix(),
+        pubkey: "",
+      };
+      console.log("followProfile122", { event, identities, windowNostr });
+      if (windowNostr) {
+        event = await signEventWindow.mutateAsync(event);
+      } else {
+        event.pubkey = identities[0].publicKey;
+        event.id = getEventHash(event);
+        event.sig = signEvent(event, identities[0].privateKey);
+      }
+      if (!event.id) {
+        throw new Error("event.id is missing");
+      }
+      await publish.mutateAsync({ event });
+      let eventFromDb = await api.getEvent(event.id);
+      while (!eventFromDb) {
+        await new Promise((r) => setTimeout(r, 2000));
+        eventFromDb = await api.getEvent(event.id);
+      }
+      toast.success("Update sent");
+    }
+  );
 
   const unfollowProfile = useMutation(async (pubkey: string) => {
     console.log("TODO Unfollow profile", pubkey);
@@ -39,12 +86,23 @@ export const usePubkey = (props: { pubkey?: string }) => {
       if (!props?.pubkey) return;
       const profileDb = await api.getNostrProfile(props.pubkey);
       console.log("usePubkey.nostrProfile", profileDb);
-      if (!profileDb) {
-        console.warn("usePubkey-No profile found for pubkey", props.pubkey);
-        await retrievePubkeyMetadata.mutate({
+      retrievePubkeyMetadata
+        .mutateAsync({
           author: props.pubkey,
+        })
+        .then((x) => {
+          if (
+            (x?.name && x.name !== profileDb?.name) ||
+            (x?.display_name && x.display_name !== profileDb?.display_name) ||
+            (x?.picture && x.picture !== profileDb?.picture)
+          ) {
+            console.log("usePubkey.nostrProfile123", { x, profileDb });
+            queryClient.invalidateQueries([
+              "usePubkey.nostrProfile",
+              props.pubkey,
+            ]);
+          }
         });
-      }
       return profileDb;
     },
     enabled: !!props?.pubkey && ready,
@@ -143,3 +201,50 @@ export const usePubkeyFollowing = (props: { pubkey: string }) => {
     count,
   };
 };
+
+export const usePubkeyFollowersRelay = (props: { pubkey: string }) => {
+  const { nostrRelays, relayPool } = useNostrRelayPool();
+  const following = useIdentityViewStore((state) => state.following);
+  const handleCollectedFollowing = (pubkeys: string[]) => {
+    console.log("handleCollectedFollowing: ", pubkeys);
+    // remove duplicates
+    const uniquePubkeys = [...new Set(pubkeys)];
+    useIdentityViewStore.setState({ following: uniquePubkeys });
+  };
+
+  const getFollows = useCallback(() => {
+    if (!props.pubkey || !nostrRelays || !relayPool) {
+      return;
+    }
+    const author = new Author(relayPool, nostrRelays, props.pubkey);
+    console.log("useEffect - followers: ", author.pubkey);
+    author.followsPubkeys(handleCollectedFollowing, 100);
+  }, [nostrRelays, props.pubkey, relayPool]);
+
+  useEffect(() => {
+    if (!props.pubkey || !nostrRelays || !relayPool) {
+      return;
+    }
+    getFollows();
+  }, [nostrRelays, props.pubkey, relayPool]);
+
+  return {
+    following,
+  };
+};
+
+interface IdentityViewInterfaceStore {
+  identity: string;
+  followers: string[];
+  following: string[];
+  secondFollows?: string[];
+}
+
+const useIdentityViewStore = create<IdentityViewInterfaceStore>()(
+  immer((set, get) => ({
+    identity: "",
+    followers: [],
+    following: [],
+    secondFollows: [],
+  }))
+);

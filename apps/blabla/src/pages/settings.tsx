@@ -5,6 +5,10 @@ import { useWebLn } from "../hooks/useWebLn";
 import { Button } from "../components/common/Button";
 import { useWindowNostr } from "../hooks/useWindowNostr";
 import { useAppStore, useSettingsStore } from "../AppStore";
+import {
+  IdentityInformationCard,
+  IdentityView,
+} from "../components/IdentityView";
 
 export default function Settings() {
   const webLN = useWebLn();
@@ -19,6 +23,7 @@ export default function Settings() {
     <Layout title={"Profile"}>
       <NoSSR>
         <h1 className="m-4 text-2xl font-bold">Profile</h1>
+        {nostrPubKeyNip07 && <IdentityView identity={nostrPubKeyNip07} />}
         <Button
           loading={webLN.connect.isLoading}
           onClick={async () => {

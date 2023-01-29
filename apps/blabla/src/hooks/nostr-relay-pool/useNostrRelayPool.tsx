@@ -91,10 +91,6 @@ export const useNostrRelayPool = () => {
               metadataObj.data
             );
             await api.createOrUpdateNostrProfile([metadataObj.data]);
-            await queryClient.invalidateQueries([
-              "usePubkey.nostrProfile",
-              variables.author,
-            ]);
             resolve(metadataObj.data);
             return;
           } else {

@@ -18,7 +18,9 @@ export const IdentityPreview = (props: { identity: string }) => {
   };
 
   const handleFollowProfileClicked = () => {
-    followProfile.mutate(props.identity);
+    followProfile.mutate({
+      pubkeys: [props.identity],
+    });
   };
 
   if (profile.isLoading)
@@ -46,9 +48,7 @@ export const IdentityPreview = (props: { identity: string }) => {
         </p>
       </div>
       <div className={"btn-group"}>
-        <Button onClick={() => followProfile.mutate(props.identity)}>
-          Follow
-        </Button>
+        <Button onClick={handleFollowProfileClicked}>Follow</Button>
         <Button onClick={handleBookmarkProfileClicked}>
           {profile.data?.is_bookmarked ? (
             <BookmarkSlashIcon className="h-5 w-5" />
