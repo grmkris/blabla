@@ -2,7 +2,7 @@ import { Layout } from "../components/Layout";
 import { z } from "zod";
 import NoSSR from "../components/common/NoSSR";
 import { useSearchParams } from "@jokullsolberg/next-use-search-params";
-import { IdentityView, IdentityViewSchema } from "../components/IdentityView";
+import { IdentityView, IdentityViewSchema } from "../components/pubkey/IdentityView";
 
 export const IdentityPage = () => {
   const [{ id }] = useSearchParams({

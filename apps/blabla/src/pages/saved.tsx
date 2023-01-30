@@ -4,7 +4,7 @@ import { useEvents } from "../hooks/useEvents";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import NoSSR from "../components/common/NoSSR";
 import { EventComponent } from "../components/event-view/EventComponent";
-import { IdentityPreview } from "../components/IdentityPreview";
+import { IdentityPreview } from "../components/pubkey/IdentityPreview";
 import { useProfiles } from "../hooks/useProfiles";
 
 export default function Saved() {

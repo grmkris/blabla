@@ -1,6 +1,6 @@
 import { Author, collect } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
-import { useCallback, useContext } from "react";
+import {  useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../web-sqlite/sqlite";
 import { NostrSocketContext } from "../../NostrSocketContext";
@@ -9,7 +9,7 @@ import type { NostrProfileTable } from "../../web-sqlite/schema";
 import { NostrProfileTableSchema } from "../../web-sqlite/schema";
 import { insertOrUpdateEvents } from "../../web-sqlite/client-functions";
 import { Kind } from "nostr-tools";
-import { useIdentityViewStore } from "../../components/IdentityView";
+import { useIdentityViewStore } from "../../components/pubkey/pubkey.store";
 
 interface IdentityViewInterfaceStore {
   identities: {
@@ -81,6 +81,32 @@ export const useNostrRelayPool = () => {
     const author = new Author(relayPool, nostrRelays, props.pubkey);
     console.log("useEffect - followers: ", author.pubkey);
     author.followers(collect(handleCollectedFollowers), 100, 100);
+  };
+
+  const getSecondFollows = (props: { pubkey: string }) => {
+    if (!props.pubkey || !nostrRelays || !relayPool) {
+      return;
+    }
+    const handleCollectedSecondFollows = (events: [string,number][]) => {
+      console.log("handleCollectedSecondFollows: ", events);
+      // remove duplicates
+      const uniquePubkeys = [...new Set(events.map((x) => x[0]))];
+      const identity = useIdentityViewStore
+        .getState()
+        .identities.find((x) => x.identity === props.pubkey);
+      if (identity) {
+        identity.secondFollows = uniquePubkeys;
+        useIdentityViewStore.getState().updateIdentity(identity);
+      } else {
+        useIdentityViewStore.getState().updateIdentity({
+          identity: props.pubkey,
+          secondFollows: uniquePubkeys,
+        });
+      }
+    };
+    const author = new Author(relayPool, nostrRelays, props.pubkey);
+    console.log("useEffect - secondFollows: ", author.pubkey);
+    author.secondFollows(handleCollectedSecondFollows, 100);
   };
 
   const getPostComments = useMutation(
@@ -269,6 +295,7 @@ export const useNostrRelayPool = () => {
     relayPool,
     getFollows,
     getFollowers,
+    getSecondFollows
   };
 };
 

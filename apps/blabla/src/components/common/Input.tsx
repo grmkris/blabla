@@ -34,7 +34,7 @@ export const Input = (props: InputProps) => {
           type={type}
           name={name}
           id={name}
-          className={`block w-full rounded-md shadow-sm sm:text-sm ${
+          className={`text-black block w-full rounded-md shadow-sm sm:text-sm ${
             error
               ? "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:outline-none focus:ring-red-500"
               : "border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"

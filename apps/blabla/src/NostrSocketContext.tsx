@@ -71,7 +71,7 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   }, [relayPool, nostrRelays]);
 
   useEffect(() => {
-    createRelayPoolSubscriptions();
+    // createRelayPoolSubscriptions();
     if (!!relayPool || !isSqliteReady || subscribed || !data) return;
     const pool = new RelayPool(nostrRelays);
     setRelayPool(pool);

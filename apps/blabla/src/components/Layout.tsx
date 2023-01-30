@@ -17,13 +17,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { NostrSocketContext } from "../NostrSocketContext";
 import { useGetGlobalFilterSinceTime } from "../hooks/useGetGlobalFilterSinceTime";
-import { useWebLn } from "../hooks/useWebLn";
 import {
-  FollowersList,
   IdentityViewSchema,
-  RecommendedList,
-} from "./IdentityView";
-import identity from "../pages/identity";
+} from "./pubkey/IdentityView";
 import { useSearchParams } from "@jokullsolberg/next-use-search-params";
 import { z } from "zod";
 import { RelaysView } from "../pages/relays";

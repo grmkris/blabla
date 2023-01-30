@@ -1,8 +1,8 @@
-import { usePubkey } from "../hooks/usePubkey";
-import { ProfileAvatar } from "./event-view/EventComponent";
-import { Button } from "./common/Button";
+import { usePubkey } from "../../hooks/usePubkey";
+import { Button } from "../common/Button";
+import { ProfileAvatar } from "../event-view/EventComponent";
 import Link from "next/link";
-import { LoadingSpinner } from "./common/LoadingSpinner";
+import { LoadingSpinner } from "../common/LoadingSpinner";
 import { BookmarkIcon, BookmarkSlashIcon } from "@heroicons/react/20/solid";
 
 export const IdentityPreview = (props: { identity: string }) => {
