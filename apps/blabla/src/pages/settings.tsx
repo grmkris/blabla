@@ -4,11 +4,10 @@ import { UserIdentities } from "../components/settings/UserIdentities";
 import { useWebLn } from "../hooks/useWebLn";
 import { Button } from "../components/common/Button";
 import { useWindowNostr } from "../hooks/useWindowNostr";
-import { useAppStore, useSettingsStore } from "../AppStore";
+import { useSettingsStore } from "../AppStore";
 import {
-  IdentityInformationCard,
   IdentityView,
-} from "../components/IdentityView";
+} from "../components/pubkey/IdentityView";
 
 export default function Settings() {
   const webLN = useWebLn();

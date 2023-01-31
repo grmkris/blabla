@@ -6,7 +6,7 @@ import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { EventComponent } from "../components/event-view/EventComponent";
 import { useSearchParams } from "@jokullsolberg/next-use-search-params";
 import { z } from "zod";
-import { IdentityPreview } from "../components/IdentityPreview";
+import { IdentityPreview } from "../components/pubkey/IdentityPreview";
 
 export const SearchPage = () => {
   const [{ q }, setSearchParam] = useSearchParams({

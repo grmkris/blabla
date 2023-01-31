@@ -13,6 +13,7 @@ export const FollowersList = (props: { identity: string }) => {
   );
 
   const getFollersCB = useCallback(() => {
+    console.log("getFollersCB", props.identity)
     getFollowers({pubkey: props.identity});
   }, [props.identity, ready])
 

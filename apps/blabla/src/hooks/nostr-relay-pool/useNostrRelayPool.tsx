@@ -31,6 +31,10 @@ export const useNostrRelayPool = () => {
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
   const queryClient = useQueryClient();
 
+  relayPool?.onnotice(async (notice) => {
+    console.log("NOTICE RELAYPOOL", notice);
+  })
+
   const getFollows = (props: { pubkey: string }) => {
     if (!props.pubkey || !nostrRelays || !relayPool) {
       return;
