@@ -1,73 +1,41 @@
-# Turborepo starter
+# blabla.page 
+Is experimental general purpose web client for nostr protocol (https://www.nostr.how/).
 
-This is an official pnpm starter turborepo.  
+- It aims to implement all the features of the protocol, and be a good example of how to use the protocol.
+- It should be easily extensible and customizable (themes, colors) and deployable by anyone just by cloning the repository and building the code.
 
-## What's inside?
+It runs purely in the browser and only requires a connection to atleast one nostr relay node.
 
-This turborepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
+Goal is that any community should be able to customize configuration object and deploy it on their own domain. 
+There is also public http://blabla.page/ instance available.
 
-### Apps and Packages
+## Technical details
+https://pnpm.io/ is used as a package manager
 
-- `docs`: a [Next.js](https://nextjs.org) app
-- `web`: another [Next.js](https://nextjs.org) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm run build
+```shell
+npm -g install pnpm
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
+```shell
+pnpm install
 pnpm run dev
+pnpm run build
+pnpm run start
 ```
 
-### Remote Caching
+It is built using:
+- Typescript
+- React
+- Nextjs
+- Tailwindcss
+  - DaisyUI (https://daisyui.com/)
+- In browser Sqlite for caching 
+  - Sqlite and SQL.js https://sqlite.org/wasm/doc/tip/about.md - https://github.com/sql-js/sql.js/
+- State management: Zustand (https://github.com/pmndrs/zustand)
+- NostrRelay: Nostr-Relay-Pool (https://github.com/adamritter/nostr-relaypool-ts) 
+- Nostr-tools (https://github.com/nbd-wtf/nostr-tools)
+- ReactQuery https://tanstack.com/query/latest/
+- TypeOrm (https://typeorm.io/)
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.org/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-pnpm dlx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
-
-```
-pnpm dlx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Pipelines](https://turborepo.org/docs/core-concepts/pipelines)
-- [Caching](https://turborepo.org/docs/core-concepts/caching)
-- [Remote Caching](https://turborepo.org/docs/core-concepts/remote-caching)
-- [Scoped Tasks](https://turborepo.org/docs/core-concepts/scopes)
-- [Configuration Options](https://turborepo.org/docs/reference/configuration)
-- [CLI Usage](https://turborepo.org/docs/reference/command-line-reference)
+Suggestions and contributions are welcome. Feel free to open issues and pull requests.
