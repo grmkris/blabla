@@ -128,10 +128,12 @@ export const useFollowsFeed = () => {
 
   // get new events from relay
   useEffect(() => {
-    retrievePubkeyTexts.mutateAsync({
-      author: following,
-    });
-  }, [following]);
+    if (!retrievePubkeyTexts.isSuccess) {
+      retrievePubkeyTexts.mutateAsync({
+        author: following,
+      });
+    }
+  }, [following, retrievePubkeyTexts]);
 
   const followsFeed = useInfiniteQuery({
     queryKey: ["followsFeed", now],

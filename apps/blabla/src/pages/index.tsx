@@ -1,7 +1,6 @@
 import { type NextPage } from "next";
 import NoSSR from "../components/common/NoSSR";
 import { Layout } from "../components/Layout";
-import { useState } from "react";
 import React from "react";
 import {
   BookmarkedFeed,
@@ -11,7 +10,6 @@ import {
 } from "../components/Feeds";
 import { useSearchParams } from "@jokullsolberg/next-use-search-params";
 import { z } from "zod";
-import { FollowsList } from "../components/pubkey/Followers";
 import { useWindowNostr } from "../hooks/useWindowNostr";
 
 const tabs = [

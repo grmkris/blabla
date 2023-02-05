@@ -261,11 +261,8 @@ export const useNostrRelayPool = () => {
     async (variables: { author: string[]; since?: number }) => {
       if (!relayPool) return;
       const onCollect = async (events: Event[]) => {
-        console.log(
-          "retrievePubkeyTexts.onCollect:" + variables.author,
-          events.length
-        );
         if (events.length % 10 === 0) {
+          console.log("retrievePubkeyTexts.onCollect", events.length);
           await insertOrUpdateEvents(events.splice(0, 10));
         }
       };

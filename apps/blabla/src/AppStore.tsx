@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { createSelectors, LocalStateStorage } from "./utils";
-import type { Note } from "./types";
 
 const relays: NostrRelay[] = [
   "wss://nostr-pub.wellorder.net",
@@ -89,6 +88,9 @@ export interface ISettingsStore {
 
   nostrPubKeyNip07: string;
   setNostrPubKeyNip07: (pubKey: string) => void;
+
+  globalFeedEnabled: boolean;
+  setGlobalFeedEnabled: (enabled: boolean) => void;
 }
 
 export const useSettingsStore = createSelectors(
@@ -107,6 +109,12 @@ export const useSettingsStore = createSelectors(
             setNostrPubKeyNip07: (pubKey) => {
               set((state) => {
                 state.nostrPubKeyNip07 = pubKey;
+              });
+            },
+            globalFeedEnabled: false,
+            setGlobalFeedEnabled: (enabled) => {
+              set((state) => {
+                state.globalFeedEnabled = enabled;
               });
             },
           }),

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { createContext, useCallback, useEffect, useState } from "react";
 import { RelayPool, collect } from "nostr-relaypool";
 import type { Event } from "nostr-tools";
-import { useAppStore } from "./AppStore";
+import { useAppStore, useSettingsStore } from "./AppStore";
 import { EventKinds } from "./types";
 import { insertOrUpdateEvents } from "./web-sqlite/client-functions";
 import { dateToUnix } from "./hooks/nostr-relay-pool/useNostrRelayPool";
@@ -25,7 +25,10 @@ export const NostrSocketContext = createContext<{
   refreshNow: () => ({}),
 });
 
-export const NostrSocketProvider = (props: { children: ReactNode }) => {
+export const NostrSocketProvider = (props: {
+  children: ReactNode;
+  globalFeed?: boolean;
+}) => {
   const [isSqliteReady, setIsSqliteReady] = useState(false);
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
   const [relayPool, setRelayPool] = useState<RelayPool>();
@@ -36,6 +39,7 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   const refreshNow = () => {
     setNow(dateToUnix(new Date()));
   };
+  const globalFeedEnabled = useSettingsStore.use.globalFeedEnabled();
 
   function callback() {
     setIsSqliteReady(true);
@@ -71,8 +75,10 @@ export const NostrSocketProvider = (props: { children: ReactNode }) => {
   }, [relayPool, nostrRelays]);
 
   useEffect(() => {
-    // createRelayPoolSubscriptions();
     if (!!relayPool || !isSqliteReady || subscribed || !data) return;
+    if (props.globalFeed || globalFeedEnabled) {
+      // createRelayPoolSubscriptions();
+    }
     const pool = new RelayPool(nostrRelays);
     setRelayPool(pool);
   }, [nostrRelays, relayPool, data]);
