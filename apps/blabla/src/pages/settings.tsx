@@ -5,16 +5,13 @@ import { useWebLn } from "../hooks/useWebLn";
 import { Button } from "../components/common/Button";
 import { useWindowNostr } from "../hooks/useWindowNostr";
 import { useSettingsStore } from "../AppStore";
-import {
-  IdentityView,
-} from "../components/pubkey/IdentityView";
+import { IdentityView } from "../components/pubkey/IdentityView";
 
 export default function Settings() {
   const webLN = useWebLn();
-  const { windowNostr, getPublicKey } = useWindowNostr();
+  const { windowNostr, connect, pubKey } = useWindowNostr();
 
   const setWebLNConnection = useSettingsStore.use.setWebLNConnection();
-  const setNostrPubKeyNip07 = useSettingsStore.use.setNostrPubKeyNip07();
   const webLNConnection = useSettingsStore.use.webLNConnection();
   const nostrPubKeyNip07 = useSettingsStore.use.nostrPubKeyNip07();
 
@@ -38,10 +35,9 @@ export default function Settings() {
 
         {windowNostr && (
           <Button
-            loading={getPublicKey.isLoading}
+            loading={connect.isLoading}
             onClick={async () => {
-              const data = await getPublicKey.mutateAsync();
-              data && setNostrPubKeyNip07(data);
+              await connect.mutate();
             }}
           >
             {nostrPubKeyNip07 && (

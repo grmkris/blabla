@@ -1,6 +1,6 @@
 import { Author, collect } from "nostr-relaypool";
 import type { Filter, Event } from "nostr-tools";
-import {  useContext } from "react";
+import { useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../web-sqlite/sqlite";
 import { NostrSocketContext } from "../../NostrSocketContext";
@@ -33,7 +33,7 @@ export const useNostrRelayPool = () => {
 
   relayPool?.onnotice(async (notice) => {
     console.log("NOTICE RELAYPOOL", notice);
-  })
+  });
 
   const getFollows = (props: { pubkey: string }) => {
     if (!props.pubkey || !nostrRelays || !relayPool) {
@@ -91,7 +91,7 @@ export const useNostrRelayPool = () => {
     if (!props.pubkey || !nostrRelays || !relayPool) {
       return;
     }
-    const handleCollectedSecondFollows = (events: [string,number][]) => {
+    const handleCollectedSecondFollows = (events: [string, number][]) => {
       console.log("handleCollectedSecondFollows: ", events);
       // remove duplicates
       const uniquePubkeys = [...new Set(events.map((x) => x[0]))];
@@ -258,7 +258,7 @@ export const useNostrRelayPool = () => {
   });
 
   const retrievePubkeyTexts = useMutation(
-    async (variables: { author: string; since?: number }) => {
+    async (variables: { author: string[]; since?: number }) => {
       if (!relayPool) return;
       const onCollect = async (events: Event[]) => {
         console.log(
@@ -274,7 +274,7 @@ export const useNostrRelayPool = () => {
           {
             since:
               variables.since ?? dateToUnix(new Date()) - 60 * 60 * 24 * 30,
-            authors: [variables.author],
+            authors: variables.author,
             kinds: [Kind.Text],
           },
         ],
@@ -299,7 +299,7 @@ export const useNostrRelayPool = () => {
     relayPool,
     getFollows,
     getFollowers,
-    getSecondFollows
+    getSecondFollows,
   };
 };
 

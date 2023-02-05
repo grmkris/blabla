@@ -1,9 +1,11 @@
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "../web-sqlite/sqlite";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { eventToNoteMapper } from "../web-sqlite/client-functions";
 import { NostrSocketContext } from "../NostrSocketContext";
 import { useProfiles } from "./useProfiles";
+import { useWindowNostr } from "./useWindowNostr";
+import { useNostrRelayPool } from "./nostr-relay-pool/useNostrRelayPool";
 
 const PAGE_SIZE = 10;
 export const useGlobalFeed = () => {
@@ -116,5 +118,64 @@ export const useNumberOfNewItems = () => {
 
   return {
     numberOfNewItems,
+  };
+};
+
+export const useFollowsFeed = () => {
+  const { now, refreshNow } = useContext(NostrSocketContext);
+  const { following, pubKey } = useWindowNostr();
+  const { retrievePubkeyTexts } = useNostrRelayPool();
+
+  // get new events from relay
+  useEffect(() => {
+    retrievePubkeyTexts.mutateAsync({
+      author: following,
+    });
+  }, [following]);
+
+  const followsFeed = useInfiniteQuery({
+    queryKey: ["followsFeed", now],
+    queryFn: async ({ pageParam = now }) => {
+      const events = await api.getEventsByPubkeys({
+        pageParam,
+        pageSize: PAGE_SIZE,
+        pubkeys: following,
+      });
+      return events.map((x) => eventToNoteMapper(x));
+    },
+    getNextPageParam: (lastPage) => {
+      return lastPage.length === PAGE_SIZE
+        ? lastPage[PAGE_SIZE - 1]?.event.created_at
+        : undefined;
+    },
+    getPreviousPageParam: (firstPage) => {
+      return firstPage.length === PAGE_SIZE
+        ? firstPage[0]?.event.created_at
+        : undefined;
+    },
+    refetchInterval: false,
+    enabled: !!pubKey,
+  });
+
+  const numberOfNewItems = useQuery({
+    queryKey: ["followsFeed", "numberOfNewItems", now],
+    queryFn: async () => {
+      return await api.getNewPostsCount({
+        created_at: now,
+        pubkeys: following,
+      });
+    },
+    refetchInterval: 3000,
+  });
+
+  const refresh = useMutation(async () => {
+    await refreshNow();
+  });
+
+  return {
+    followsFeed,
+    numberOfNewItems,
+    refresh,
+    now,
   };
 };

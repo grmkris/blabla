@@ -9,9 +9,7 @@ import {
   dateToUnix,
   useNostrRelayPool,
 } from "./nostr-relay-pool/useNostrRelayPool";
-import { useCallback, useEffect } from "react";
-import { Author } from "nostr-relaypool";
-import { Event, getEventHash, Kind, signEvent } from "nostr-tools";
+import { getEventHash, Kind, signEvent } from "nostr-tools";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import type { Event as NostrEvent } from "nostr-tools/event";
@@ -21,10 +19,13 @@ import toast from "react-hot-toast";
 
 export const usePubkey = (props: { pubkey?: string }) => {
   const queryClient = useQueryClient();
-  const { retrievePubkeyMetadata, ready, publish, getFollows } =
-    useNostrRelayPool();
+  const { retrievePubkeyMetadata, ready, publish } = useNostrRelayPool();
+  const {
+    signEvent: signEventWindow,
+    windowNostr,
+    following,
+  } = useWindowNostr();
   const identities = useAppStore.use.localProfiles();
-  const { signEvent: signEventWindow, windowNostr } = useWindowNostr();
 
   const toggleBlocked = useMutation(
     async (pubkey: string, blocked?: boolean) => {
@@ -42,11 +43,11 @@ export const usePubkey = (props: { pubkey?: string }) => {
 
   const followProfile = useMutation(
     async (variables: { pubkeys: string[] }) => {
-      console.log("followProfile", { variables });
+      console.log("followProfile12345", { asd: variables.pubkeys, following });
       const { pubkeys } = variables;
       // gets typesafe data when form is submitted
       const tags = [];
-      for (const pubkey of pubkeys) {
+      for (const pubkey of [...pubkeys, ...following]) {
         tags.push(["p", pubkey]);
       }
       let event: NostrEvent = {

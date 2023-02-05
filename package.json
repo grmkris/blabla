@@ -37,6 +37,9 @@
   "pnpm": {
     "overrides": {
       "@graphiql/toolkit": "0.8.0"
+    },
+    "patchedDependencies": {
+      "nostr-relaypool@0.4.9": "patches/nostr-relaypool@0.4.9.patch"
     }
   }
 }

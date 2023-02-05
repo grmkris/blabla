@@ -1,0 +1,13 @@
+diff --git a/relay.ts b/relay.ts
+index 722ebd92ec233febb40b1d6c650a660e489c87a5..2d44e3f1fa6b5cf7adaca38fd5de88340b9d4c9d 100644
+--- a/relay.ts
++++ b/relay.ts
+@@ -229,7 +229,7 @@ class RelayC {
+       this.ws = ws;
+ 
+       ws.onopen = this.#onopen.bind(this, resolve);
+-      ws.onerror = (e) => {
++      ws.onerror = (e: any) => {
+         this.listeners.error.forEach((cb) => cb());
+         reject(e);
+       };

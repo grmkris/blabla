@@ -19,16 +19,14 @@ export const useWebLn = () => {
     }
   );
 
-  const getInfo = useQuery({
-    queryFn: async () => {
+  const getInfo = useMutation({
+    mutationFn: async () => {
       if (webLn) {
         return await webLn.getInfo();
       } else {
         return null;
       }
     },
-    queryKey: ["getInfo"],
-    enabled: !!webLn,
   });
 
   const signMessage = useMutation({

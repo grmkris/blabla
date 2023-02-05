@@ -23,13 +23,15 @@ export const IdentityInformationCard = (props: {
 
   const followingCount = useIdentityViewStore(
     (state) =>
-      state.identities.find((i) => i.identity === props.identity)?.following.length,
+      state.identities.find((i) => i.identity === props.identity)?.following
+        .length,
     shallow
   );
 
   const followersCount = useIdentityViewStore(
     (state) =>
-      state.identities.find((i) => i.identity === props.identity)?.followers.length,
+      state.identities.find((i) => i.identity === props.identity)?.followers
+        .length,
     shallow
   );
 
@@ -42,7 +44,7 @@ export const IdentityInformationCard = (props: {
 
   const handleRefresh = async () => {
     retrievePubkeyTexts.mutate({
-      author: props.identity,
+      author: [props.identity],
     });
     retrievePubkeyMetadata.mutate({ author: props.identity });
     retrievePubkeyInfos.mutate({

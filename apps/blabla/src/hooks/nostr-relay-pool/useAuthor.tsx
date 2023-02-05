@@ -2,10 +2,10 @@ import { useImmer } from "use-immer";
 import { useContext } from "react";
 import { NostrSocketContext } from "../../NostrSocketContext";
 import { Author, collect } from "nostr-relaypool";
-import { Event } from "nostr-tools";
+import type { Event } from "nostr-tools";
 import { useAppStore } from "../../AppStore";
 
-export const useAuthor = (props: { pubkey: string }) => {
+export const useAuthor = (props: { pubkey?: string }) => {
   const { pubkey } = props;
   const { relayPool } = useContext(NostrSocketContext);
   const nostrRelays = useAppStore.use.saved().nostrRelays.map((x) => x.url);
@@ -17,7 +17,7 @@ export const useAuthor = (props: { pubkey: string }) => {
     followers: [],
     following: [],
     secondFollows: [],
-  })
+  });
 
   const getFollows = (props: { pubkey: string }) => {
     if (!props.pubkey || !nostrRelays || !relayPool) {
@@ -27,9 +27,9 @@ export const useAuthor = (props: { pubkey: string }) => {
       console.log("handleCollectedFollowing: ", pubkeys);
       // remove duplicates
       const uniquePubkeys = [...new Set(pubkeys)];
-      updateData(draft => {
+      updateData((draft) => {
         draft.following = uniquePubkeys;
-      })
+      });
     };
     const author = new Author(relayPool, nostrRelays, props.pubkey);
     console.log("useEffect - followers: ", author.pubkey);
@@ -44,10 +44,10 @@ export const useAuthor = (props: { pubkey: string }) => {
       console.log("handleCollectedFollowers: ", events);
       // remove duplicates
       const uniquePubkeys = [...new Set(events.map((x) => x.pubkey))];
-      updateData(draft => {
+      updateData((draft) => {
         draft.followers = uniquePubkeys;
-      })
-    }
+      });
+    };
     const author = new Author(relayPool, nostrRelays, props.pubkey);
     console.log("useEffect - followers: ", author.pubkey);
     author.followers(collect(handleCollectedFollowers), 100, 100);
@@ -61,9 +61,9 @@ export const useAuthor = (props: { pubkey: string }) => {
       console.log("handleCollectedSecondFollows: ", pubkeys);
       // remove duplicates
       const uniquePubkeys = [...new Set(pubkeys.map((x) => x[0]))];
-      updateData(draft => {
+      updateData((draft) => {
         draft.secondFollows = uniquePubkeys;
-      })
+      });
     };
     const author = new Author(relayPool, nostrRelays, props.pubkey);
     console.log("useEffect - secondFollows: ", author.pubkey);
@@ -75,5 +75,5 @@ export const useAuthor = (props: { pubkey: string }) => {
     getFollows,
     getFollowers,
     getSecondFollows,
-  }
-}
+  };
+};

@@ -24,7 +24,7 @@ export const useEventsByPubkey = (props: { pubkey: string }) => {
       if (pageParam === 0) {
         // if we are on the first page and latest event is not in last
         retrievePubkeyTexts.mutate({
-          author: props.pubkey,
+          author: [props.pubkey],
         });
       }
       return events.map((x) => eventToNoteMapper(x));
